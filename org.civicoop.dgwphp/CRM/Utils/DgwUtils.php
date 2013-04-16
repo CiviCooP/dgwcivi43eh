@@ -51,7 +51,7 @@ class CRM_Utils_DgwUtils {
             $apiParams['name'] = $params['name'];
         }
         $customField = civicrm_api( 'CustomField', 'getsingle', $apiParams );
-        if ( $customField['is_error'] == '1' ) {
+        if ( isset($customField['is_error']) && $customField['is_error'] == '1' ) {
             $result['is_error'] = '1';
             $result['error_message'] = $customField['error_message'];
         } else {

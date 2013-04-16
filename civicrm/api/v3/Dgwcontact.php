@@ -51,27 +51,59 @@
  * include common utils for api, standard API's, config file De Goede Woning
  *
  */
-require_once 'api/v2/utils.php';
-require_once $config->customPHPPathDir.'dgwConfig.php';
-require_once 'api/v2/Contact.php';
+//require_once 'api/v2/utils.php';
+/**
+ * @Todo config bestand en constanten goed zetten
+ */
+require_once 'dgwConfig.php';
+//require_once 'CRM/Utils/DgwUtils.php';
+/*require_once 'api/v2/Contact.php';
 require_once 'api/v2/Location.php';
 require_once 'api/v2/Note.php';
 require_once 'api/v2/Group.php';
 require_once 'api/v2/GroupContact.php';
 require_once 'api/v2/EntityTag.php';
-require_once 'api/v2/Relationship.php';
+require_once 'api/v2/Relationship.php';*/
+
+/*
+ * Helper function for custom values
+ */
+function _getCustomFieldID( $label ) {
+	$result = array( );
+	/*
+	 * return error als label leeg
+	*/
+	if ( empty( $label ) ) {
+		$result['is_error'] = '1';
+		$result['error_message'] = "Label mag niet leeg zijn voor functie getCustomField";
+		return $result;
+	}
+	$customField = civicrm_api( 'CustomField', 'getsingle', array (
+			'version'   =>  '3',
+			'label'     =>  $label ) );
+	if ( $customField['is_error'] == '1' ) {
+		$result['is_error'] = '1';
+		$result['error_message'] = $customField['error_message'];
+	} else {
+		$result['customfield'] = "custom_".$customField['id'];
+	}
+	return $result;
+}
+
 /*
  * Function to get details of a contact
  */
-function civicrm_dgwcontact_get($inparms) {
+function civicrm_api3_dgwcontact_get($inparms) {
     /*
      * initialize output array
      */
     $outparms = array("");
 
-
     /*
      * array to hold all possible input parms
+     */
+    /**
+     * @Todo create a spec function for this api
      */
     $valid_input = array("contact_id", "persoonsnummer_first", "achternaam",
         "geboortedatum", "bsn", "contact_type");
@@ -86,7 +118,7 @@ function civicrm_dgwcontact_get($inparms) {
         }
     }
     if (!$valid) {
-        return civicrm_create_error( 'Geen geldige input parameters voor
+        return civicrm_api3_create_error( 'Geen geldige input parameters voor
             dgwcontact_get' );
     }
 
@@ -111,8 +143,9 @@ function civicrm_dgwcontact_get($inparms) {
         if (isset($inparms['contact_id'])) {
             $civiparms1 = array(
                 "contact_id" => $inparms['contact_id'],
-                "rowCount"   => $rowCount);
-            $civires1 = &civicrm_contact_get($civiparms1);
+                "rowCount"   => $rowCount,
+            	"version"    => 3);
+            $civires1 = civicrm_api('Contact', 'get', $civiparms1);
         } else {
 
             /*
@@ -123,14 +156,16 @@ function civicrm_dgwcontact_get($inparms) {
             if (isset($inparms['persoonsnummer_first'])) {
                 $civiparms1 = array(
 					'contact_type'	=>	'Individual',
-                    CFPERSNR    	=>  $inparms['persoonsnummer_first']);
-                $civires1 = civicrm_contact_get($civiparms1);
+                    CFPERSNR    	=>  $inparms['persoonsnummer_first'],
+                	'version' => 3);
+                $civires1 = civicrm_api('Contact', 'get', $civiparms1);
                 $testkey = key($civires1);
                 if (empty($testkey)) {
 					$civiparms1 = array(
 						'contact_type'	=>	'Organization',
-						CFORGPERSNR    	=>  $inparms['persoonsnummer_first']);
-					$civires1 = civicrm_contact_get($civiparms1);
+						CFORGPERSNR    	=>  $inparms['persoonsnummer_first'],
+						'version' => 3);
+					$civires1 = civicrm_api('Contact', 'get', $civiparms1);
 					$inparms['contact_type'] = "Organization";
 				}
             } else {
@@ -177,7 +212,8 @@ function civicrm_dgwcontact_get($inparms) {
                     }
                 }
                 $civiparms1['rowCount'] = $rowCount;
-                $civires1 = &civicrm_contact_get($civiparms1);
+                $civiparms1['version'] = 3;
+                $civires1 = civicrm_api('Contact', 'get', $civiparms1);
             }
         }
 
@@ -185,28 +221,23 @@ function civicrm_dgwcontact_get($inparms) {
          * check results from civicrm_contact_get, if error return error
          */
         if (civicrm_error($civires1)) {
-            return civicrm_create_error($civires1['error_message']);
+            return civicrm_api3_create_error($civires1['error_message']);
         } else {
             /*
              * if no error, set contact part of output parms. Result could
              * contain more contacts, so for each contact in $civires
              */
             $i = 1;
-            foreach ($civires1 as $result) {
-
+            foreach ($civires1['values'] as $result) {
                 $contact_id = $result['contact_id'];
                 $outparms[$i]['contact_id'] = $result['contact_id'];
                 $outparms[$i]['contact_type'] = strtolower($result['contact_type']);
                 $outparms[$i]['persoonsnummer_first'] = "";
+                
                 /*
                  * incident 20 11 12 002 retrieve is_deleted for contact
                  */
-                $qryIsDeleted = 
-"SELECT is_deleted FROM civicrm_contact WHERE id = $contact_id";
-                $daoIsDeleted = CRM_Core_DAO::executeQuery( $qryIsDeleted );
-                if ( $daoIsDeleted->fetch() ) {
-                    $outparms[$i]['is_deleted'] = $daoIsDeleted->is_deleted;
-                }
+                $outparms[$i]['is_deleted'] = $result['contact_is_deleted'];
 
                 switch ($result['contact_type']) {
 
@@ -355,15 +386,16 @@ function civicrm_dgwcontact_get($inparms) {
 						/*
 						 * vanaf CiviCRM 3.3.4 website in aparte tabel
 						 * en niet meer in standaard API
-						 */
-						$qry_site = "SELECT * FROM civicrm_website
-							WHERE contact_id = $contact_id";
-						$daoSite = CRM_Core_DAO::executeQuery($qry_site);
-						if ($daoSite->fetch()) {
-							if (!empty($daoSite->url)) {
-								$outparms[$i]['home_URL'] = $daoSite->url;
-							}
-						}	
+						 */						
+						$civires4 = civicrm_api('Website', 'get', array(
+							'version' => 3,
+							'contact_id' => $contact_id
+						));						
+						if ($civires4['is_error'] == '0' && isset($civires4['values']) && is_array($civires4['values']) && count($civires4['values'])) {
+							$website = reset($civires4['values']);
+							$outparms[$i]['home_URL'] = $website['url'];
+						}
+						
 						break;
 					default:
 						$outparms[$i]['name'] = $result['sort_name'];
@@ -372,6 +404,9 @@ function civicrm_dgwcontact_get($inparms) {
                  * retrieve custom data for individual
                  */
                 if ($result['contact_type'] == "Individual") {
+                	/**
+                	 * @Todo Custom values by api call
+                	 */
                     require_once("CRM/Core/BAO/CustomValueTable.php");
                     $civiparms2 = array(
                         "entityID"     =>  $outparms[$i]['contact_id'],
@@ -402,7 +437,7 @@ function civicrm_dgwcontact_get($inparms) {
                         /*
                          * default value burg_staat if nothing entered
                          */
-                        if ($civires2[CFPERSBURG] == 0 or
+                        if (!isset($civires2[CFPERSBURG]) or $civires2[CFPERSBURG] == 0 or
                                 $civires2[CFPERSBURG] == "") {
                             $civires2[CFPERSBURG] = DEFBURG;
                         }
@@ -455,7 +490,7 @@ function civicrm_dgwcontact_get($inparms) {
 /*
  * Function to get phones for a contact
  */
-function civicrm_dgwcontact_phoneget($inparms) {
+function civicrm_api3_dgwcontact_phoneget($inparms) {
 
     /*
      * initialize output parameter array
@@ -595,7 +630,7 @@ function civicrm_dgwcontact_phoneget($inparms) {
  * Function to update an individual emailaddress in CiviCRM
  * incoming is either email_id or cde_refno
  */
-function civicrm_dgwcontact_emailupdate($inparms) {
+function civicrm_api3_dgwcontact_emailupdate($inparms) {
     /*
      * if no email_id or cde_refno passed, error
      */
@@ -659,7 +694,7 @@ function civicrm_dgwcontact_emailupdate($inparms) {
      * check if email exists in CiviCRM
      */
     $checkparms = array("email_id" => $email_id);
-    $res_check = civicrm_dgwcontact_emailget($checkparms);
+    $res_check = civicrm_api3_dgwcontact_emailget($checkparms);
     if (civicrm_error($res_check)) {
         return civicrm_create_error("Email niet gevonden");
     }
@@ -838,7 +873,7 @@ function civicrm_dgwcontact_emailupdate($inparms) {
 /*
  * Function to get email addresses for a contact
  */
-function civicrm_dgwcontact_emailget($inparms) {
+function civicrm_api3_dgwcontact_emailget($inparms) {
 
     /*
      * initialize output parameter array
@@ -955,7 +990,7 @@ function civicrm_dgwcontact_emailget($inparms) {
 /*
  * Function to get addresses for a contact
  */
-function civicrm_dgwcontact_addressget($inparms) {
+function civicrm_api3_dgwcontact_addressget($inparms) {
     /*
      * initialize output parameter array
      */
@@ -1114,7 +1149,7 @@ function civicrm_dgwcontact_addressget($inparms) {
 /*
  * Function to retrieve all members of the group synchronize with first
  */
-function civicrm_dgwcontact_firstsyncget() {
+function civicrm_api3_dgwcontact_firstsyncget() {
     /*
      * initialize array with outgoing parameters
      */
@@ -1210,7 +1245,7 @@ function civicrm_dgwcontact_firstsyncget() {
 /*
  * Function to retrieve all groups for a contact
  */
-function civicrm_dgwcontact_groupget($inparms) {
+function civicrm_api3_dgwcontact_groupget($inparms) {
     /*
      * initialize output parameter array
      */
@@ -1266,7 +1301,7 @@ function civicrm_dgwcontact_groupget($inparms) {
 /*
  * Function to retrieve all tags for a contact
  */
-function civicrm_dgwcontact_tagget($inparms) {
+function civicrm_api3_dgwcontact_tagget($inparms) {
     /*
      * initialize output parameter array
      */
@@ -1318,7 +1353,7 @@ function civicrm_dgwcontact_tagget($inparms) {
 /*
  * Function to retrieve all relationships for a contact
  */
-function civicrm_dgwcontact_relationshipget($inparms) {
+function civicrm_api3_dgwcontact_relationshipget($inparms) {
     /*
      * initialize output parameter array
      */
@@ -1394,7 +1429,7 @@ function civicrm_dgwcontact_relationshipget($inparms) {
 /*
  * Function to retrieve all notes for a contact
  */
-function civicrm_dgwcontact_noteget($inparms) {
+function civicrm_api3_dgwcontact_noteget($inparms) {
     /*
      * initialize output parameter array
      */
@@ -1450,7 +1485,7 @@ function civicrm_dgwcontact_noteget($inparms) {
 /*
  * Function to remove contact from group FirstSync
  */
-function civicrm_dgwcontact_firstsyncremove($inparms) {
+function civicrm_api3_dgwcontact_firstsyncremove($inparms) {
     /*
      * if contact_id empty or not numeric, error
      */
@@ -1614,7 +1649,7 @@ function civicrm_dgwcontact_firstsyncremove($inparms) {
  * Function to receive error from First Noa and add this to error table in
  * CiviCRM
  */
-function civicrm_dgwcontact_firstsyncerror($inparms) {
+function civicrm_api3_dgwcontact_firstsyncerror($inparms) {
     /*
      * if contact_id not in parms, empty or not numeric, error
      */
@@ -1742,7 +1777,7 @@ function civicrm_dgwcontact_firstsyncerror($inparms) {
 /*
  * Function to create new contact
  */
-function civicrm_dgwcontact_create($inparms) {
+function civicrm_api3_dgwcontact_create($inparms) {
     /*
      * If contact_type passed and not valid, error. Else set contact_type
      * to default 'Individual'
@@ -2171,7 +2206,7 @@ function civicrm_dgwcontact_create($inparms) {
 /*
  * Function to add a phone number to CiviCRM
  */
-function civicrm_dgwcontact_phonecreate($inparms) {
+function civicrm_api3_dgwcontact_phonecreate($inparms) {
     /*
      * if no contact_id or persoonsnummer_first passed, error
      */
@@ -2256,7 +2291,7 @@ function civicrm_dgwcontact_phonecreate($inparms) {
     } else {
         $checkparms = array("contact_id" => $contact_id);
     }
-    $check_contact = civicrm_dgwcontact_get($checkparms);
+    $check_contact = civicrm_api3_dgwcontact_get($checkparms);
     if (civicrm_error($check_contact)) {
         return civicrm_create_error("Contact niet gevonden");
     } else {
@@ -2417,7 +2452,7 @@ function civicrm_dgwcontact_phonecreate($inparms) {
 /*
  * Function to add an emailaddress to CiviCRM
  */
-function civicrm_dgwcontact_emailcreate($inparms) {
+function civicrm_api3_dgwcontact_emailcreate($inparms) {
     /*
      * if no contact_id or persoonsnummer_first passed, error
      */
@@ -2494,7 +2529,7 @@ function civicrm_dgwcontact_emailcreate($inparms) {
     } else {
         $checkparms = array("contact_id" => $contact_id);
     }
-    $check_contact = civicrm_dgwcontact_get($checkparms);
+    $check_contact = civicrm_api3_dgwcontact_get($checkparms);
     if (civicrm_error($check_contact)) {
         return civicrm_create_error("Contact niet gevonden");
     } else {
@@ -2650,7 +2685,7 @@ function civicrm_dgwcontact_emailcreate($inparms) {
 /*
  * Function to add an address to CiviCRM
  */
-function civicrm_dgwcontact_addresscreate($inparms) {
+function civicrm_api3_dgwcontact_addresscreate($inparms) {
     /*
      * if no contact_id or persoonsnummer_first passed, error
      */
@@ -2735,7 +2770,7 @@ function civicrm_dgwcontact_addresscreate($inparms) {
     } else {
         $checkparms = array("contact_id" => $contact_id);
     }
-    $check_contact = civicrm_dgwcontact_get($checkparms);
+    $check_contact = civicrm_api3_dgwcontact_get($checkparms);
     if (civicrm_error($check_contact)) {
         return civicrm_create_error("Contact niet gevonden");
     } else {
@@ -3077,7 +3112,7 @@ function civicrm_dgwcontact_addresscreate($inparms) {
 /*
  * Function to add contact to a group
  */
-function civicrm_dgwcontact_groupcreate($inparms) {
+function civicrm_api3_dgwcontact_groupcreate($inparms) {
     /*
      * if no contact_id passed, error
      */
@@ -3154,7 +3189,7 @@ function civicrm_dgwcontact_groupcreate($inparms) {
 /*
  * function to add a huurovereenkomst to a household in CiviCRM
  */
-function civicrm_dgwcontact_hovcreate($inparms) {
+function civicrm_api3_dgwcontact_hovcreate($inparms) {
     /*
      * if no hov_nummer passed, error
      */
@@ -3202,7 +3237,7 @@ function civicrm_dgwcontact_hovcreate($inparms) {
     $hh_type = null; 
     if (!empty($hh_persoon)) {
         $hhparms = array("persoonsnummer_first" => $hh_persoon);
-        $res_hh = civicrm_dgwcontact_get($hhparms);
+        $res_hh = civicrm_api3_dgwcontact_get($hhparms);
         if (civicrm_error($res_hh)) {
             return civicrm_create_error("Hoofdhuurder niet gevonden");
         } else {
@@ -3223,7 +3258,7 @@ function civicrm_dgwcontact_hovcreate($inparms) {
      */
     if (!empty($mh_persoon)) {
         $mhparms = array("persoonsnummer_first" => $mh_persoon);
-        $res_mh = civicrm_dgwcontact_get($mhparms);
+        $res_mh = civicrm_api3_dgwcontact_get($mhparms);
         if (civicrm_error($res_mh)) {
             return civicrm_create_error("Medehuurder niet gevonden");
         } else {
@@ -3429,7 +3464,7 @@ function civicrm_dgwcontact_hovcreate($inparms) {
 					 "contact_type" =>  "Household",
 					 "contact_id"   =>  $huishouden_id,
 					 "name"         =>  $corr_name);
-				 civicrm_dgwcontact_update($hhparms);
+				 civicrm_api3_dgwcontact_update($hhparms);
 			 }
 			 $outparms['is_error'] = "0";
 		} else {
@@ -3599,7 +3634,7 @@ function civicrm_dgwcontact_hovcreate($inparms) {
 /*
  * Function to update contact
  */
-function civicrm_dgwcontact_update($inparms) {
+function civicrm_api3_dgwcontact_update($inparms) {
     /*
      * if no contact_id or persoonsnummer_first passed, error
      */
@@ -4141,7 +4176,7 @@ function civicrm_dgwcontact_update($inparms) {
  * Function to update an individual phonenumber in CiviCRM
  * incoming is either phone_id or cde_refno
  */
-function civicrm_dgwcontact_phoneupdate($inparms) {
+function civicrm_api3_dgwcontact_phoneupdate($inparms) {
     /*
      * if no phone_id or cde_refno passed, error
      */
@@ -4205,7 +4240,7 @@ function civicrm_dgwcontact_phoneupdate($inparms) {
      * check if phone exists in CiviCRM
      */
     $checkparms = array("phone_id" => $phone_id);
-    $res_check = civicrm_dgwcontact_phoneget($checkparms);
+    $res_check = civicrm_api3_dgwcontact_phoneget($checkparms);
     if (civicrm_error($res_check)) {
         return civicrm_create_error("Phone niet gevonden");
     }
@@ -4447,7 +4482,7 @@ function civicrm_dgwcontact_phoneupdate($inparms) {
  * Function to update an individual address in CiviCRM
  * incoming is either address or adr_refno
  */
-function civicrm_dgwcontact_addressupdate($inparms) {
+function civicrm_api3_dgwcontact_addressupdate($inparms) {
     /*
      * if no address_id or adr_refno passed, error
      */
@@ -4511,7 +4546,7 @@ function civicrm_dgwcontact_addressupdate($inparms) {
      * check if address exists in CiviCRM
      */
     $checkparms = array("address_id" => $address_id);
-    $res_check = civicrm_dgwcontact_addressget($checkparms);
+    $res_check = civicrm_api3_dgwcontact_addressget($checkparms);
     if (civicrm_error($res_check)) {
         return civicrm_create_error("Adres niet gevonden");
     }
@@ -4833,7 +4868,7 @@ function civicrm_dgwcontact_addressupdate($inparms) {
 /*
  * Function to delete a phone number in CiviCRM
  */
-function civicrm_dgwcontact_phonedelete($inparms) {
+function civicrm_api3_dgwcontact_phonedelete($inparms) {
     /*
      * if no phone_id or cde_refno passed, error
      */
@@ -4875,7 +4910,7 @@ function civicrm_dgwcontact_phonedelete($inparms) {
      * check if phone exists in CiviCRM
      */
     $checkparms = array("phone_id" => $phone_id);
-    $res_check = civicrm_dgwcontact_phoneget($checkparms);
+    $res_check = civicrm_api3_dgwcontact_phoneget($checkparms);
     if (civicrm_error($res_check)) {
         return civicrm_create_error("Phone niet gevonden");
     }
@@ -4890,7 +4925,7 @@ function civicrm_dgwcontact_phonedelete($inparms) {
 /*
  * Function to delete an e-mailadres in CiviCRM
  */
-function civicrm_dgwcontact_emaildelete($inparms) {
+function civicrm_api3_dgwcontact_emaildelete($inparms) {
     /*
      * if no email_id or cde_refno passed, error
      */
@@ -4932,7 +4967,7 @@ function civicrm_dgwcontact_emaildelete($inparms) {
      * check if email exists in CiviCRM
      */
     $checkparms = array("email_id" => $email_id);
-    $res_check = civicrm_dgwcontact_emailget($checkparms);
+    $res_check = civicrm_api3_dgwcontact_emailget($checkparms);
     if (civicrm_error($res_check)) {
         return civicrm_create_error("Email niet gevonden");
     }
@@ -4947,7 +4982,7 @@ function civicrm_dgwcontact_emaildelete($inparms) {
 /*
  * Function to delete an address in CiviCRM
  */
-function civicrm_dgwcontact_addressdelete($inparms) {
+function civicrm_api3_dgwcontact_addressdelete($inparms) {
     /*
      * if no address_id or adr_refno passed, error
      */
@@ -4989,7 +5024,7 @@ function civicrm_dgwcontact_addressdelete($inparms) {
      * check if address exists in CiviCRM
      */
     $checkparms = array("address_id" => $address_id);
-    $res_check = civicrm_dgwcontact_addressget($checkparms);
+    $res_check = civicrm_api3_dgwcontact_addressget($checkparms);
     if (civicrm_error($res_check)) {
         return civicrm_create_error("Address niet gevonden");
     }
@@ -5004,7 +5039,7 @@ function civicrm_dgwcontact_addressdelete($inparms) {
 /*
  * Function to remove contact from a CiviCRM group
  */
-function civicrm_dgwcontact_groupremove($inparms) {
+function civicrm_api3_dgwcontact_groupremove($inparms) {
     /*
      * if no contact_id or persoonsnummer_first passed, error
      */
@@ -5098,7 +5133,7 @@ return $outparms;
 /*
  * Function to update huurovereenkomst
  */
-function civicrm_dgwcontact_hovupdate($inparms) {
+function civicrm_api3_dgwcontact_hovupdate($inparms) {
     /*
      * if no hov_nummer passed, error
      */
@@ -5146,7 +5181,7 @@ function civicrm_dgwcontact_hovupdate($inparms) {
 		}
         $hh_persoon = trim($inparms['hh_persoon']);
         $hhparms = array("persoonsnummer_first" => $hh_persoon);
-        $res_hh = civicrm_dgwcontact_get($hhparms);
+        $res_hh = civicrm_api3_dgwcontact_get($hhparms);
         if (civicrm_error($res_hh)) {
             return civicrm_create_error("Hoofdhuurder niet gevonden");
         } else {
@@ -5171,7 +5206,7 @@ function civicrm_dgwcontact_hovupdate($inparms) {
 		}
         $mh_persoon = trim($inparms['mh_persoon']);
         $mhparms = array("persoonsnummer_first" => $mh_persoon);
-        $res_mh = civicrm_dgwcontact_get($mhparms);
+        $res_mh = civicrm_api3_dgwcontact_get($mhparms);
         if (civicrm_error($res_mh)) {
             return civicrm_create_error("Medehuurder niet gevonden");
         } else {
@@ -5335,7 +5370,7 @@ function civicrm_dgwcontact_hovupdate($inparms) {
 					"contact_id"        =>  $huis_id,
 					"contact_type"      =>  "Household",
 					"name"              =>  $hov_cor);
-				civicrm_dgwcontact_update($huishoudparms);
+				civicrm_api3_dgwcontact_update($huishoudparms);
 			} else {
 				$hhov_cor = $daoHovHuis->$fldhovcor;
 			}
