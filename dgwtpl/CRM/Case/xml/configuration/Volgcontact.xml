@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<CaseType><name>Volgcontact</name>
+  <ActivityTypes>
+    	<ActivityType><name>Open Case</name><max_instances>1</max_instances></ActivityType>
+	<ActivityType><name>Afleggen bezoek</name></ActivityType>
+	<ActivityType><name>Maken afspraak</name></ActivityType>
+	<ActivityType><name>Gesprek - telefoon</name></ActivityType>
+	<ActivityType><name>Gesprek face-to-face</name></ActivityType>
+	<ActivityType><name>Inkomende mail</name></ActivityType>
+	<ActivityType><name>Uitgaande mail</name></ActivityType>
+	<ActivityType><name>Vastleggen informatie</name></ActivityType>
+	<ActivityType><name>Controleren huur/betaling</name></ActivityType>
+	<ActivityType><name>Let op! Gevoelige dossierinformatie</name></ActivityType>
+	<ActivityType><name>Close Case</name></ActivityType>
+  </ActivityTypes>
+<ActivitySets>
+    <ActivitySet>
+      <name>standard_timeline</name>
+      <label>Standaard Tijdlijn</label>
+      <timeline>true</timeline>
+      <ActivityTypes>
+        <ActivityType>
+          <name>Open Case</name>
+          <status>Completed</status>
+        </ActivityType>
+      </ActivityTypes>
+    </ActivitySet>
+<ActivitySet>
+      <name>Volgen inplannen</name>
+      <label>Volgen inplannen</label>
+      <timeline>true</timeline>
+      <ActivityTypes>
+	<ActivityType>
+          <name>Start planning</name>
+	<status>Completed</status>
+        </ActivityType>        
+	<ActivityType>
+          <name>Volgen 1</name>
+	<reference_activity>Start planning</reference_activity>
+          <reference_offset>1</reference_offset>
+          <reference_select>newest</reference_select>
+        </ActivityType>
+	<ActivityType>
+          <name>Volgen 2</name>
+          <reference_activity>Start planning</reference_activity>
+          <reference_offset>45</reference_offset>
+          <reference_select>newest</reference_select>
+        </ActivityType>
+	<ActivityType>
+          <name>Volgen 3</name>
+          <reference_activity>Start planning</reference_activity>
+          <reference_offset>90</reference_offset>
+          <reference_select>newest</reference_select>
+        </ActivityType>
+	<ActivityType>
+          <name>Volgen 4</name>
+          <reference_activity>Start planning</reference_activity>
+          <reference_offset>135</reference_offset>
+          <reference_select>newest</reference_select>
+        </ActivityType>
+<ActivityType>
+          <name>Volgen 5</name>
+          <reference_activity>Start planning</reference_activity>
+          <reference_offset>180</reference_offset>
+          <reference_select>newest</reference_select>
+        </ActivityType>
+      </ActivityTypes>
+    </ActivitySet>
+  </ActivitySets> 
+  <CaseRoles>
+    <RelationshipType>
+        <name>Dossiermanager</name>
+        <creator>1</creator>
+        <manager>1</manager>
+    </RelationshipType>
+    <RelationshipType>
+        <name>Buurtbeheerder</name>
+    </RelationshipType>
+ </CaseRoles>
+</CaseType>
