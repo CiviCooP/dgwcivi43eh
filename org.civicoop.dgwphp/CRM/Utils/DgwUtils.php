@@ -58,5 +58,5 @@ class CRM_Utils_DgwUtils {
             $result['custom_id'] = "custom_".$customField['id'];
         }
         return $result;
-    }   
+    }
 }
