@@ -11,8 +11,10 @@ class CRM_Custom_Upgrader extends CRM_Custom_Upgrader_Base {
      * does not 
      */
     public function install() {
-        //$this->ctx->log->info('Installing org.civicoop.dgw.custom extension');
         $this->executeSqlFile( 'sql/dgwcustominstall.sql'  );
+    }
+    public function uninstall() {
+        $this->executeSqlFile( 'sql/dgwcustomuninstall.sql' );
     }
 
   // By convention, functions that look like "function upgrade_NNNN()" are
