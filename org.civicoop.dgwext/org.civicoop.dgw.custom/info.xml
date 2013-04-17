@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<extension key="org.civicoop.dgw.custom" type="module">
+  <file>custom</file>
+  <name>General Customization De Goede Woning</name>
+  <description>Generic Customizations required for De Goede Woning. Obligatory, their CiviCRM will not function correctly without this extensions</description>
+  <license>Academic Free License v3.0</license>
+  <maintainer>
+    <author>CiviCooP</author>
+    <email>helpdesk@civicoop.org</email>
+  </maintainer>
+  <releaseDate>2013-04-16</releaseDate>
+  <version>1.0</version>
+  <develStage>beta</develStage>
+  <compatibility>
+    <ver>4.3</ver>
+  </compatibility>
+  <comments>This module is being developed and tested</comments>
+  <civix>
+    <namespace>CRM/Custom</namespace>
+  </civix>
+</extension>
