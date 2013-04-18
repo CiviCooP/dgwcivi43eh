@@ -117,17 +117,26 @@ function civicrm_api3_dgwcontact_get($inparms) {
              * (issue 240 ook voor organisatie)
              */
         	$civiparms1['contact_type'] = 'Individual';
+        	/**
+        	 * @TodO replace constant CFPERSNR with config value
+        	 */
         	$civiparms1[CFPERSNR] = $inparms['persoonsnummer_first'];
         	$civires1 = civicrm_api('Contact', 'get', $civiparms1);
             if (key($civires1) == null) {
             	unset($civiparms1[CFPERSNR]);
             	$inparms['contact_type'] = "Organization";
             	$civiparms1['contact_type'] = 'Organization';
+            	/**
+            	 * @TodO replace constant CFORGPERSNR with config value
+            	 */
             	$civiparms1[CFORGPERSNR] = $inparms['persoonsnummer_first'];
             	$civires1 = civicrm_api('Contact', 'get', $civiparms1);
             } 
         } else {
         	if (isset($inparms['bsn']) && !empty($inparms['bsn'])) {
+        		/**
+        		 * @TodO replace constant CFPERSBSN with config value
+        		 */
         		$civiparms1[CFPERSBSN] = $inparms['bsn'];
         	} 
         	if (isset($inparms['achternaam']) && !empty($inparms['achternaam'])) {
