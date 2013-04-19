@@ -43,3 +43,22 @@ INSERT INTO `dgw_config` SET label = 'relatie medehuurder', value = 'Medehuurder
 INSERT INTO `dgw_config` SET label = 'default location type', value = 'Thuis';
 INSERT INTO `dgw_config` SET label = 'helpdesk mail', value = 'helpdesk@degoedewoning.nl';
 
+INSERT INTO `dgw_config` SET label = 'vjt woonkeusnummer', value = 'Inschrijfnummer Woonkeus';
+INSERT INTO `dgw_config` SET label = 'vjt woonkeusdatum', value = 'Datum inschrijving woonkeus';
+INSERT INTO `dgw_config` SET label = 'vjt situatie', value = 'Huidige woonsituatie';
+INSERT INTO `dgw_config` SET label = 'vjt hoofdhuurder', value = 'Hoofdhuurder';
+INSERT INTO `dgw_config` SET label = 'vjt andere', value = 'Welke andere corporatie';
+INSERT INTO `dgw_config` SET label = 'vjt huishoudgrootte', value = 'Huishoudgrootte';
+INSERT INTO `dgw_config` SET label = 'vjt bekend', value = 'Bekend met koopaanbod';
+INSERT INTO `dgw_config` SET label = 'vjt particulier', value = 'Particuliere markt';
+INSERT INTO `dgw_config` SET label = 'vjt bruto jaarinkomen', value = 'Bruto jaarinkomen';
+INSERT INTO `dgw_config` SET label = 'vjt check', value = 'Check';
+
+INSERT INTO `dgw_config` SET label = 'locatie oud', value = 'Oud';
+INSERT INTO `dgw_config` SET label = 'locatie toekomst', value = 'Toekomst';
+INSERT INTO `dgw_config` SET label = 'kov bestandsnaam', value = 'kov_';
+INSERT INTO `dgw_config` SET label = 'kov pad', value = '/home/kov';
+INSERT INTO `dgw_config` SET label = 'kov tabel', value = 'kovimport';
+INSERT INTO `dgw_config` SET label = 'kov header', value = 'kovhdr';
+INSERT INTO `dgw_config` SET label = 'kov foutgroep', value = 'Koopovereenkomst Huishouden Fout'; 
+
