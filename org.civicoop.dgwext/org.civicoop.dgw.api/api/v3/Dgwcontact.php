@@ -52,6 +52,7 @@
  * @Todo config bestand en constanten goed zetten
  */
 require_once 'dgwConfig.php';
+require_once 'DgwPhone.php';
 
 /*
  * Function to get details of a contact
@@ -213,140 +214,7 @@ function civicrm_api3_dgwcontact_get($inparms) {
  * Function to get phones for a contact
  */
 function civicrm_api3_dgwcontact_phoneget($inparms) {
-
-    /*
-     * initialize output parameter array
-     */
-    $outparms = array("");
-
-    /*
-     * if contact_id empty and phone_id empty, error
-     */
-    if (!isset($inparms['contact_id']) && !isset($inparms['phone_id'])) {
-        return civicrm_create_error("Geen contact_id of phone_id doorgegeven in
-            dgwcontact_phoneget.");
-    }
-
-    if (empty($inparms['contact_id']) && empty($inparms['phone_id'])) {
-        return civicrm_create_error("Contact_id en phone_id allebei leeg in
-            dgwcontact_phoneget.");
-    }
-
-    /*
-     * if contact_id is used and contains non-numeric data, error
-     */
-    if (!empty($inparms['contact_id'])) {
-        if (!is_numeric($inparms['contact_id'])) {
-            return civicrm_create_error("Contact_id bevat ongeldige waarde in
-                dgwcontact_phoneget.");
-        } else {
-            $contact_id = $inparms['contact_id'];
-        }
-    }
-
-    /*
-     * if phone_id is used and contains non-numeric data, error
-     */
-    if (!empty($inparms['phone_id']) && !is_numeric($inparms['phone_id'])) {
-        return civicrm_create_error("Phone_id bevat ongeldige waarde in
-            dgwcontact_phoneget.");
-    }
-
-    /*
-     * use civicrm_location_get for the contact to retrieve phone numbers if
-     * phone_id is empty
-     */
-
-    if (!isset($inparms['phone_id']) || empty($inparms['phone_id'])) {
-        $civiparms = array(
-            "contact_id"    =>  $contact_id,
-            "version"       =>  "3.0");
-        $civires = &civicrm_location_get($civiparms);
-        if (civicrm_error($civires)) {
-            $message = $civires['error_message'];
-            return civicrm_create_error("Fout is : ".$message);
-        } else {
-            /*
-             * array from location_get contains possibly many arrays. Therefore:
-             * - read all arrays within result, this is a complete location
-             * - read all items within a location. This can contain an address,
-             *   emails or phones.
-             * - If the item is an array it is either emails or phones
-             * - If item['phone'] exists, it is a phone.
-             */
-            $i = 1;
-            foreach ($civires as $location) {
-                foreach ($location as $item) {
-                    if (is_array($item)) {
-                        if (isset($item['phone'])) {
-                            $outparms[$i]['contact_id'] = $item['contact_id'];
-                            $outparms[$i]['phone_id'] = $item['id'];
-                            /*
-                             * retrieve label location_type_id
-                             */
-                            $loc_type = getLocationType($item['location_type_id']);
-                            $outparms[$i]['location_type'] = strtolower($loc_type);
-
-                            if (isset($item['is_primary'])) {
-                                $outparms[$i]['is_primary'] = $item['is_primary'];
-                            } else {
-                                $outparms[$i]['is_primary'] = 0;
-                            }
-                            /*
-                             * retrieve label phone_type_id
-                             */
-                            $phone_type = getOptionValue(
-                                    "", "phone_type", $item['phone_type_id']);
-                            $outparms[$i]['phone_type'] = strtolower($phone_type);
-                            $outparms[$i]['phone'] = $item['phone'];
-                            /*
-                             * Make it possible to pass on start date for phone.
-                             * This is not part of CiviCRM yet, but might be in
-                             * future and will probably be required for De Goede
-                             * Woning anyway. So already in place in API even if
-                             * not functional yet
-                             */
-                            $outparms[$i]['start_date'] = date("Y-m-d");
-                            $outparms[$i]['end_date'] = "";
-                            $i++;
-                        }
-                    }
-
-                }
-            }
-        }
-        $outparms[0]['record_count'] = ($i - 1);
-
-    } else {
-        /*
-         *
-         * retrieve specific phone number if phone_id is used
-         */
-        $phone_id = $inparms['phone_id'];
-        $query = "SELECT * FROM civicrm_phone WHERE id = $phone_id";
-        $daoPhone = CRM_Core_DAO::executeQuery($query);
-        $outparms[0]['record_count'] = 0;
-            while ($daoPhone->fetch()) {
-                $outparms[1]['contact_id'] = $daoPhone->contact_id;
-                $outparms[1]['phone_id'] = $daoPhone->id;
-                $outparms[1]['location_type'] =
-                    getLocationType($daoPhone->location_type_id);
-                $outparms[1]['location_type'] =
-                    getLocationTypeId($daoPhone->location_type_id);
-                $outparms[1]['location_type'] =
-                    strtolower($outparms[1]['location_type']);
-                $outparms[1]['is_primary'] = $daoPhone->is_primary;
-                $outparms[1]['phone_type'] = getOptionValue(
-                        "", "phone_type", $daoPhone->phone_type_id);
-                $outparms[1]['phone_type'] = strtolower(
-                        $outparms[1]['phone_type']);
-                $outparms[1]['phone'] = $daoPhone->phone;
-                $outparms[1]['start_date'] = date("Y-m-d");
-                $outparms[1]['end_date'] = "";
-                $outparms[0]['record_count'] = 1;
-         }
-    }
-    return $outparms;
+	return civicrm_api3_dgw_phone_get($inparms);
 }
 /*
  * Function to update an individual emailaddress in CiviCRM
