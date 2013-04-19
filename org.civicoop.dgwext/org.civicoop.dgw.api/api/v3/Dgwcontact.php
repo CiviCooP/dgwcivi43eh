@@ -54,6 +54,7 @@
 require_once 'dgwConfig.php';
 require_once 'DgwPhone.php';
 require_once 'DgwEmail.php';
+require_once 'DgwGroup.php';
 require_once 'DgwAddress.php';
 
 /*
@@ -574,57 +575,7 @@ function civicrm_api3_dgwcontact_firstsyncget() {
  * Function to retrieve all groups for a contact
  */
 function civicrm_api3_dgwcontact_groupget($inparms) {
-    /*
-     * initialize output parameter array
-     */
-    $outparms = array("");
-    /*
-     * if contact_id empty or not numeric, error
-     */
-    if (!isset($inparms['contact_id'])) {
-        return civicrm_create_error("Geen contact_id in parms in
-            dgwcontact_groupget");
-    } else {
-        $contact_id = trim($inparms['contact_id']);
-    }
-
-    if (empty($contact_id)) {
-        return civicrm_create_error( 'Leeg contact_id voor
-            dgwcontact_groupget' );
-    } else {
-        if (!is_numeric($contact_id)) {
-            return civicrm_create_error( 'Contact_id '.$contact_id.' heeft
-                niet numerieke waarden in dgwcontact_groupget');
-        }
-    }
-
-    /*
-     * use standard API to get group array
-     */
-    $civiparms = array("contact_id" => $contact_id);
-    $civires = &civicrm_group_contact_get($civiparms);
-    if (civicrm_error($civires)) {
-        return civicrm_create_error($civires['error_message']);
-    } else {
-        /*
-         * add outparms element for every group found
-         */
-        $i = 1;
-        foreach ($civires as $group) {
-            $outparms[$i]['contact_id'] = $contact_id;
-            $outparms[$i]['group_id'] = $group['group_id'];
-            if (isset($group['title'])) {
-                $outparms[$i]['group_title'] = $group['title'];
-            }
-            if (isset($group['in_date'])) {
-                $outparms[$i]['in_date'] = date("Y-m-d",
-                    strtotime($group['in_date']));
-            }
-            $i++;
-        }
-    }
-    $outparms[0]['record_count'] = ($i - 1);
-    return $outparms;
+    return civicrm_api3_dgw_group_get($inparms);
 }
 /*
  * Function to retrieve all tags for a contact

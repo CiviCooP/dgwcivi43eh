@@ -25,12 +25,12 @@ function civicrm_api3_dgw_address_get($inparms) {
 	 * if contact_id empty and address_id empty, error
 	*/
 	if (!isset($inparms['contact_id']) && !isset($inparms['address_id'])) {
-		return civicrm_create_error("Geen contact_id of address_id doorgegeven
+		return civicrm_api3_create_error("Geen contact_id of address_id doorgegeven
             in dgwcontact_addressget.");
 	}
 	
 	if (empty($inparms['contact_id']) && empty($inparms['address_id'])) {
-		return civicrm_create_error("Contact_id en address_id allebei leeg in
+		return civicrm_api3_create_error("Contact_id en address_id allebei leeg in
             dgwcontact_addressget.");
 	}
 	
@@ -40,7 +40,7 @@ function civicrm_api3_dgw_address_get($inparms) {
 	if (!empty($inparms['contact_id'])) {
 		$contact_id = trim($inparms['contact_id']);
 		if (!is_numeric($contact_id)) {
-			return civicrm_create_error( 'Contact_id '.$contact_id.' heeft
+			return civicrm_api3_create_error( 'Contact_id '.$contact_id.' heeft
                 niet numerieke waarden in dgwcontact_addressget');
 		}
 	}
