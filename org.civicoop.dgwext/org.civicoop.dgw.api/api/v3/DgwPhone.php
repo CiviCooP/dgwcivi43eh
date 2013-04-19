@@ -70,12 +70,7 @@ function civicrm_api3_dgw_phone_get($inparms) {
 	$i = 1;
 	foreach ($civires1['values'] as $result) {
 		/* Get location type name */
-		$civiparms2 = array('version' => 3, 'id' => $result['location_type_id']);
-		$civires2 = civicrm_api('LocationType', 'getsingle', $civiparms2);
-		$locationType = "";
-		if (!civicrm_error($civires2)) {
-			$locationType = $civires2['name'];
-		}
+		$locationType = CRM_Utils_DgwApiUtils::getLocationByid($result['location_type_id']);
 		/* Get phone type name */
 		$civiparms3 = array('version' => 3, 'id' => $result['location_type_id']);
 		$civires3 = civicrm_api('OptionValue', 'getsingle', $civiparms3);
