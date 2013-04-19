@@ -53,6 +53,7 @@
  */
 require_once 'dgwConfig.php';
 require_once 'DgwPhone.php';
+require_once 'DgwEmail.php';
 
 /*
  * Function to get details of a contact
@@ -464,118 +465,7 @@ function civicrm_api3_dgwcontact_emailupdate($inparms) {
  * Function to get email addresses for a contact
  */
 function civicrm_api3_dgwcontact_emailget($inparms) {
-
-    /*
-     * initialize output parameter array
-     */
-    $outparms = array("");
-    /*
-     * if contact_id empty and email_id empty, error
-     */
-    if (!isset($inparms['contact_id']) && !isset($inparms['email_id'])) {
-        return civicrm_create_error("Geen contact_id of email_id doorgegeven in
-            dgwcontact_emailget.");
-    }
-
-    if (empty($inparms['contact_id']) && empty($inparms['email_id'])) {
-        return civicrm_create_error("Contact_id en email_id allebei leeg in
-            dgwcontact_emailget.");
-    }
-
-    /*
-     * if contact_id not numeric, error
-     */
-    if (!empty($inparms['contact_id'])) {
-        $contact_id = trim($inparms['contact_id']);
-        if (!is_numeric($contact_id)) {
-            return civicrm_create_error( 'Contact_id '.$contact_id.' heeft
-                niet numerieke waarden in dgwcontact_emailget');
-        }
-    }
-    /*
-     * if contact_id used
-     */
-    if (!isset($inparms['email_id']) || empty($inparms['email_id'])) {
-        /*
-         * use civicrm_location_get for the contact to retrieve email addresses
-         */
-        $civiparms = array(
-            "contact_id"    =>  $contact_id,
-            "version"       =>  "3.0");
-        $civires = &civicrm_location_get($civiparms);
-        if (civicrm_error($civires)) {
-            return civicrm_create_error($civires['error_message']);
-        } else {
-            /*
-             * array from location_get contains possibly many arrays. Therefore:
-             * - read all arrays within result, this is a complete location
-             * - read all items within a location. This can contain an address,
-             *   emails or phones.
-             * - If the item is an array it is either emails or phones
-             * - If item['email'] exists, it is an emailaddress.
-             */
-            $i = 1;
-            foreach ($civires as $location) {
-                foreach ($location as $item) {
-                    if (is_array($item)) {
-                        if (isset($item['email'])) {
-                            $outparms[$i]['contact_id'] = $item['contact_id'];
-                            $outparms[$i]['email_id'] = $item['id'];
-                            /*
-                             * retrieve label location_type_id and translate
-                             */
-                            $outparms[$i]['location_type'] = strtolower(
-                                getLocationType($item['location_type_id']));
-
-                            if (isset($item['is_primary'])) {
-                                $outparms[$i]['is_primary'] = $item['is_primary'];
-                            } else {
-                                $outparms[$i]['is_primary'] = 0;
-                            }
-                            $outparms[$i]['email'] = $item['email'];
-                            /*
-                             * Make it possible to pass on start date for email.
-                             * This is not part of CiviCRM yet, but might be in
-                             * future and will probably be required for De Goede
-                             * Woning anyway. So already in place in API even if
-                             * not functional yet
-                             */
-                            $outparms[$i]['start_date'] = date("Y-m-d");
-                            $outparms[$i]['end_date'] = "";
-                            $i++;
-                        }
-                    }
-
-                }
-            }
-        }
-        $outparms[0]['record_count'] = ($i - 1);
-
-
-    } else {
-        /*
-         *
-         * retrieve specific email if email_id is used
-         */
-        $email_id = $inparms['email_id'];
-        $query = "SELECT * FROM civicrm_email WHERE id = $email_id";
-        $daoEmail = CRM_Core_DAO::executeQuery($query);
-        $outparms[0]['record_count'] = 0;
-            while ($daoEmail->fetch()) {
-                $outparms[1]['contact_id'] = $daoEmail->contact_id;
-                $outparms[1]['email_id'] = $daoEmail->id;
-                $outparms[1]['location_type'] =
-                    getLocationType($daoEmail->location_type_id);
-                $outparms[1]['location_type'] = strtolower(
-                        $outparms['location_type']);
-                $outparms[1]['is_primary'] = $daoEmail->is_primary;
-                $outparms[1]['email'] = $daoEmail->email;
-                $outparms[1]['start_date'] = date("Y-m-d");
-                $outparms[1]['end_date'] = "";
-                $outparms[0]['record_count'] = 1;
-         }
-    }
-    return $outparms;
+	return civicrm_api3_dgw_email_get($inparms);
 }
 /*
  * Function to get addresses for a contact
