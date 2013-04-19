@@ -55,6 +55,7 @@ require_once 'dgwConfig.php';
 require_once 'DgwPhone.php';
 require_once 'DgwEmail.php';
 require_once 'DgwGroup.php';
+require_once 'DgwTag.php';
 require_once 'DgwAddress.php';
 
 /*
@@ -581,53 +582,7 @@ function civicrm_api3_dgwcontact_groupget($inparms) {
  * Function to retrieve all tags for a contact
  */
 function civicrm_api3_dgwcontact_tagget($inparms) {
-    /*
-     * initialize output parameter array
-     */
-    $outparms = array("");
-    /*
-     * if contact_id empty or not numeric, error
-     */
-    if (!isset($inparms['contact_id'])) {
-        return civicrm_create_error("Geen contact_id in parms in
-            dgwcontact_tagget");
-    } else {
-        $contact_id = trim($inparms['contact_id']);
-    }
-    if (empty($contact_id)) {
-        return civicrm_create_error( 'Leeg contact_id voor
-            dgwtag_contact_get' );
-    } else {
-        if (!is_numeric($contact_id)) {
-            return civicrm_create_error( 'Contact_id '.$contact_id.' heeft
-                niet numerieke waarden in dgwtag_contact_get');
-        }
-    }
-
-    /*
-     * use standard API to get tag id array
-     */
-    $civiparms = array("contact_id" => $contact_id);
-    $civires = &civicrm_entity_tag_display($civiparms);
-    if (civicrm_error($civires)) {
-        return civicrm_create_error($civires['error_message']);
-    } else {
-        /*
-         * add outparms element for every tag found (if any)
-         */
-        $i = 1;
-        if (!empty($civires)) {
-            $tags = explode(",", $civires);
-            foreach ($tags as $tag) {
-                $outparms[$i]['contact_id'] = $contact_id;
-                $outparms[$i]['tag'] = $tag;
-                $i++;
-            }
-        }
-    }
-    $outparms[0]['record_count'] = ($i - 1);
-    return $outparms;
-
+	return civicrm_api3_dgw_tag_get($inparms);
 }
 /*
  * Function to retrieve all relationships for a contact
