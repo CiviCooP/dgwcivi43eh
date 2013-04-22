@@ -16,7 +16,7 @@
 *
 */
 class CRM_Utils_DgwUtils {
-    /*
+    /**
      * static function to retrieve a custom field ID with a label (passed in
      * params
      * @author Erik Hommel (erik.hommel@civicoop.org)
@@ -59,7 +59,7 @@ class CRM_Utils_DgwUtils {
         }
         return $result;
     }
-    /*
+    /**
      * Static function to retrieve a custom field with the Custom Field API
      * @author Erik Hommel (erik.hommel@civicoop.org)
      * @params params array
@@ -114,6 +114,33 @@ class CRM_Utils_DgwUtils {
             return $result;
         }
         $result = $customField;
+        return $result;
+    }
+    /**
+     * Static function to parse street_address in NL_nl format
+     * @author Erik Hommel (erik.hommel@civicoop.org)
+     * @params params array
+     * @return result array
+     */
+    static function parseStreetAddressNl( $params ) {
+        $result = array( );
+        /*
+         * error if no street_name in array
+         */
+        if ( !isset( $params['street_name'] ) ) {
+            $result['is_error'] = 1;
+            $result['error_message'] = "Parsing of street address requires street_name in params";
+            return $result;
+        }
+        $parsedStreetAddressNl = trim( $params['street_name'] );
+        if ( isset( $params['street_number'] ) && !empty( $params['street_number'] ) ) {
+            $parsedStreetAddressNl .= " ".$params['street_number'];
+        }
+        if ( isset( $params['street_unit'] ) && !empty( $params['street_unit'] ) ) {
+            $parsedStreetAddressNl .= " ".$params['street_unit'];
+        }
+        $result['is_error'] = 0;
+        $result['parsed_street_address'] = $parsedStreetAddressNl;
         return $result;
     }
 }

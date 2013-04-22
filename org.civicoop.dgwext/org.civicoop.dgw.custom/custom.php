@@ -68,3 +68,97 @@ function custom_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 function custom_civicrm_managed(&$entities) {
   return _custom_civix_civicrm_managed($entities);
 }
+/**
+ * Implementation of hook_civicrm_validateForm
+ * 
+ * @author Erik Hommel (erik.hommel@civicoop.org)
+ */
+function custom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$errors ) {
+    if ( $formName == "CRM_Contact_Form_Contact") {
+        foreach ( $fields['address'] as $addressKey => $address ) {
+            /*
+             * if streetname is entered, street number can not be empty
+             */
+            if ( !empty( $address['street_name'] ) ) {
+                if ( empty( $address['street_number'] ) ) {
+                   $errors['address[' . $addressKey . '][street_number]'] = 'Huisnummer mag niet leeg zijn als straat gevuld is';
+                }
+            }
+        }
+    }
+    return;
+}
+/**
+ * Implementation of hook_civicrm_post
+ * 
+ * @author Erik Hommel (erik.hommel@civicoop.org)
+ * 
+ * - change sequence of address fields for street parsing in Dutch format
+ *   
+ */
+function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
+    
+    if ( $objectName == "Address" ) {
+    }
+    
+}
+/**
+ * Implementation of hook_civicrm_pre
+ * 
+ * @author Erik Hommel (erik.hommel@civicoop.org)
+ *
+ * Object Address: 
+ * - change sequence of address fields for street parsing in Dutch format
+ *   
+ */
+function custom_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
+    
+    if ( $objectName == "Address" ) {
+        $parsedStreetAddress = "";
+        if ( isset( $objectRef['street_name'] ) && !empty( $objectRef['street_name'] ) ) {
+            $parsedStreetAddress = $objectRef['street_name'];
+        }
+        if ( isset( $objectRef['street_number'] ) && !empty( $objectRef['street_number'] ) ) {
+            $parsedStreetAddress .= " ".$objectRef['street_number'];
+        }
+        if ( isset( $objectRef['street_unit'] ) && !empty( $objectRef['street_unit'] ) ) {
+            $parsedStreetAddress .= " ".$objectRef['street_unit'];
+        }
+        $objectRef['street_address'] = $parsedStreetAddress;
+    }
+    return;   
+}
+/**
+ * Implementation of hook_civicrm_buildForm
+ * @author Erik Hommel (erik.hommel@civicoop.org)
+ *
+ * Contact_Form_Contact: 
+ * - change sequence of address fields to show Dutch format
+ *   
+ */
+function custom_civicrm_buildForm( $formName, &$form ) {
+    if ( $formName == "CRM_Contact_Form_Contact" ) {
+        $values = $form->getVar('_values' );
+        if ( isset( $values['address'] ) ) {
+            foreach ( $values['address'] as $addressKey => $address ) {
+                if ( isset( $values['address'][$addressKey]['street_name'] ) ) {
+                    $parseParams['street_name'] = $values['address'][$addressKey]['street_name'];
+                }
+                if ( isset( $values['address'][$addressKey]['street_number'] ) ) {
+                    $parseParams['street_number'] = $values['address'][$addressKey]['street_number'];
+                }
+                if ( isset( $values['address'][$addressKey]['street_unit'] ) ) {
+                    $parseParams['street_unit'] = $values['address'][$addressKey]['street_unit'];
+                }
+                require_once 'CRM/Utils/DgwUtils.php';
+                $parseResult = CRM_Utils_DgwUtils::parseStreetAddressNl( $parseParams );
+                if ( $parseResult['is_error'] == 0 ) {
+                    if ( isset( $parseResult['parsed_street_address'] ) ) {
+                        $defaults['address'][$addressKey]['street_address'] = $parseResult['parsed_street_address'];
+                        $form->setDefaults( $defaults );
+                    }
+                }
+            }
+        }
+    }
+}
