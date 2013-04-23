@@ -513,6 +513,8 @@ function civicrm_api3_dgwcontact_noteget($inparms) {
  * Function to remove contact from group FirstSync
  */
 function civicrm_api3_dgwcontact_firstsyncremove($inparms) {
+    return civicrm_api3_dgw_firstsync_delete($inparms);
+    
     /*
      * if contact_id empty or not numeric, error
      */

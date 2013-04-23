@@ -38,6 +38,16 @@ class CRM_Utils_DgwApiUtils {
 		return $id;
 	}
 	
+	public static function retrieveCustomGroupByid($group_id) {
+		$civiparms2 = array('version' => 3, 'title' => $title);
+		$civires2 = civicrm_api('Group', 'getsingle', $civiparms2);
+		$id = false;
+		if (!civicrm_error($civires2)) {
+			return $civires2;
+		}
+		return false;
+	}
+	
 	public static function retrieveCustomValuesForContactAndCustomGroup($contact_id, $group_id) {
 		$data['contact_id'] = $contact_id;
 		$return['is_error'] = '0';
