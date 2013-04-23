@@ -57,6 +57,7 @@ require_once 'DgwEmail.php';
 require_once 'DgwGroup.php';
 require_once 'DgwTag.php';
 require_once 'DgwAddress.php';
+require_once 'DgwRelationship.php';
 
 /*
  * Function to get details of a contact
@@ -588,77 +589,7 @@ function civicrm_api3_dgwcontact_tagget($inparms) {
  * Function to retrieve all relationships for a contact
  */
 function civicrm_api3_dgwcontact_relationshipget($inparms) {
-    /*
-     * initialize output parameter array
-     */
-    $outparms = array("");
-    /*
-     * if contact_id empty or not numeric, error
-     */
-    if (!isset($inparms['contact_id'])) {
-        return civicrm_create_error("Geen contact_id in parms in
-            dgwcontact_relationshipget");
-    } else {
-        $contact_id = trim($inparms['contact_id']);
-    }
-    if (empty($contact_id)) {
-        return civicrm_create_error( 'Leeg contact_id voor
-            dgwcontact_relationshipget' );
-    } else {
-        if (!is_numeric($contact_id)) {
-            return civicrm_create_error( 'Contact_id '.$contact_id.' heeft
-                niet numerieke waarden in dgwcontact_relationshipget');
-        }
-    }
-    $i = 1;
-
-    /*
-     * use standard API to get all relationships for a contact
-     */
-    $civiparms = array("contact_id" => $contact_id);
-    $civires = &civicrm_relationship_get($civiparms);
-
-    if (civicrm_error($civires)) {
-        /*
-         * standard API returns with error message 'Invalid Data' if empty.
-         * Changed to record_count = 0 here
-         */
-        if ($civires['error_message'] != "Invalid Data") {
-            return civicrm_create_error($civires['error_message']);
-        }
-    } else {
-        /*
-         * retrieve all relationships from array and move to outparms
-         */
-
-        foreach ($civires['result'] as $relation) {
-            $outparms[$i]['contact_id_from'] = $contact_id;
-            if (isset($relation['cid'])) {
-                $outparms[$i]['contact_id_to'] = $relation['cid'];
-            }
-            if (isset($relation['name'])) {
-                $outparms[$i]['contact_name_to'] = $relation['name'];
-            }
-            if (isset($relation['civicrm_relationship_type_id'])) {
-                $outparms[$i]['relationship_type_id'] =
-                   $relation['civicrm_relationship_type_id'];
-            }
-            if (isset($relation['relation'])) {
-                $outparms[$i]['relationship'] = $relation['relation'];
-            }
-            if (isset($relation['start_date'])) {
-                $outparms[$i]['start_date'] = date("Y-m-d",
-                   strtotime($relation['start_date']));
-            }
-            if (isset($relation['end_date'])) {
-                $outparms[$i]['end_date'] = date("Y-m-d",
-                   strtotime($relation['end_date']));
-            }
-            $i++;
-        }
-    }
-    $outparms[0]['record_count'] = ($i - 1);
-    return $outparms;
+	return civicrm_api3_dgw_relationship_get($inparms);
 }
 /*
  * Function to retrieve all notes for a contact
