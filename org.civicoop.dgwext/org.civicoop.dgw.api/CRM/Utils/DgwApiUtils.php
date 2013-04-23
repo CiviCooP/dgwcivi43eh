@@ -28,9 +28,66 @@ class CRM_Utils_DgwApiUtils {
 		return $locationType;
 	}
 	
+	public static function getGroupIdByTitle($title) {
+		$civiparms2 = array('version' => 3, 'title' => $title);
+		$civires2 = civicrm_api('Group', 'getsingle', $civiparms2);
+		$id = false;
+		if (!civicrm_error($civires2)) {
+			$id = $civires2['id'];
+		}
+		return $id;
+	}
+	
+	public static function retrieveCustomValuesForContactAndCustomGroup($contact_id, $group_id) {
+		$data['contact_id'] = $contact_id;
+		$return['is_error'] = '0';
+		if (!isset($data['contact_id'])) {
+			$return['is_error'] = '1';
+			$return['error_message'] ='Invalid input parameters expected contact_id and contact_type';
+			return $return;
+		}
+	
+		$params = array(
+				'version' => 3,
+				'sequential' => 1,
+				'entity_id' => $data['contact_id'],
+				'onlyActiveFields' => '0',
+		);
+		$values = civicrm_api('CustomValue', 'get', $params);
+		if (isset($values['is_error']) && $values['is_error'] == '1') {
+			return $values;
+		}
+		
+		$i = 0;
+		foreach($values['values'] as $value) {
+			$params = array(
+					'version' => 3,
+					'sequential' => 1,
+					'id' => $value['id'],
+					'custom_group_id' => $group_id
+			);
+			$fields = civicrm_api('CustomField', 'getsingle', $params);
+			if (!isset($fields['is_error'])) {
+				$return['values'][$i] = $value;
+				$return['values'][$i]['name'] = $fields['name'];
+				$i++;					
+			}
+		}
+		return $return;
+	}
+	
+	public static function retrievePersoonsNummerFirst($contact_id) {
+		$pers_first = "onbekend";
+		$return = self::retrieveCustomValuesForContact(array('contact_id' => $contact_id));
+		if (isset($return['values']) && isset($return['values']['Persoonsnummer_First']) && isset($return['values']['Persoonsnummer_First']['value']) && strlen(isset($return['values']['Persoonsnummer_First']['value'])) ) {
+			$pers_first = $return['values']['Persoonsnummer_First']['value'];
+		}
+		return $pers_first;
+	}
+	
 	public static function retrieveCustomValuesForContact($data) {
 		$return['is_error'] = '0';
-		if (!isset($data['contact_id']) || !isset($data['contact_type'])) {
+		if (!isset($data['contact_id'])) {
 			$return['is_error'] = '1';
 			$return['error_message'] ='Invalid input parameters expected contact_id and contact_type';
 			return $return;

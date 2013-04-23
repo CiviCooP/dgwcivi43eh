@@ -58,6 +58,8 @@ require_once 'DgwGroup.php';
 require_once 'DgwTag.php';
 require_once 'DgwAddress.php';
 require_once 'DgwRelationship.php';
+require_once 'DgwNote.php';
+require_once 'DgwFirstsync.php';
 
 /*
  * Function to get details of a contact
@@ -480,98 +482,8 @@ function civicrm_api3_dgwcontact_addressget($inparms) {
 /*
  * Function to retrieve all members of the group synchronize with first
  */
-function civicrm_api3_dgwcontact_firstsyncget() {
-    /*
-     * initialize array with outgoing parameters
-     */
-    $outparms = array("");
-    /*
-     * Retrieve group_id for group FirstSync
-     */
-    $civiparms = array("title" => "FirstSync");
-    $civires = &civicrm_group_get($civiparms);
-
-    /*
-     * Error if group not found
-     */
-    if (civicrm_error($civires)) {
-        return civicrm_create_error("No group FirstSync found");
-    } else {
-        foreach ($civires as $group) {
-            $group_id = $group['id'];
-        }
-    }
-
-     /*
-      * Alle leden van de groep ophalen
-      */
-     require_once("CRM/Contact/BAO/Group.php");
-     $members = array_keys(CRM_Contact_BAO_Group::getMember($group_id));
-     /*
-      * issue 233 : $i was 0, should be 1 otherwise record count
-      * is in wrong element and has value -1 if no records
-      */
-    
-     $i = 1;
-     $fldact = FLDSYNCACT;
-     $fldent = FLDSYNCENT;
-     $fldid = FLDSYNCID;
-     $fldkey = FLDSYNCKEY;
-
-     foreach ($members as $member) {
-
-         /*
-          * voor desbetreffend persoon, gegevens ophalen uit tabel
-          * met synchronisatiegegevens
-          */
-         $query = "SELECT ".FLDSYNCACT.", ".FLDSYNCENT.", ".FLDSYNCID.", ".
-            FLDSYNCKEY." FROM ".TABSYNC." WHERE entity_id = $member AND
-            ".FLDSYNCACT." <> 'none'";
-         $daoFirstSync = CRM_Core_DAO::executeQuery($query);
-         /*
-          * retrieve persoonsnummer First for contact
-          */
-         $firstparms = array(
-            "contact_id"        =>  $member,
-            "return.".CFPERSNR   =>  1);
-         $firstres = civicrm_contact_get($firstparms);
-         if (civicrm_error($firstres)) {
-            $pers_first = "onbekend";
-         } else {
-            $pers_first = $firstres[$member][CFPERSNR];
-         }
-
-         while ($daoFirstSync->fetch()) {
-			/*
-			 * issue 269: do not send if key_first is empty and action is 
-			 * not ins
-			 * do not send if entity = address or contact and action is
-			 * delete
-			 */
-			$processRecord = true; 
-			if ( $daoFirstSync->$fldact == "del" ) {
-				if ( $daoFirstSync->$fldent == "contact" || $daoFirstSync->$fldent == "address" ) {
-					$processRecord = false;
-				}
-			}
-			if ( empty( $daoFirstSync->$fldkey ) && $daoFirstSync->$fldact != "ins" ) {
-				$processRecord = false;
-			}
-			
-			if ( $processRecord ) {	
-				$outparms[$i]['contact_id'] = $member;
-				$outparms[$i]['action'] = $daoFirstSync->$fldact;
-				$outparms[$i]['entity'] = $daoFirstSync->$fldent;
-				$outparms[$i]['entity_id'] = $daoFirstSync->$fldid;
-				$outparms[$i]['key_first'] = $daoFirstSync->$fldkey;
-				$outparms[$i]['persoonsnummer_first'] = $pers_first;
-				$i++;
-			}
-       }
-     }
-	 $outparms[0]['record_count'] = ($i - 1);
-		
-     return $outparms;
+function civicrm_api3_dgwcontact_firstsyncget($inparams=array()) {
+    return civicrm_api3_dgw_firstsync_get($inparams);
 }
 /*
  * Function to retrieve all groups for a contact
@@ -595,57 +507,7 @@ function civicrm_api3_dgwcontact_relationshipget($inparms) {
  * Function to retrieve all notes for a contact
  */
 function civicrm_api3_dgwcontact_noteget($inparms) {
-    /*
-     * initialize output parameter array
-     */
-    $outparms = array("");
-    /*
-     * if contact_id empty or not numeric, error
-     */
-    if (!isset($inparms['contact_id'])) {
-        return civicrm_create_error("Geen contact_id in parms in
-            dgwcontact_noteget");
-    } else {
-        $contact_id = trim($inparms['contact_id']);
-    }
-
-    if (empty($contact_id)) {
-        return civicrm_create_error( 'Leeg contact_id voor
-            dgwcontact_noteget' );
-    } else {
-        if (!is_numeric($contact_id)) {
-            return civicrm_create_error( 'Contact_id '.$contact_id.' heeft
-                niet numerieke waarden in dgwcontact_noteget');
-        }
-    }
-
-    /*
-     * use standard API to get all notes for a contact
-     */
-    $civiparms = array(
-        "entity_id"     =>  $contact_id,
-        "entity_table"  =>  "civicrm_contact");
-    $civires = &civicrm_note_get($civiparms);
-    $i = 1;
-    if (civicrm_error($civires)) {
-        if ($civires['error_message'] !=
-            "0 notes matching the input parameters") {
-            return civicrm_create_error($civires['error_message']);
-        }
-    } else {
-        /*
-         * retrieve all notes from array and move to outparms
-         */
-        foreach ($civires as $note) {
-            if ($note != "is_error") {
-                $outparms[$i]['contact_id'] = $contact_id;
-                $outparms[$i]['note'] = trim(strip_tags($note));
-                $i++;
-            }
-        }
-    }
-    $outparms[0]['record_count'] = ($i - 1);
-    return $outparms;
+	return civicrm_api3_dgw_note_get($inparms);
 }
 /*
  * Function to remove contact from group FirstSync
