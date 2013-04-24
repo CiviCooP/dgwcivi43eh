@@ -82,6 +82,7 @@ function civicrm_api3_custom_value_create($params) {
   // Translate names and
   //Convert arrays to multi-value strings
   $sp = CRM_Core_DAO::VALUE_SEPARATOR;
+  
   foreach ($params as $id => $param) {
     if (is_array($param)) {
       $param = $sp . implode($sp, $param) . $sp;

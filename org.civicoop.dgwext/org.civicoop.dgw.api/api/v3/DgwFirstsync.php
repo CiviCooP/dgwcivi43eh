@@ -11,8 +11,12 @@
 /*
  * Function to remove contact from group FirstSync
  */
-function civicrm_api3_dgw_firstsync_delete($inparms) {
+function civicrm_api3_dgw_firstsync_remove($inparms) {
+	/** 
+     * @ToDo fetch id's by customfieldgroup name
+	 */
 	$group_id = 8;
+	$error_group_id = 6;
 	
 	/*
 	 * if contact_id empty or not numeric, error
@@ -34,10 +38,10 @@ function civicrm_api3_dgw_firstsync_delete($inparms) {
 	/*
 	 * if action empty or not "ins", "del" or "upd", error
 	*/
-	if (!isset($inparms['action'])) {
+	if (!isset($inparms['dgwaction'])) {
 		return civicrm_api3_create_error("Geen action in parms in dgwcontact_firstsyncremove");
 	} else {
-		$action = trim(strtolower($inparms['action']));
+		$action = trim(strtolower($inparms['dgwaction']));
 	}
 
 	if (empty($action)) {
@@ -50,10 +54,10 @@ function civicrm_api3_dgw_firstsync_delete($inparms) {
 	/*
 	 * if entity empty or invalid, error
 	*/
-	if (!isset($inparms['entity'])) {
+	if (!isset($inparms['dgwentity'])) {
 		return civicrm_api3_create_error("Geen entity in parms in dgwcontact_firstsyncremove");
 	} else {
-		$entity = trim(strtolower($inparms['entity']));
+		$entity = trim(strtolower($inparms['dgwentity']));
 	}
 
 	if (empty($entity)) {
@@ -93,65 +97,104 @@ function civicrm_api3_dgw_firstsync_delete($inparms) {
 	}
 	
 	$custom_group = CRM_Utils_DgwApiUtils::retrieveCustomGroupByid($group_id);
+	$custom_fields = CRM_Utils_DgwApiUtils::retrieveCustomValuesForContactAndCustomGroupSorted( $contact_id, $group_id);
+	$action_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('action');
+	if (!is_array($action_field)) {
+		return civicrm_api3_create_error('invalid custom field action');
+	}
+	
 	/*
 	 * issue 86 : check if contact_id exists, only process if it does
 	*/
 	$checkQry = "SELECT * FROM ".$custom_group['table_name']." WHERE entity_id = $contact_id";
 	$checkSync = CRM_Core_DAO::executeQuery( $checkQry );
 	if ($checkSync->fetch()) {
-
 		/*
-			* remove entry from firstsync error table with incoming parms,
+		* remove entry from firstsync error table with incoming parms,
 		* delete from synctable if action is 'del' and set action to none for all
 		* others
 		*/
 		if (!empty($entity_id)) {
 			if ($action == "del") {
-				$qry1 = "DELETE FROM ".$custom_group['table_name']." WHERE entity_id = $contact_id
-				AND ".FLDSYNCENT." = '$entity' AND ".FLDSYNCID." = $entity_id
-				AND ".FLDSYNCACT." = '$action'";
+				$fields = array(
+					'entity' => $entity,
+					'action' => $action,
+				);
+				CRM_Utils_DgwApiUtils::removeCustomValuesRecord($group_id, $entity_id, $fields);
 			} else {
-				$qry1 = "UPDATE ".$custom_group['table_name']." SET ".FLDSYNCACT." = 'none' WHERE
-				entity_id = $contact_id AND ".FLDSYNCENT." = '$entity' AND ".
-				FLDSYNCID." = $entity_id AND ".FLDSYNCACT." <> 'del'";
+				foreach($custom_fields as $id => $field) {
+					if ($field['action'] != 'del' && $field['entity'] == $entity && $field['entity_id'] == $entity_id) {
+						$civiparms2 = array(
+							'version' => 3,
+							'entity_id' => $contact_id,
+							'custom_'.$action_field['id'].':'.$id => 'none',
+						);
+						$civicres2 = civicrm_api('CustomValue', 'Create', $civiparms2);
+						print_r($civicres2); exit();
+						if (civicrm_error($civires2)) {
+							return civicrm_api3_create_error($civires2['error_message']);
+						}
+					} 
+				}
 			}
-			$qry2 = "DELETE FROM ".TABSYNCERR." WHERE entity_id = $contact_id AND
-			".FLDERRACT." = '$action' AND ".FLDERRENT." = '$entity' AND ".
-			FLDERRID." = $entity_id";
+			
+			$fields = array(
+				'action_err' => $action,
+				'entity_err' => $entity,
+				'entity_id_err' => $entity_id,
+			);
+			CRM_Utils_DgwApiUtils::removeCustomValuesRecord($error_group_id, $contact_id, $fields);
 		} else {
 			if ($action == "del") {
-				$qry1 = "DELETE FROM ".$custom_group['table_name']." WHERE entity_id = $contact_id
-				AND ".FLDSYNCENT." = '$entity' AND ".FLDSYNCKEY." = $key_first
-				AND ".FLDSYNCACT." = '$action'";
+				$fields = array(
+					'entity' => $entity,
+					'action' => $action,
+					'key_first' => $key_first,
+				);
+				CRM_Utils_DgwApiUtils::removeCustomValuesRecord($group_id, $entity_id, $fields);
 			} else {
-				$qry1 = "UPDATE ".$custom_group['table_name']." SET ".FLDSYNCACT." = 'none' WHERE
-				entity_id = $contact_id AND ".FLDSYNCENT." = '$entity' AND ".
-				FLDSYNCKEY." = $key_first AND ".FLDSYNCACT." <> 'del'";
+				foreach($custom_fields as $id => $field) {
+					if ($field['action'] != 'del' && $field['entity'] == $entity && $field['entity_id'] == $contact_id && $field['key_first'] == $key_first) {
+						$civiparms2 = array(
+								'version' => 3,
+								'entity_id' => $contact_id,
+								'custom_'.$action_field['id'].':'.$id => 'none',
+						);
+						$civicres2 = civicrm_api('CustomValue', 'Create', $civiparms2);
+						if (civicrm_error($civires2)) {
+							return civicrm_api3_create_error($civires2['error_message']);
+						}
+					}
+				}
 			}
-			$qry2 = "DELETE FROM ".TABSYNCERR." WHERE entity_id = $contact_id AND
-			".FLDERRACT." = '$action' AND ".FLDERRENT." = '$entity' AND ".
-			FLDERRKEY." = $key_first";
+			
+			$fields = array(
+					'action_err' => $action,
+					'entity_err' => $entity,
+					'key_first_err' => $key_first,
+			);
+			CRM_Utils_DgwApiUtils::removeCustomValuesRecord($error_group_id, $contact_id, $fields);
 		}
-		CRM_Core_DAO::executeQuery($qry1);
-		CRM_Core_DAO::executeQuery($qry2);
 
 		/*
-			* if no entries left in synctable for contact with action
+		* if no entries left in synctable for contact with action
 		* upd, action del or action ins, remove contact from group firstsync
 		*/
-		$qry3 = "SELECT count(id) as aantal FROM ".$custom_group['table_name']." WHERE entity_id =
-		$contact_id and (".FLDSYNCACT." = 'ins' OR ".FLDSYNCACT." = 'upd'
-				OR ".FLDSYNCACT." = 'del')";
-		$daoFirstSync = CRM_Core_DAO::executeQuery($qry3);
-		while ($daoFirstSync->fetch()) {
-			$aantal = $daoFirstSync->aantal;
+		$fields = CRM_Utils_DgwApiUtils::retrieveCustomValuesForContactAndCustomGroupSorted( $contact_id, $group_id);
+		$aantal = 0;
+		foreach($fields as $field) {
+			if ($field['action'] == 'ins' || $field['action'] == 'upd' || $field['action'] == 'del') {
+				$aantal ++;
+			}
 		}
+		
 		if ($aantal == 0) {
-			$groupID = FIRSTSYNC;
+			$gid = CRM_Utils_DgwApiUtils::getGroupIdByTitle('FirstSync');
 			$civiparms2 = array(
+					"version"       => 3, 
 					"contact_id"    =>  $contact_id,
-					"group_id"      =>  $groupID);
-			$civires2 = &civicrm_group_contact_remove($civiparms2);
+					"group_id"      =>  $gid);
+			$civires2 = civicrm_api('GroupContact', 'delete', $civiparms2);
 			if (civicrm_error($civires2)) {
 				return civicrm_api3_create_error($civires2['error_message']);
 			}
@@ -167,6 +210,9 @@ function civicrm_api3_dgw_firstsync_delete($inparms) {
 */
 function civicrm_api3_dgw_firstsync_get($inparms) {
 
+	/**
+     * @Todo upgrade id with api call on name
+	 */
 	$group_for_first_sync = 8;
 	
 	/*
@@ -196,17 +242,7 @@ function civicrm_api3_dgw_firstsync_get($inparms) {
 	foreach ($civires1['values'] as $contact) {
 		
 		$pers_first = CRM_Utils_DgwApiUtils::retrievePersoonsNummerFirst($contact['contact_id']);
-		$customValues = CRM_Utils_DgwApiUtils::retrieveCustomValuesForContactAndCustomGroup( $contact['contact_id'], $group_for_first_sync);
-		$fields = array();
-		if (isset($customValues['values']) && is_array($customValues['values'])) {
-			foreach($customValues['values'] as $values) {
-				foreach($values as $key => $v) {
-					if ($key != 'entity_id' && $key != 'id' && $key != 'latest' && $key != 'name') {
-						$fields[$key][$values['name']] = $v;
-					}	
-				}
-			}
-		}
+		$fields = CRM_Utils_DgwApiUtils::retrieveCustomValuesForContactAndCustomGroupSorted( $contact['contact_id'], $group_for_first_sync);
 		
 		foreach($fields as $field) {
 			$proccessRecord = true;

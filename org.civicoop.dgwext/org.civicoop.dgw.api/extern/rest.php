@@ -30,14 +30,6 @@ require_once 'CRM/Core/Config.php';
 $config = CRM_Core_Config::singleton();
 
 /**
- * Rename action parameter
- */
-if (isset($_GET['action'])) {
-	$_GET['dgwaction'] = $_GET['action'];
-	unset($_GET['action']);
-}
-
-/**
  * Parse the pathinfo
  */
 $q = "";
@@ -54,6 +46,21 @@ for($i=1; $i < count($k); $i++) {
 	if (count($a) == 2) {
 		$_GET[$a[0]] = $a[1];
 	} 
+}
+
+/**
+ * Rename action parameter
+ */
+if (isset($_GET['action'])) {
+	$_GET['dgwaction'] = $_GET['action'];
+	unset($_GET['action']);
+}
+/**
+ * Rename entity parameter
+ */
+if (isset($_GET['entity'])) {
+	$_GET['dgwentity'] = $_GET['entity'];
+	unset($_GET['entity']);
 }
 
 $q = $k[0];
@@ -77,10 +84,9 @@ $rest = new CRM_Utils_REST();
 
 $rest->loadCMSBootstrap();
 
-if (isset($_GET['json']) && $_GET['json']) {
-  header('Content-Type: text/javascript');
+$return = $rest->run();
+if (isset($_GET['debug']) && $_GET['debug']) {
+  header('Content-Type: text/html');
 }
-else {
-  //header('Content-Type: text/xml');
-}
-echo $rest->run();
+echo $return;
+

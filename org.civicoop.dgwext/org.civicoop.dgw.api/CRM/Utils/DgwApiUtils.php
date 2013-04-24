@@ -30,6 +30,10 @@ class CRM_Utils_DgwApiUtils {
 				'firstsync' => 'DgwFirstsync',
 		);
 		
+		/*$actions = array(
+			'remove' => 'delete'
+		);*/
+		
 		$return['entity'] = 'Dgwcontact';
 		$return['action'] = $action;
 		
@@ -39,6 +43,11 @@ class CRM_Utils_DgwApiUtils {
 				$return['action'] = str_replace($key, "", $action);
 			}
 		}
+		/*foreach($actions as $key => $value) {
+			if ($return['action'] == $key) {
+				$return['action'] = $value;
+			}
+		}*/
 		
 		return $return;
 	}
@@ -64,13 +73,54 @@ class CRM_Utils_DgwApiUtils {
 	}
 	
 	public static function retrieveCustomGroupByid($group_id) {
-		$civiparms2 = array('version' => 3, 'title' => $title);
-		$civires2 = civicrm_api('Group', 'getsingle', $civiparms2);
+		$civiparms2 = array('version' => 3, 'id' => $group_id);
+		$civires2 = civicrm_api('CustomGroup', 'getsingle', $civiparms2);
 		$id = false;
 		if (!civicrm_error($civires2)) {
 			return $civires2;
 		}
 		return false;
+	}
+	
+	public static function retrieveCustomFieldByName($name) {
+		$civiparms2 = array('version' => 3, 'name' => $name);
+		$civires2 = civicrm_api('CustomField', 'getsingle', $civiparms2);
+		$id = false;
+		if (!civicrm_error($civires2)) {
+			return $civires2;
+		}
+		return false;
+	}
+	
+	public static function removeCustomValuesRecord($group_id, $entity_id, $fields) {
+		$custom_group = CRM_Utils_DgwApiUtils::retrieveCustomGroupByid($group_id);
+		$where = "";
+		foreach($fields as $key => $value) {
+			$custom_field = self::retrieveCustomFieldByName($key);
+			if (is_array($custom_field)) {
+				$field_name = $custom_field['column_name'];
+				$where .= " AND `".$field_name."` = '".mysql_escape_string($value)."'";
+			}
+		}
+		if (strlen($where)) {
+			$qry1 = "DELETE FROM ".$custom_group['table_name']." WHERE entity_id = ".$entity_id.$where;
+			CRM_Core_DAO::executeQuery($qry1);
+		}
+	}
+	
+	public static function retrieveCustomValuesForContactAndCustomGroupSorted($contact_id, $group_id) {
+		$customValues = CRM_Utils_DgwApiUtils::retrieveCustomValuesForContactAndCustomGroup($contact_id, $group_id);
+		$fields = array();
+		if (isset($customValues['values']) && is_array($customValues['values'])) {
+			foreach($customValues['values'] as $values) {
+				foreach($values as $key => $v) {
+					if ($key != 'entity_id' && $key != 'id' && $key != 'latest' && $key != 'name') {
+						$fields[$key][$values['name']] = $v;
+					} 
+				}
+			}
+		}
+		return $fields;
 	}
 	
 	public static function retrieveCustomValuesForContactAndCustomGroup($contact_id, $group_id) {
