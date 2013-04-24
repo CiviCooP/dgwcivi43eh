@@ -18,6 +18,31 @@
 */
 class CRM_Utils_DgwApiUtils {
 	
+	public static function parseEntity($action) {
+		$entities = array(
+				'phone' => 'DgwPhone',
+				'note' => 'DgwNote',
+				'email' => 'DgwEmail',
+				'address' => 'DgwAddress',
+				'group' => 'DgwGroup',
+				'tag' => 'DgwTag',
+				'relationship' => 'DgwRelationship',
+				'firstsync' => 'DgwFirstsync',
+		);
+		
+		$return['entity'] = 'Dgwcontact';
+		$return['action'] = $action;
+		
+		foreach($entities as $key => $value) {
+			if (strpos($action, $key) === 0) {
+				$return['entity'] = $value;
+				$return['action'] = str_replace($key, "", $action);
+			}
+		}
+		
+		return $return;
+	}
+	
 	public static function getLocationByid($id) {
 		$civiparms2 = array('version' => 3, 'id' => $id);
 		$civires2 = civicrm_api('LocationType', 'getsingle', $civiparms2);
