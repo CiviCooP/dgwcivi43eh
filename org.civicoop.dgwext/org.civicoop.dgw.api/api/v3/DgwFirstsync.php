@@ -102,13 +102,8 @@ function civicrm_api3_dgw_firstsync_remove($inparms) {
 	if (!is_array($action_field)) {
 		return civicrm_api3_create_error('invalid custom field action');
 	}
-	
-	/*
-	 * issue 86 : check if contact_id exists, only process if it does
-	*/
-	$checkQry = "SELECT * FROM ".$custom_group['table_name']." WHERE entity_id = $contact_id";
-	$checkSync = CRM_Core_DAO::executeQuery( $checkQry );
-	if ($checkSync->fetch()) {
+
+	if (count($custom_fields) > 0) {
 		/*
 		* remove entry from firstsync error table with incoming parms,
 		* delete from synctable if action is 'del' and set action to none for all
