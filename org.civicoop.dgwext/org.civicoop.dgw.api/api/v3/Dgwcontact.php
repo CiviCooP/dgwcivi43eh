@@ -220,9 +220,9 @@ function civicrm_api3_dgwcontact_get($inparms) {
 /*
  * Function to get phones for a contact
  */
-function civicrm_api3_dgwcontact_phoneget($inparms) {
-	return civicrm_api3_dgw_phone_get($inparms);
-}
+//function civicrm_api3_dgwcontact_phoneget($inparms) {
+//	return civicrm_api3_dgw_phone_get($inparms);
+//}
 /*
  * Function to update an individual emailaddress in CiviCRM
  * incoming is either email_id or cde_refno
@@ -470,210 +470,51 @@ function civicrm_api3_dgwcontact_emailupdate($inparms) {
 /*
  * Function to get email addresses for a contact
  */
-function civicrm_api3_dgwcontact_emailget($inparms) {
-	return civicrm_api3_dgw_email_get($inparms);
-}
+//function civicrm_api3_dgwcontact_emailget($inparms) {
+//	return civicrm_api3_dgw_email_get($inparms);
+//}
 /*
  * Function to get addresses for a contact
  */
-function civicrm_api3_dgwcontact_addressget($inparms) {
-	return civicrm_api3_dgw_address_get($inparms);
-}
+//function civicrm_api3_dgwcontact_addressget($inparms) {
+//	return civicrm_api3_dgw_address_get($inparms);
+//}
 /*
  * Function to retrieve all members of the group synchronize with first
  */
-function civicrm_api3_dgwcontact_firstsyncget($inparams=array()) {
-    return civicrm_api3_dgw_firstsync_get($inparams);
-}
+//function civicrm_api3_dgwcontact_firstsyncget($inparams=array()) {
+//    return civicrm_api3_dgw_firstsync_get($inparams);
+//}
 /*
  * Function to retrieve all groups for a contact
  */
-function civicrm_api3_dgwcontact_groupget($inparms) {
-    return civicrm_api3_dgw_group_get($inparms);
-}
+//function civicrm_api3_dgwcontact_groupget($inparms) {
+//    return civicrm_api3_dgw_group_get($inparms);
+//}
 /*
  * Function to retrieve all tags for a contact
  */
-function civicrm_api3_dgwcontact_tagget($inparms) {
-	return civicrm_api3_dgw_tag_get($inparms);
-}
+//function civicrm_api3_dgwcontact_tagget($inparms) {
+//	return civicrm_api3_dgw_tag_get($inparms);
+//}
 /*
  * Function to retrieve all relationships for a contact
  */
-function civicrm_api3_dgwcontact_relationshipget($inparms) {
-	return civicrm_api3_dgw_relationship_get($inparms);
-}
+//function civicrm_api3_dgwcontact_relationshipget($inparms) {
+//	return civicrm_api3_dgw_relationship_get($inparms);
+//}
 /*
  * Function to retrieve all notes for a contact
  */
-function civicrm_api3_dgwcontact_noteget($inparms) {
-	return civicrm_api3_dgw_note_get($inparms);
-}
+//function civicrm_api3_dgwcontact_noteget($inparms) {
+//	return civicrm_api3_dgw_note_get($inparms);
+//}
 /*
  * Function to remove contact from group FirstSync
  */
-function civicrm_api3_dgwcontact_firstsyncremove($inparms) {
-    return civicrm_api3_dgw_firstsync_delete($inparms);
-    
-    /*
-     * if contact_id empty or not numeric, error
-     */
-    if (!isset($inparms['contact_id'])) {
-        return civicrm_create_error("Geen contact_id in parms in
-            dgwcontact_firstsyncremove");
-    } else {
-        $contact_id = trim($inparms['contact_id']);
-    }
-
-    if (empty($contact_id)) {
-        return civicrm_create_error( "Leeg contact_id voor
-            dgwcontact_firstsyncremove" );
-    }
-
-    if (!is_numeric($contact_id)) {
-        return civicrm_create_error( "Contact_id '.$contact_id.' heeft
-            niet numerieke waarden in dgwcontact_firstsyncremove");
-    }
-
-    /*
-     * if action empty or not "ins", "del" or "upd", error
-     */
-    if (!isset($inparms['action'])) {
-        return civicrm_create_error("Geen action in parms in
-            dgwcontact_firstsyncremove");
-    } else {
-        $action = trim(strtolower($inparms['action']));
-    }
-
-    if (empty($action)) {
-        return civicrm_create_error("Lege action voor
-            dgwcontact_firstsyncremove");
-    }
-    if ($action != "ins" && $action != "upd" && $action != "del") {
-        return civicrm_create_error("Ongeldige waarde ".$action. " voor
-            action in dgwcontact_firstsyncremove");
-    }
-
-    /*
-     * if entity empty or invalid, error
-     */
-    if (!isset($inparms['entity'])) {
-        return civicrm_create_error("Geen entity in parms in
-            dgwcontact_firstsyncremove");
-    } else {
-        $entity = trim(strtolower($inparms['entity']));
-    }
-
-    if (empty($entity)) {
-        return civicrm_create_error("Lege entity voor
-            dgwcontact_firstsyncremove");
-    }
-
-    if ($entity != "contact" && $entity != "phone" && $entity != "email"
-            && $entity != "address") {
-        return civicrm_create_error("Ongeldige waarde ".$entity." voor entity
-            in dgwcontact_firstsyncremove");
-    }
-
-    /*
-     * entity_id or key_first required
-     */
-    if (!isset($inparms['entity_id']) && !isset($inparms['key_first'])) {
-        return civicrm_create_error("Entity_id en key_first ontbreken in
-            dgwcontact_firstsyncremove");
-    }
-
-    if (empty($inparms['entity_id']) && empty($inparms['key_first'])) {
-        return civicrm_create_error("Entity_id en key_first zijn beiden leeg
-            in dgwcontact_firstsyncremove");
-    }
-
-    if (isset($inparms['entity_id'])) {
-        $entity_id = trim($inparms['entity_id']);
-        if (!is_numeric($entity_id)) {
-            return civicrm_create_error("Entity_id kan alleen numeriek zijn,
-                doorgegeven was $entity_id");
-        }
-    } else {
-        $entity_id = null;
-    }
-    if (isset($inparms['key_first'])) {
-        $key_first = trim($inparms['key_first']);
-        if (!is_numeric($key_first)) {
-            return civicrm_create_error("Key_first kan alleen numeriek zijn,
-                doorgegeven was $key_first");
-        }
-    } else {
-        $key_first = null;
-    }
-    /*
-     * issue 86 : check if contact_id exists, only process if it does
-     */
-    $checkQry = "SELECT * FROM ".TABSYNC." WHERE entity_id = $contact_id";
-    $checkSync = CRM_Core_DAO::executeQuery( $checkQry );
-    if ($checkSync->fetch()) {
-
-		/*
-		 * remove entry from firstsync error table with incoming parms,
-		 * delete from synctable if action is 'del' and set action to none for all
-		 * others
-		 */
-		if (!empty($entity_id)) {
-			if ($action == "del") {
-				$qry1 = "DELETE FROM ".TABSYNC." WHERE entity_id = $contact_id
-					AND ".FLDSYNCENT." = '$entity' AND ".FLDSYNCID." = $entity_id
-					AND ".FLDSYNCACT." = '$action'";
-			} else {
-				$qry1 = "UPDATE ".TABSYNC." SET ".FLDSYNCACT." = 'none' WHERE
-					entity_id = $contact_id AND ".FLDSYNCENT." = '$entity' AND ".
-					FLDSYNCID." = $entity_id AND ".FLDSYNCACT." <> 'del'";
-			}
-			$qry2 = "DELETE FROM ".TABSYNCERR." WHERE entity_id = $contact_id AND
-				".FLDERRACT." = '$action' AND ".FLDERRENT." = '$entity' AND ".
-				FLDERRID." = $entity_id";
-		} else {
-			if ($action == "del") {
-				$qry1 = "DELETE FROM ".TABSYNC." WHERE entity_id = $contact_id
-					AND ".FLDSYNCENT." = '$entity' AND ".FLDSYNCKEY." = $key_first
-					AND ".FLDSYNCACT." = '$action'";
-			} else {
-				$qry1 = "UPDATE ".TABSYNC." SET ".FLDSYNCACT." = 'none' WHERE
-					entity_id = $contact_id AND ".FLDSYNCENT." = '$entity' AND ".
-					FLDSYNCKEY." = $key_first AND ".FLDSYNCACT." <> 'del'";
-			}
-			$qry2 = "DELETE FROM ".TABSYNCERR." WHERE entity_id = $contact_id AND
-				".FLDERRACT." = '$action' AND ".FLDERRENT." = '$entity' AND ".
-				FLDERRKEY." = $key_first";
-		}
-		CRM_Core_DAO::executeQuery($qry1);
-		CRM_Core_DAO::executeQuery($qry2);
-
-		/*
-		 * if no entries left in synctable for contact with action
-		 * upd, action del or action ins, remove contact from group firstsync
-		 */
-		$qry3 = "SELECT count(id) as aantal FROM ".TABSYNC." WHERE entity_id =
-			$contact_id and (".FLDSYNCACT." = 'ins' OR ".FLDSYNCACT." = 'upd'
-			OR ".FLDSYNCACT." = 'del')";
-		$daoFirstSync = CRM_Core_DAO::executeQuery($qry3);
-		while ($daoFirstSync->fetch()) {
-			$aantal = $daoFirstSync->aantal;
-		}
-		if ($aantal == 0) {
-			$groupID = FIRSTSYNC;
-			$civiparms2 = array(
-				"contact_id"    =>  $contact_id,
-				"group_id"      =>  $groupID);
-			$civires2 = &civicrm_group_contact_remove($civiparms2);
-			if (civicrm_error($civires2)) {
-				return civicrm_create_error($civires2['error_message']);
-			}
-		}
-		return "Firstsync remove processed correctly";
-	} else {
-		return "No sync records found for contact_id";
-	}
-}
+//function civicrm_api3_dgwcontact_firstsyncremove($inparms) {
+//    return civicrm_api3_dgw_firstsync_delete($inparms);
+//}
 /*
  * Function to receive error from First Noa and add this to error table in
  * CiviCRM

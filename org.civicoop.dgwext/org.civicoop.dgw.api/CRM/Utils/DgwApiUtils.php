@@ -82,6 +82,16 @@ class CRM_Utils_DgwApiUtils {
 		return false;
 	}
 	
+	public static function retrieveCustomGroupByName($name) {
+		$civiparms2 = array('version' => 3, 'name' => $name);
+		$civires2 = civicrm_api('CustomGroup', 'getsingle', $civiparms2);
+		$id = false;
+		if (!civicrm_error($civires2)) {
+			return $civires2;
+		}
+		return false;
+	}
+	
 	public static function retrieveCustomFieldByName($name) {
 		$civiparms2 = array('version' => 3, 'name' => $name);
 		$civires2 = civicrm_api('CustomField', 'getsingle', $civiparms2);

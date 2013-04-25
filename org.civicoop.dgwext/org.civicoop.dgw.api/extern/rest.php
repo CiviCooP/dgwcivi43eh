@@ -79,8 +79,8 @@ foreach($_GET as $key => $value) {
 	$_REQUEST[$key] = $value;
 }
 
-require_once 'CRM/Utils/REST.php';
-$rest = new CRM_Utils_REST();
+require_once 'CRM/Utils/DgwREST.php';
+$rest = new CRM_Utils_DgwREST();
 
 $rest->loadCMSBootstrap();
 
