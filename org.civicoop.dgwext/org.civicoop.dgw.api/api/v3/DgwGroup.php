@@ -9,6 +9,89 @@
 */
 
 /*
+ * function to update group
+ */
+function civicrm_api3_dgw_group_create($inparms) {
+	/*
+	 * if no contact_id passed, error
+	*/
+	if (!isset($inparms['contact_id'])) {
+		return civicrm_api3_create_error("Contact_id ontbreekt");
+	} else {
+		$contact_id = trim($inparms['contact_id']);
+	}
+	/*
+	 * if no group_id passed and no group_name passed, error
+	*/
+	if (!isset($inparms['group_id']) && !isset($inparms['group_name'])) {
+		return civicrm_api3_create_error("Group_id en group_name ontbreken");
+	}
+	/*
+	 * if group_id passed, put in $group_id else null
+	*/
+	if (isset($inparms['group_id'])) {
+		$group_id = trim($inparms['group_id']);
+	} else {
+		$group_id = null;
+	}
+	/*
+	 * if group_name passed, put in $group_name else null
+	*/
+	if (isset($inparms['group_name'])) {
+		$group_name = trim($inparms['group_name']);
+	} else {
+		$group_name = null;
+	}
+	/*
+	 * if both $group_id and $group_name are empty, error
+	*/
+	if (empty($group_id) && empty($group_name)) {
+		return civicrm_api3_create_error("Group_id en group_name ontbreken");
+	}
+	/*
+	 * if contact not in civicrm, error
+	*/
+	$checkparms = array("contact_id" => $contact_id);
+	$checkparms['version'] = 3;
+	$check_contact = civicrm_api('Contact', 'get', $checkparms);
+	if (civicrm_error($check_contact)) {
+		return civicrm_api3_create_error("Contact niet gevonden");
+	}
+	
+	/*
+	 * if group not in civicrm, error
+	*/
+	$checkparms = array();
+	if (empty($group_id)) {
+		$checkparms = array("name"    =>  $group_name);
+	} else {
+		$checkparms = array("id"    =>  $group_id);
+	}
+	$checkparms['version'] = 3;
+	$check_group = civicrm_api('Group', 'get', $checkparms);
+	if (civicrm_error($check_group)) {
+		return civicrm_api3_create_error("Groep niet gevonden");
+	} else {
+		$check_group = reset($check_group['values']);
+		$group_id = $check_group['id'];
+	}
+	/*
+	 * if validation passed, add contact to group in CiviCRM
+	*/
+	$civiparms = array(
+		"version" => 3,
+		"contact_id"  =>  $contact_id,
+		"group_id"      =>  $group_id);
+	$res_add = civicrm_api("GroupContact", "Create", $civiparms);
+	if (civicrm_error($res_add)) {
+		return civicrm_api3_create_error("Onverwachte fout, contact is niet aan groep toegevoegd, CiviCRM melding : ".$res_add['error_message']);
+	} else {
+		$outparms = array("is_error" => "0");
+	}
+	return $outparms;
+}
+
+/*
  * Function to get phones for a contact
 */
 function civicrm_api3_dgw_group_get($inparms) {
