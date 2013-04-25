@@ -144,6 +144,113 @@ class CRM_Utils_DgwUtils {
         $result['parsed_street_address'] = $parsedStreetAddressNl;
         return $result;
     }
+    
+    /*
+     * function to check the date format
+    */
+    static function checkDateFormat($indate) {
+    	/*
+    	 * default false
+    	*/
+    	$valid = false;
+    	/*
+    	 * if length date = 8, not separated
+    	*/
+    	if (strlen($indate) == 8) {
+    		$year = substr($indate,0,4);
+    		$month = substr($indate,4,2);
+    		$day = substr($indate, 6, 2);
+    	} else {
+    		/*
+    		 * date parts separated by "-"
+    		*/
+    		$dateparts = explode("-",$indate);
+    		if (isset($dateparts[2]) && !isset($dateparts[3])) {
+    			$month = $dateparts[1];
+    			if(strlen($dateparts[0]) == 2) {
+    				$day = (int) $dateparts[0];
+    				$year = (int) $dateparts[2];
+    			} else {
+    				$day = (int) $dateparts[2];
+    				$year = (int) $dateparts[0];
+    			}
+    		} else {
+    			/*
+    			 * separated by "/"
+    			*/
+    			$dateparts = explode("/", $indate);
+    			if (isset($dateparts[2]) && !isset($dateparts[3])) {
+    				$year = $dateparts[0];
+    				$month = $dateparts[1];
+    				$day = $dateparts[2];
+    			}
+    		}
+    	}
+    	if (isset($year) && isset($month) && isset($day)) {
+    		/*
+    		 * only valid if all numeric
+    		*/
+    		if (is_numeric($year) && is_numeric($month) && is_numeric($day)) {
+    			if ($month > 0 && $month < 13) {
+    				if ($year > 1800 && $year < 2500) {
+    					if ($day > 0 && $day < 32) {
+    						switch($month) {
+    							case 1:
+    								$valid = true;
+    								break;
+    							case 2:
+    								if ($day < 30) {
+    									$valid = true;
+    								}
+    								break;
+    							case 3:
+    								$valid = true;
+    								break;
+    							case 4:
+    								if ($day < 31) {
+    									$valid = true;
+    								}
+    								break;
+    							case 5:
+    								$valid = true;
+    								break;
+    							case 6:
+    								if ($day < 31) {
+    									$valid = true;
+    								}
+    								break;
+    							case 7:
+    								$valid = true;
+    								break;
+    							case 8:
+    								$valid = true;
+    								break;
+    							case 9:
+    								if ($day < 31) {
+    									$valid = true;
+    								}
+    								break;
+    							case 10:
+    								$valid = true;
+    								break;
+    							case 11:
+    								if ($day < 31) {
+    									$valid = true;
+    								}
+    								break;
+    							case 12:
+    								$valid = true;
+    								break;
+    						}
+    
+    					}
+    				}
+    			}
+    		}
+    	}
+    	return $valid;
+    }
+    
     /**
      * Static function to split street_address in components street_name,
      * street_number and street_unit
@@ -233,3 +340,4 @@ class CRM_Utils_DgwUtils {
         return $result;
     }
 }
+

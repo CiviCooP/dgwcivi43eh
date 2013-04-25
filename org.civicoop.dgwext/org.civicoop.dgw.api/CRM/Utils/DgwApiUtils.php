@@ -62,12 +62,62 @@ class CRM_Utils_DgwApiUtils {
 		return $locationType;
 	}
 	
+	public static function getLocationIdByName($name) {
+		$civiparms2 = array('version' => 3, 'name' => $name);
+		$civires2 = civicrm_api('LocationType', 'getsingle', $civiparms2);
+		$locationType = "";
+		if (!civicrm_error($civires2)) {
+			$locationType = $civires2['id'];
+		}
+		return $locationType;
+	}
+	
 	public static function getGroupIdByTitle($title) {
 		$civiparms2 = array('version' => 3, 'title' => $title);
 		$civires2 = civicrm_api('Group', 'getsingle', $civiparms2);
 		$id = false;
 		if (!civicrm_error($civires2)) {
 			$id = $civires2['id'];
+		}
+		return $id;
+	}
+	
+	/*
+	 * function to check if a contact is a hoofdhuurder
+	*/
+	public static function is_hoofdhuurder($contact_id) {
+		/*
+		 * only if contact_id is not empty
+		*/
+		if (empty($contact_id)) {
+			return 0;
+		}
+		/*
+		 * check if there is a relationship 'hoofdhuurder' for the contact_id
+		*/
+		$rel_hfd_id = self::retrieveRelationshipTypeIdByNameAB('Hoofdhuurder');
+		$parms = array(
+			'version' => 3,
+			'relationship_type_id' => $rel_hfd_id,
+			'contact_id_a' => $contact_id,
+		);
+		$res = civicrm_api('Relationship', 'get', $parms);
+		if (is_array($res['values'])) {
+			$c = reset($res['values']);
+			return $c['contact_id_b'];
+		}
+		return 0;
+	}
+	
+	public static function retrieveRelationshipTypeIdByNameAB($name) {
+		$id = 0;
+		$parms = array(
+			'version' => 3,
+			'name_a_b' => $name
+		);
+		$res = civicrm_api('RelationshipType', 'getsingle', $parms);
+		if (!civicrm_error($res)) {
+			$id = $res['id'];
 		}
 		return $id;
 	}
