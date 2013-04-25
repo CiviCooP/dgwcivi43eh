@@ -117,19 +117,20 @@ class CRM_Utils_DgwUtils {
         return $result;
     }
     /**
-     * Static function to parse street_address in NL_nl format
+     * Static function to glue street_address in NL_nl format from components
+     * (street_name, street_number, street_unit)
      * @author Erik Hommel (erik.hommel@civicoop.org)
      * @params params array
      * @return result array
      */
-    static function parseStreetAddressNl( $params ) {
+    static function glueStreetAddressNl( $params ) {
         $result = array( );
         /*
          * error if no street_name in array
          */
         if ( !isset( $params['street_name'] ) ) {
             $result['is_error'] = 1;
-            $result['error_message'] = "Parsing of street address requires street_name in params";
+            $result['error_message'] = "Glueing of street address requires street_name in params";
             return $result;
         }
         $parsedStreetAddressNl = trim( $params['street_name'] );
@@ -249,4 +250,91 @@ class CRM_Utils_DgwUtils {
     	}
     	return $valid;
     }
+    
+    /**
+     * Static function to split street_address in components street_name,
+     * street_number and street_unit
+     * @author Erik Hommel (erik.hommel@civicoop.org)
+     * @params street_address
+     * @return $result array
+     */
+    static function splitStreetAddressNl ( $streetAddress ) {
+        $result = array( );
+        $result['is_error'] = 0;
+        $result['street_name'] = null;
+        $result['street_number'] = null;
+        $result['street_unit'] = null;
+        /*
+         * empty array in return if streetAddress is empty
+         */
+        if ( empty( $streetAddress ) ) {
+            return $result;
+        }
+        $foundNumber = false;
+        $parts = explode( " ", $streetAddress );
+        $splitFields = array ( );
+        /*
+         * check all parts
+         */
+        foreach ( $parts as $key => $part ) {
+            /*
+             * if part is numeric
+             */
+            if ( is_numeric( $part ) ) {
+                /*
+                 * if key = 0, add to street_name
+                 */
+                if ( $key == 0 ) {
+                    $splitFields['street_name'] .= $part;
+                } else {
+                    /*
+                     * else add to street_number if not found, else add to unit
+                     */
+                    if ( $foundNumber == false ) {
+                        $splitFields['street_number'] .= $part;
+                        $foundNumber = true;
+                    } else {
+                        $splitFields['street_unit'] .= " ".$part;
+                    }
+                }
+            } else {
+                /*
+                 * if not numeric and no foundNumber, add to street_name
+                 */
+                if ( $foundNumber == false ) {
+                    /*
+                     * if part is first part, set to street_name
+                     */
+                    if ( $key == 0 ) {
+                        $splitFields['street_name'] .= " ".$part;
+                    } else {
+                        /*
+                         * if part has numbers first and non-numbers later put number 
+                         * into street_number and rest in unit and set foundNumber = true
+                         */
+                        $length = strlen( $part );
+                        if ( is_numeric( substr( $part, 0, 1 ) ) ) {
+                            for ( $i=0; $i<$length; $i++ ) {
+                                if ( is_numeric( substr( $part, $i, 1 ) ) ) {
+                                    $splitFields['street_number'] .= substr( $part, $i, 1 );
+                                    $foundNumber = true;
+                                } else {
+                                    $splitFields['street_unit'] .= substr( $part, $i, 1 );
+                                }
+                            }
+                        } else {
+                            $splitFields['street_name'] .= " ".$part;
+                        }
+                    }
+                } else {
+                    $splitFields['street_unit'] .= " ".$part;
+                }
+            }
+        }
+        $result['street_name'] = trim( $splitFields['street_name'] );
+        $result['street_number'] = $splitFields['street_number'];
+        $result['street_unit'] = ( $splitFields['street_unit'] );
+        return $result;
+    }
 }
+
