@@ -166,6 +166,9 @@ class CRM_Utils_DgwUtils {
         $foundNumber = false;
         $parts = explode( " ", $streetAddress );
         $splitFields = array ( );
+        $splitFields['street_name'] = null;
+        $splitFields['street_number'] = null;
+        $splitFields['street_unit'] = null;
         /*
          * check all parts
          */
@@ -226,7 +229,7 @@ class CRM_Utils_DgwUtils {
         }
         $result['street_name'] = trim( $splitFields['street_name'] );
         $result['street_number'] = $splitFields['street_number'];
-        $result['street_unit'] = ( $splitFields['street_unit'] );
+        $result['street_unit'] = $splitFields['street_unit'];
         return $result;
     }
 }
