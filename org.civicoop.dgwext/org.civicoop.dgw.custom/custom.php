@@ -203,6 +203,18 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
 function custom_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
     
     if ( $objectName == "Address" ) {
+        if ( isset( $objectRef['street_address'] ) ) {
+            if ( !empty( $objectRef['street_address'] ) ) {
+                require_once 'CRM/Utils/DgwUtils.php';
+                $splitAddress = CRM_Utils_DgwUtils::splitStreetAddressNl( $objectRef['street_address'] );
+                if ( $splitAddress['is_error'] == 0 ) {
+                    $objectRef['street_name'] = $splitAddress['street_name'];
+                    $objectRef['street_number'] = $splitAddress['street_number'];
+                    $objectRef['street_unit'] = $splitAddress['street_unit'];
+                } 
+            }
+        }
+        
         $parsedStreetAddress = "";
         if ( isset( $objectRef['street_name'] ) && !empty( $objectRef['street_name'] ) ) {
             $parsedStreetAddress = $objectRef['street_name'];
