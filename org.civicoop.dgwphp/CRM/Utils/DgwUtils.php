@@ -338,5 +338,45 @@ class CRM_Utils_DgwUtils {
         $result['street_unit'] = $splitFields['street_unit'];
         return $result;
     }
+    
+    /*
+     * Function to check format of postcode (Dutch) 1234AA or 1234 AA
+    */
+    public static function checkPostcodeFormat($postcode) {
+    	/*
+    	 * if postcode empty, false
+    	*/
+    	if (empty($postcode)) {
+    		return false;
+    	}
+    	/*
+    	 * if length postcode not 6 or 7, error
+    	*/
+    	if (strlen($postcode) != 6 && strlen($postcode) != 7) {
+    		return false;
+    	}
+    	/*
+    	 * split in 2 parts depending on length
+    	*/
+    	$num = substr($postcode,0,3);
+    	if (strlen($postcode == 6)) {
+    		$alpha = substr($postcode,4,2);
+    	} else {
+    		$alpha = substr($postcode,5,2);
+    	}
+    	/*
+    	 * if $num is not numeric, error
+    	*/
+    	if (!is_numeric(($num))) {
+    		return false;
+    	}
+    	/*
+    	 * if $alpha not letters, error
+    	*/
+    	if (!ctype_alpha($alpha)) {
+    		return false;
+    	}
+    	return true;
+    }
 }
 
