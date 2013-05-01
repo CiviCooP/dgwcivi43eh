@@ -9,6 +9,249 @@
 */
 
 /*
+ * Function to delete an e-mailadres in CiviCRM
+*/
+function civicrm_api3_dgw_email_delete($inparms) {
+	/*
+	 * if no email_id or cde_refno passed, error
+	*/
+	if (!isset($inparms['email_id']) && !isset($inparms['cde_refno'])) {
+		return civicrm_api3_create_error("Email_id en cde_refno ontbreken beiden");
+	}
+	if (isset($inparms['email_id'])) {
+		$email_id = trim($inparms['email_id']);
+	} else {
+		$email_id = null;
+	}
+	if (isset($inparms['cde_refno'])) {
+		$cde_refno = trim($inparms['cde_refno']);
+	} else {
+		$cde_refno = null;
+	}
+	if (empty($email_id) && empty($cde_refno)) {
+		return civicrm_api3_create_error("Email_id en cde_refno ontbreken beiden");
+	}
+	/*
+	 * if $cde_refno is used, retrieve $email_id from synchronisation First table
+	*/
+	if (!empty($cde_refno)) {
+		$email_id = CRM_Utils_DgwApiUtils::getEntityIdFromSyncTable($cde_refno, 'email');
+	}
+	/*
+	 * if $email_id is still empty, error
+	*/
+	if (empty($email_id)) {
+		return civicrm_api3_create_error("Email niet gevonden");
+	}
+	/*
+	 * check if email exists in CiviCRM
+	*/
+	$checkparms = array("email_id" => $email_id, 'version' => 3);
+	$res_check = civicrm_api('Email', 'getsingle', $checkparms);
+	if (civicrm_error($res_check)) {
+		return civicrm_api3_create_error("Email niet gevonden");
+	}
+	/*
+	 * all validation passed, delete email from table
+	*/
+	$res = civicrm_api('Email', 'delete', array('version' => 3, 'id' => $email_id));
+	$outparms['is_error'] = "0";
+	return $outparms;
+}
+
+/*
+ * Function to update an individual emailaddress in CiviCRM
+* incoming is either email_id or cde_refno
+*/
+function civicrm_api3_dgw_email_update($inparms) {
+	/*
+	 * if no email_id or cde_refno passed, error
+	*/
+	if (!isset($inparms['email_id']) && !isset($inparms['cde_refno'])) {
+		return civicrm_api3_create_error("Email_id en cde_refno ontbreken beiden");
+	}
+	if (isset($inparms['email_id'])) {
+		$email_id = trim($inparms['email_id']);
+	} else {
+		$email_id = null;
+	}
+	if (isset($inparms['cde_refno'])) {
+		$cde_refno = trim($inparms['cde_refno']);
+	} else {
+		$cde_refno = null;
+	}
+	if (empty($email_id) && empty($cde_refno)) {
+		return civicrm_api3_create_error("Email_id en cde_refno ontbreken beiden");
+	}
+	/*
+	 * if start_date passed and format invalid, error
+	*/
+	if (isset($inparms['start_date']) && !empty($inparms['start_date'])) {
+		$valid_date = CRM_Utils_DgwUtils::checkDateFormat($inparms['start_date']);
+		if (!$valid_date) {
+			return civicrm_api3_create_error("Onjuiste formaat start_date");
+		} else {
+			$start_date = $inparms['start_date'];
+		}
+	}
+	/*
+	 * if end_date passed and format invalid, error
+	*/
+	if (isset($inparms['end_date']) && !empty($inparms['end_date'])) {
+		$valid_date = CRM_Utils_DgwUtils::checkDateFormat($inparms['end_date']);
+		if (!$valid_date) {
+			return civicrm_api3_create_error("Onjuiste formaat end_date");
+		} else {
+			$end_date = $inparms['end_date'];
+		}
+	}
+	/*
+	 * if $cde_refno is used, retrieve email_id from synchronisation First table
+	*/
+	if (!empty($cde_refno)) {
+		$email_id = CRM_Utils_DgwApiUtils::getEntityIdFromSyncTable($cde_refno, 'email');
+	}
+	/*
+	 * if $email_id is still empty, error
+	*/
+	if (empty($email_id)) {
+		return civicrm_api3_create_error("Email niet gevonden");
+	}
+	/*
+	 * check if email exists in CiviCRM
+	*/
+	$checkparms = array("email_id" => $email_id, 'version' => 3);
+	$res_check = civicrm_api('Email', 'getsingle', $checkparms);
+	if (civicrm_error($res_check)) {
+		return civicrm_api3_create_error("Email niet gevonden");
+	}
+	/*
+	 * if location_type is invalid, error
+	*/
+	if (isset($inparms['location_type'])) {
+		$location_type_id = CRM_Utils_DgwApiUtils::getLocationIdByName($inparms['location_type']);
+		if ($location_type_id == "") {
+			return civicrm_api3_create_error("Location_type is ongeldig");
+		} else {
+			$location_type = strtolower(trim($inparms['location_type']));
+		}
+	}
+	/*
+	 * if is_primary is not 0 or 1, error
+	*/
+	if (isset($inparms['is_primary'])) {
+		if ($inparms['is_primary'] != 0 && $inparms['is_primary'] != 1) {
+			return civicrm_api3_create_error("Is_primary is ongeldig");
+		}
+	}
+	/*
+	 * if start_date > today and location_type is not toekomst, error
+	*/
+	if (isset($start_date) && !empty($start_date)) {
+		$start_date = date("Ymd", strtotime($start_date));
+		if ($start_date > date("Ymd") && $location_type != "toekomst") {
+			return civicrm_api3_create_error("Combinatie location_type en start/end_date ongeldig");
+		}
+		/*
+		 * if location_type = toekomst and start_date is not > today, error
+		*/
+		if ($location_type == "toekomst" && $start_date <= date("Ymd")) {
+			return civicrm_api3_create_error("Combinatie location_type en start/end_date ongeldig");
+		}
+	}
+	/*
+	 * if end_date < today and location_type is not oud, error
+	*/
+	if (isset($end_date) && !empty($end_date)) {
+		$end_date = date("Ymd", strtotime($end_date));
+		if ($end_date < date("Ymd") && $location_type != "oud") {
+			return civicrm_api3_create_error("Combinatie location_type en start/end_date ongeldig");
+		}
+		/*
+		 * if location_type = oud and end_date is empty or > today, error
+		*/
+		if ($location_type == "oud") {
+			if (empty($end_date) || $end_date > date("Ymd")) {
+				return civicrm_api3_create_error("Combinatie location_type en start/end_date ongeldig");
+			}
+		}
+	}
+	/*
+	 * all validation passed, first retrieve email to get all current values
+	* for total update record
+	*/
+	$params['version'] = 3;
+	if (isset($inparms['email'])) {
+		$params['email'] = trim($inparms['email']);
+	}
+	/*
+	 * issue 178: if email empty, delete email
+	*/
+	if (isset($params['email']) && empty($params['email'])) {
+		return civicrm_api('DgwEmail', 'delete', array('version' => 3, 'email_id' => $email_id));
+	} else {
+		/*
+		 * update email with new values
+		*/
+		if (isset($location_type_id)) {
+			$params['location_type_id'] = $location_type_id;
+		}
+		if (isset($inparms['is_primary'])) {
+			$params['is_primary'] = $inparms['is_primary'];
+		}
+		$params['email_id'] = $email_id;
+		$res_update = civicrm_api('Email', 'Create', $params);
+		if (civicrm_error($res_update)) {
+			return civicrm_api3_create_error('Onbekende fout: '.$res_update['error_msg']);
+		}
+		/*
+		 * issue 158: if the email belongs to a hoofdhuurder, update the household
+		* email too
+		*/
+		$huishoudenID = CRM_Utils_DgwApiUtils::is_hoofdhuurder($res_check['contact_id']);
+		if ($huishoudenID != 0) {
+			/*
+			 * update huishouden phone if there is one, if not create
+			*/
+			unset($params['phone_id']);
+			$params['contact_id'] = $huishoudenID;
+			$res_update_hh = civicrm('Email', 'Create', $params);
+		}
+		/*
+		 * retrieve phone_id from result array
+		*/
+		$email_id = $res_update['id'];
+		
+		/*
+		 * set new cde_refno in synctable if passed
+		 */
+		if (isset($inparms['cde_refno']) && !empty($inparms['cde_refno'])) {
+			$refno = trim($inparms['cde_refno']);
+			$key_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first');
+			$group = CRM_Utils_DgwApiUtils::retrieveCustomGroupByName('Synchronisatie_First_Noa');
+			$fields = CRM_Utils_DgwApiUtils::retrieveCustomValuesForContactAndCustomGroupSorted($res_check['contact_id'], $group['id']);
+			$fid = "";
+			foreach($fields as $key => $field) {
+				if ($field['entity_id'] == $phone_id  && $field['entity'] == "email") {
+					$fid = ":".$key;
+					break;
+				}
+			}
+			
+			$civiparms2 = array (
+					'version' => 3,
+					'entity_id' => $res_check['contact_id'],
+					'custom_'.$key_first_field['id'].$fid => $inparms['cde_refno'],
+			);
+			
+			$civicres2 = civicrm_api('CustomValue', 'Create', $civiparms2);
+		}
+	}
+	$outparms['is_error'] = "0";
+	return $outparms;
+}
+
+/*
  * Function to add an e-mailaddress
  */
 function civicrm_api3_dgw_email_create($inparms) {
