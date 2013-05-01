@@ -146,6 +146,29 @@ class CRM_Utils_DgwApiUtils {
 		return $id;
 	}
 	
+	public static function getEntityIdFromSyncTable($first_key, $entity_type) {
+		$id = 0;
+		$cde_refno_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first');
+		$entity_id_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity_id');
+		$entity_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity');
+		$cde_refno_field_froup = CRM_Utils_DgwApiUtils::retrieveCustomGroupByid($cde_refno_field['custom_group_id']);
+		
+		/*
+		 * Onderstaande query is niet om te bouwen naar API calls
+		* Want er moet dan gebruik gemaakt worden van de CustomValues van de api
+		* maar om die te gebruiken hebben entity_id nodig en die verwijst in de database
+		* altijd naar het contact in de tabel voor synchronisatie.
+		* En omdat het een inactief (verborgen) veld is kunnen we ook niet zoeken via
+		* de Contact api met als parameter custom_*
+		*/
+		$query = "SELECT ".$entity_id_field['column_name']." AS `entity_id` FROM ".$cde_refno_field_froup['table_name']." WHERE ".$cde_refno_field['column_name']." = '$cde_refno' AND ".$entity_field['column_name']." = '".$entity_type."'";
+		$daoSync = CRM_Core_DAO::executeQuery($query);
+		if ($daoSync->fetch()) {
+			$id = $daoSync->entity_id;
+		}
+		return $id;
+	}
+	
 	public static function retrieveCustomGroupByid($group_id) {
 		$civiparms2 = array('version' => 3, 'id' => $group_id);
 		$civires2 = civicrm_api('CustomGroup', 'getsingle', $civiparms2);

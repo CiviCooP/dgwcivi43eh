@@ -412,6 +412,11 @@ class CRM_Utils_DgwREST {
 
     // trap all fatal errors
     CRM_Core_Error::setCallback(array('CRM_Utils_REST', 'fatal'));
+    
+    //make sure id is not required by delete action
+    if (strtolower(substr($args[1],0,3)) == 'dgw' && strtolower($args[2]) == 'delete' && !isset($params['id'])) {
+    	$params['id'] = 1;
+    }
     $result = civicrm_api($args[1], $args[2], $params);
     CRM_Core_Error::setCallback();
 

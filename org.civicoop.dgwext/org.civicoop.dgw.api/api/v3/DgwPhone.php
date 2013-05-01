@@ -58,25 +58,7 @@ function civicrm_api3_dgw_phone_update($inparms) {
 	 * if $cde_refno is used, retrieve phone_id from synchronisation First table
 	*/
 	if (!empty($cde_refno)) {
-		$cde_refno_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first');
-		$entity_id_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity_id');
-		$entity_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity');
-		$cde_refno_field_froup = CRM_Utils_DgwApiUtils::retrieveCustomGroupByid($cde_refno_field['custom_group_id']);
-		
-		/*
-		 * Onderstaande query is niet om te bouwen naar API calls
-		 * Want er moet dan gebruik gemaakt worden van de CustomValues van de api
-		 * maar om die te gebruiken hebben entity_id nodig en die verwijst in de database
-		 * altijd naar het contact in de tabel voor synchronisatie.
-		 * En omdat het een inactief (verborgen) veld is kunnen we ook niet zoeken via
-		 * de Contact api met als parameter custom_*
-		 */
-		$query = "SELECT ".$entity_id_field['column_name']." AS `phone_id` FROM ".$cde_refno_field_froup['table_name']." WHERE ".$cde_refno_field['column_name']." = '$cde_refno' AND ".$entity_field['column_name']." = 'phone'";
-		$daoSync = CRM_Core_DAO::executeQuery($query);
-		$fldsyncid = FLDSYNCID;
-		while ($daoSync->fetch()) {
-			$phone_id = $daoSync->phone_id;
-		}
+		$phone_id = CRM_Utils_DgwApiUtils::getEntityIdFromSyncTable($cde_refno, 'phone');
 	}
 	
 	/*
@@ -273,6 +255,57 @@ function civicrm_api3_dgw_phone_update($inparms) {
 			$civicres2 = civicrm_api('CustomValue', 'Create', $civiparms2);
 		}
 	}
+	$outparms['is_error'] = "0";
+	return $outparms;
+}
+
+/*
+ * Function to delete a phone number in CiviCRM
+*/
+function civicrm_api3_dgw_phone_delete($inparms) {
+	/*
+	 * if no phone_id or cde_refno passed, error
+	*/
+	if (!isset($inparms['phone_id']) && !isset($inparms['cde_refno'])) {
+		return civicrm_api3_create_error("Phone_id en cde_refno ontbreken beiden");
+	}
+	if (isset($inparms['phone_id'])) {
+		$phone_id = trim($inparms['phone_id']);
+	} else {
+		$phone_id = null;
+	}
+	if (isset($inparms['cde_refno'])) {
+		$cde_refno = trim($inparms['cde_refno']);
+	} else {
+		$cde_refno = null;
+	}
+	if (empty($phone_id) && empty($cde_refno)) {
+		return civicrm_api3_create_error("Phone_id en cde_refno ontbreken beiden");
+	}
+	/*
+	 * if $cde_refno is used, retrieve phone_id from synchronisation First table
+	*/
+	if (!empty($cde_refno)) {
+		$phone_id = CRM_Utils_DgwApiUtils::getEntityIdFromSyncTable($cde_refno, 'phone');
+	}
+	/*
+	 * if $phone_id is still empty, error
+	*/
+	if (empty($phone_id)) {
+		return civicrm_api3_create_error("Phone niet gevonden");
+	}
+	/*
+	 * check if phone exists in CiviCRM
+	*/
+	$checkparms = array("phone_id" => $phone_id, 'version' => 3);
+	$res_check = civicrm_api('Phone', 'getsingle', $checkparms);
+	if (civicrm_error($res_check)) {
+		return civicrm_api3_create_error("Phone niet gevonden");
+	}
+	/*
+	 * all validation passed, delete phone from table
+	*/
+	$res = civicrm_api('Phone', 'delete', array('version' => 3, 'id' => $phone_id));
 	$outparms['is_error'] = "0";
 	return $outparms;
 }
