@@ -26,6 +26,7 @@ class CRM_Utils_DgwApiUtils {
 				'address' => 'DgwAddress',
 				'group' => 'DgwGroup',
 				'tag' => 'DgwTag',
+				'hov' => 'DgwHov',
 				'relationship' => 'DgwRelationship',
 				'firstsync' => 'DgwFirstsync',
 		);
@@ -107,6 +108,29 @@ class CRM_Utils_DgwApiUtils {
 			return $c['contact_id_b'];
 		}
 		return 0;
+	}
+	
+	public static function aantalMedehuurders($huishouden_id) {
+		/*
+		 * only if contact_id is not empty
+		*/
+		if (empty($huishouden_id)) {
+			return 0;
+		}
+		/*
+		 * check if there is a relationship 'hoofdhuurder' for the contact_id
+		*/
+		$rel_hfd_id = self::retrieveRelationshipTypeIdByNameAB('Medehuurder');
+		$parms = array(
+				'version' => 3,
+				'relationship_type_id' => $rel_hfd_id,
+				'contact_id_b' => $huishouden_id,
+		);
+		$res = civicrm_api('Relationship', 'get', $parms);
+		if (civicrm_error($res)) {
+			return 0;
+		}
+		return $res['count'];
 	}
 	
 	public static function retrieveRelationshipTypeIdByNameAB($name) {
