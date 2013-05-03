@@ -169,6 +169,27 @@ class CRM_Utils_DgwApiUtils {
 		return $id;
 	}
 	
+	public static function getHovFromTable($hovnummer, $hovnr_field) {
+		$id = 0;
+		$hovnr_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName($hovnr_field);
+		$hovnr_field_field_froup = CRM_Utils_DgwApiUtils::retrieveCustomGroupByid($hovnr_field['custom_group_id']);
+	
+		/*
+		 * Onderstaande query is niet om te bouwen naar API calls
+		* Want er moet dan gebruik gemaakt worden van de CustomValues van de api
+		* maar om die te gebruiken hebben entity_id nodig en die verwijst in de database
+		* altijd naar het contact in de tabel voor synchronisatie.
+		* En omdat het een inactief (verborgen) veld is kunnen we ook niet zoeken via
+		* de Contact api met als parameter custom_*
+		*/
+		$query = "SELECT `entity_id` FROM ".$hovnr_field_field_froup['table_name']." WHERE ".$hovnr_field['column_name']." = '$hovnummer'";
+		$daoSync = CRM_Core_DAO::executeQuery($query);
+		if ($daoSync->fetch()) {
+			$id = $daoSync->entity_id;
+		}
+		return $id;
+	}
+	
 	public static function retrieveCustomGroupByid($group_id) {
 		$civiparms2 = array('version' => 3, 'id' => $group_id);
 		$civires2 = civicrm_api('CustomGroup', 'getsingle', $civiparms2);
