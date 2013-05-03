@@ -8,6 +8,57 @@
 +--------------------------------------------------------------------+
 */
 
+/*
+ * Function to delete an address in CiviCRM
+*/
+function civicrm_api3_dgw_address_delete($inparms) {
+	/*
+	 * if no address_id or adr_refno passed, error
+	*/
+	if (!isset($inparms['address_id']) && !isset($inparms['adr_refno'])) {
+		return civicrm_api3_create_error("Address_id en adr_refno ontbreken beiden");
+	}
+	if (isset($inparms['address_id'])) {
+		$address_id = trim($inparms['address_id']);
+	} else {
+		$address_id = null;
+	}
+	if (isset($inparms['adr_refno'])) {
+		$adr_refno = trim($inparms['adr_refno']);
+	} else {
+		$adr_refno = null;
+	}
+	if (empty($address_id) && empty($adr_refno)) {
+		return civicrm_api3_create_error("Address_id en adr_refno ontbreken beiden");
+	}
+	/*
+	 * if $adr_refno is used, retrieve $address_id from synchronisation First table
+	*/
+	if (!empty($adr_refno)) {
+		$address_id = CRM_Utils_DgwApiUtils::getEntityIdFromSyncTable($adr_refno, 'address');
+	}
+	/*
+	 * if $address_id is still empty, error
+	*/
+	if (empty($address_id)) {
+		return civicrm_api3_create_error("Adres niet gevonden");
+	}
+	/*
+	 * check if address exists in CiviCRM
+	*/
+	$checkparms = array("address_id" => $address_id, 'version' => 3);
+	$res_check = civicrm_api('Address', 'getsingle', $checkparms);
+	if (civicrm_error($res_check)) {
+		return civicrm_api3_create_error("Adres niet gevonden");
+	}
+	/*
+	 * all validation passed, delete address from table
+	*/
+	$res = civicrm_api('Address', 'delete', array('version' => 3, 'id' => $address_id));
+	$outparms['is_error'] = "0";
+	return $outparms;
+}
+
 function civicrm_api3_dgw_address_create($inparms) {
 	/*
 	 * if no contact_id or persoonsnummer_first passed, error
