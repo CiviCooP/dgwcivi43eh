@@ -183,7 +183,7 @@ function civicrm_api3_dgw_address_update($inparms) {
 		$params['street_name'] = trim($inparms['street_name']);
 	}
 	if (isset($inparms['street_suffix'])) {
-		$params['street_number_suffix'] = trim($inparms['street_suffix']);
+		$params['street_unit'] = trim($inparms['street_suffix']);
 	}
 	if (isset($inparms['city'])) {
 		$params['city'] = trim($inparms['city']);
@@ -202,8 +202,8 @@ function civicrm_api3_dgw_address_update($inparms) {
 	}
 	if (!empty($params['street_suffix'])) {
 		$street_address = $street_address.$params['street_suffix'];
-	} elseif (isset($res_check['street_number_suffix'])) {
-		$street_address = $street_address.$res_check['street_number_suffix'];
+	} elseif (isset($res_check['street_unit'])) {
+		$street_address = $street_address.$res_check['street_unit'];
 	}
 	$params['street_address'] = trim($street_address);
 	/*
@@ -578,7 +578,7 @@ function civicrm_api3_dgw_address_create($inparms) {
 		}
 	}
 	if (isset($inparms['street_suffix'])) {
-		$address['street_number_suffix'] = trim($inparms['street_suffix']);
+		$address['street_unit'] = trim($inparms['street_suffix']);
 		if (empty($address['street_address'])) {
 			$address['street_address'] = trim($inparms['street_suffix']);
 		} else {
@@ -733,10 +733,10 @@ function civicrm_api3_dgw_address_get($inparms) {
 		unset($data['id']);
 		
 		$data['street_suffix'] = '';
-		if (isset($data['street_number_suffix'])) {
-			$data['street_suffix'] = $data['street_number_suffix'];
+		if (isset($data['street_unit'])) {
+			$data['street_suffix'] = $data['street_unit'];
 		}
-		unset($data['street_number_suffix']);
+		unset($data['street_unit']);
 		if (isset($data['street_unit'])) {
 			$data['street_suffix'] .= $data['street_unit'];
 			unset($data['street_unit']);
