@@ -213,7 +213,7 @@ function civicrm_api3_dgw_email_update($inparms) {
 			/*
 			 * update huishouden phone if there is one, if not create
 			*/
-			unset($params['phone_id']);
+			unset($params['email_id']);
 			$params['contact_id'] = $huishoudenID;
 			$res_update_hh = civicrm('Email', 'Create', $params);
 		}
