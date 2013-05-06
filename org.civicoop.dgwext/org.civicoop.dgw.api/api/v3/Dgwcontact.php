@@ -48,23 +48,10 @@
  +--------------------------------------------------------------------+
  */
 
-/**
- * @Todo config bestand en constanten goed zetten
- */
-#require_once 'dgwConfig.php';
-require_once 'DgwPhone.php';
-require_once 'DgwEmail.php';
-require_once 'DgwGroup.php';
-require_once 'DgwTag.php';
-require_once 'DgwAddress.php';
-require_once 'DgwRelationship.php';
-require_once 'DgwNote.php';
-require_once 'DgwFirstsync.php';
-
 /*
  * Function to get details of a contact
  */
-function civicrm_api3_dgwcontact_get($inparms) {
+function civicrm_api3_dgw_contact_get($inparms) {
 	
     /*
      * initialize output array
@@ -74,7 +61,6 @@ function civicrm_api3_dgwcontact_get($inparms) {
     /**
      * array to hold all possible input parms
      *
-     * @Todo create a spec function for this api
      */
     $valid_input = array("contact_id", "persoonsnummer_first", "achternaam",
         "geboortedatum", "bsn", "contact_type");
@@ -89,8 +75,7 @@ function civicrm_api3_dgwcontact_get($inparms) {
         }
     }
     if (!$valid) {
-        return civicrm_api3_create_error( 'Geen geldige input parameters voor
-            dgwcontact_get' );
+        return civicrm_api3_create_error( 'Geen geldige input parameters voor dgwcontact_get' );
     }
 
     /*
@@ -112,6 +97,10 @@ function civicrm_api3_dgwcontact_get($inparms) {
         	"rowCount"   => $rowCount,
         	"version"    => 3
         );
+        
+        $persoonsnr_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Persoonsnummer_First');
+        $nr_in_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Nr_in_First');
+        $bsn_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('BSN');
 
         /*
          * if contact_id entered, no further parms needed
@@ -125,27 +114,19 @@ function civicrm_api3_dgwcontact_get($inparms) {
              * (issue 240 ook voor organisatie)
              */
         	$civiparms1['contact_type'] = 'Individual';
-        	/**
-        	 * @TodO replace constant CFPERSNR with config value
-        	 */
-        	$civiparms1[CFPERSNR] = $inparms['persoonsnummer_first'];
+        	
+        	$civiparms1['custom_'.$persoonsnr_first_field['id']] = $inparms['persoonsnummer_first'];
         	$civires1 = civicrm_api('Contact', 'get', $civiparms1);
             if (key($civires1) == null) {
             	unset($civiparms1[CFPERSNR]);
             	$inparms['contact_type'] = "Organization";
             	$civiparms1['contact_type'] = 'Organization';
-            	/**
-            	 * @TodO replace constant CFORGPERSNR with config value
-            	 */
-            	$civiparms1[CFORGPERSNR] = $inparms['persoonsnummer_first'];
+            	$civiparms1['custom_'.$nr_in_first_field['id']] = $inparms['persoonsnummer_first'];
             	$civires1 = civicrm_api('Contact', 'get', $civiparms1);
             } 
         } else {
         	if (isset($inparms['bsn']) && !empty($inparms['bsn'])) {
-        		/**
-        		 * @TodO replace constant CFPERSBSN with config value
-        		 */
-        		$civiparms1[CFPERSBSN] = $inparms['bsn'];
+        		$civiparms1['custom_'.$bsn_field['id']] = $inparms['bsn'];
         	} 
         	if (isset($inparms['achternaam']) && !empty($inparms['achternaam'])) {
         		$civiparms1['last_name'] = trim($inparms['achternaam']);
@@ -221,16 +202,15 @@ function civicrm_api3_dgwcontact_get($inparms) {
 /*
  * Function to create new contact
  */
-function civicrm_api3_dgwcontact_create($inparms) {
+function civicrm_api3_dgw_contact_create($inparms) {
     /*
      * If contact_type passed and not valid, error. Else set contact_type
      * to default 'Individual'
      */
     if (isset($inparms['contact_type'])) {
         $contact_type = trim(ucfirst(strtolower($inparms['contact_type'])));
-        if ($contact_type != "Individual" && $contact_type != "Household"
-                && $contact_type != "Organization") {
-            return civicrm_create_error("Ongeldig contact_type $contact_type");
+        if ($contact_type != "Individual" && $contact_type != "Household" && $contact_type != "Organization") {
+            return civicrm_api3_create_error("Ongeldig contact_type $contact_type");
         }
     } else {
         $contact_type = "Individual";
@@ -241,16 +221,17 @@ function civicrm_api3_dgwcontact_create($inparms) {
      */
     if ($contact_type != "Individual") {
         if (!isset($inparms['name'])) {
-            return civicrm_create_error("Geen first_name/last_name of name
-                gevonden");
+            return civicrm_api3_create_error("Geen first_name/last_name of name gevonden");
         } else {
             $name = trim($inparms['name']);
         }
         if (empty($name)) {
-            return civicrm_create_error("Geen first_name/last_name of name
-                gevonden");
+            return civicrm_api3_create_error("Geen first_name/last_name of name gevonden");
         }
     }
+    
+    $gender_group_id = CRM_Utils_DgwApiUtils::getOptionGroupIdByTitle('gender');
+    $gender_values = CRM_Utils_DgwApiUtils::getOptionValuesByGroupId($gender_group_id);
 
     /*
      * If type is Individual, a number of checks need to be done
@@ -261,45 +242,43 @@ function civicrm_api3_dgwcontact_create($inparms) {
          * issue 85: not for First org (gender = 4)
          */
         if (!isset($inparms['first_name']) && $inparms['gender_id'] != 4) {
-            return civicrm_create_error("Geen first_name/last_name of name
-                gevonden");
+            return civicrm_api3_create_error("Geen first_name/last_name of name gevonden");
         } else {
             $first_name = trim($inparms['first_name']);
         }
         if (empty($first_name) && $inparms['gender_id'] != 4) {
-            return civicrm_create_error("Geen first_name/last_name of name
-                gevonden");
+            return civicrm_api3_create_error("Geen first_name/last_name of name gevonden");
         }
         if (!isset($inparms['last_name'])) {
-            return civicrm_create_error("Geen first_name/last_name of name
-                gevonden");
+            return civicrm_api3_create_error("Geen first_name/last_name of name gevonden");
         } else {
             $last_name = trim($inparms['last_name']);
         }
         if (empty($last_name)) {
-            return civicrm_create_error("Geen first_name/last_name of name
-                gevonden");
+            return civicrm_api3_create_error("Geen first_name/last_name of name gevonden");
         }
         /*
          * gender_id has to be valid if entered. If not entered, use default
          */
         if (isset($inparms['gender_id'])) {
             $gender_id = trim($inparms['gender_id']);
-            if ($gender_id != 1 && $gender_id != 2 && $gender_id != 3
-                    && $gender_id != 4) {
-                return civicrm_create_error("Gender_id is ongeldig");
+            if (!array_key_exists($inparms['gender_id'], $gender_values)) {
+                return civicrm_api3_create_error("Gender_id is ongeldig");
             }
         } else {
-            $gender_id = 3;
+        	foreach($gender_values as $val) {
+        		if (strtolower($val['name']) == 'onbekend') {
+        			$gender_id = $val['value'];
+        			break;
+        		}
+        	}
         }
         /*
          * issue 149: if gender = 4, persoonsnummer first has to be passed
          */
         if ($gender_id == 4) {
-            if (!isset($inparms['persoonsnummer_first']) ||
-                    empty($inparms['persoonsnummer_first'])) {
-                return civicrm_create_error("Gender_id 4 mag alleen als
-                    persoonsnummer first ook gevuld is");
+            if (!isset($inparms['persoonsnummer_first']) || empty($inparms['persoonsnummer_first'])) {
+                return civicrm_api3_create_error("Gender_id 4 mag alleen als persoonsnummer first ook gevuld is");
             }
         }
         /*
@@ -308,9 +287,9 @@ function civicrm_api3_dgwcontact_create($inparms) {
         if (isset($inparms['bsn'])) {
             $bsn = trim($inparms['bsn']);
             if (!empty($bsn)) {
-                $bsn_valid = validateBsn($bsn);
+                $bsn_valid = CRM_Utils_DgwUtils::validateBsn($bsn);
                 if (!$bsn_valid) {
-                    return civicrm_create_error("Bsn voldoet niet aan 11-proef");
+                    return civicrm_api3_create_error("Bsn voldoet niet aan 11-proef");
                 }
             }
         }
@@ -318,9 +297,9 @@ function civicrm_api3_dgwcontact_create($inparms) {
          * if birth date is entered, format has to be valid
          */
         if (isset($inparms['birth_date']) && !empty($inparms['birth_date'])) {
-            $valid_date = checkDateFormat($inparms['birth_date']);
+            $valid_date = CRM_Utils_DgwUtils::checkDateFormat($inparms['birth_date']);
             if (!$valid_date) {
-                return civicrm_create_error("Onjuiste formaat birth_date");
+                return civicrm_api3_create_error("Onjuiste formaat birth_date");
             } else {
                 $birth_date = $inparms['birth_date'];
             }
@@ -330,54 +309,51 @@ function civicrm_api3_dgwcontact_create($inparms) {
         /*
          * if individual already exists with persoonsnummer_first, error
          */
+        $persoonsnummer_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('persoonsnummer_first');        
         if (isset($inparms['persoonsnummer_first'])) {
             $pers_first = trim($inparms['persoonsnummer_first']);
-            $qry = "SELECT count(id) as aantal FROM ".TABFIRSTPERS." WHERE ".
-                FLDPERSNR." = 'pers_first'";
-            $daoPers = CRM_Core_DAO::executeQuery($qry);
-            while ($daoPers->fetch()) {
-                $aantal = $daoPers->aantal;
-            }
-            if ($aantal > 0) {
-                return civicrm_create_error("Persoon bestaat al");
+            $checkparms = array("custom_".$persoonsnummer_first_field['id'] => $pers_first);
+            $checkparms['version'] = 3;
+            $check_contact = civicrm_api('Contact', 'get', $checkparms);
+            if (!civicrm_error($check_contact) && $check_contact['count'] > 0) {
+            	return civicrm_api3_create_error("Persoon bestaat al");
             }
         }
         /*
          * if burg_staat entered and invalid, error
          */
         if (isset($inparms['burg_staat_id'])) {
-            $check = getOptionValue("Burgerlijke staat", "",
-                    $inparms['burg_staat_id']);
-            if ($check == "error") {
-                return civicrm_create_error("Burg_staat_id is ongeldig");
-            } else {
-                $burg_staat_id = $inparms['burg_staat_id'];
-            }
+        	$burg_staat_group_id = CRM_Utils_DgwApiUtils::getOptionGroupIdByTitle('burgerlijke_staat_20110110165605');
+        	$burg_staat_options = CRM_Utils_DgwApiUtils::getOptionValuesByGroupId($burg_staat_group_id);
+        	if (!array_key_exists($inparms['burg_staat_id'], $burg_staat_options)) {
+        		return civicrm_api3_create_error("Burg_staat_id is ongeldig");
+        	}
+        	$burg_staat_id = $inparms['burg_staat_id'];
         }
         /*
          * if huidige woonsituatie entered, explode and if any value invalid,
          * error
          */
         if (isset($inparms['huidige_woonsituatie'])) {
+        	$woon_sit_group_id = CRM_Utils_DgwApiUtils::getOptionGroupIdByTitle('huidige_woonsituatie_20110111121521');
+        	$woon_sit_options = CRM_Utils_DgwApiUtils::getOptionValuesByGroupId($woon_sit_group_id);
+        	
             $values = explode(",", $inparms['huidige_woonsituatie']);
             $teller = 0;
             $huidige_woonsit = null;
             foreach ($values as $value) {
                 if (!empty($value)) {
-                    $check = getOptionValue("Huidige woonsituatie", "", $value, "");
-                        if ($check == "error") {
-                        return civicrm_create_error("Huidige woonsituatie is
-                            ongeldig");
-                    } else {
-                        $huidige_woonsit = $huidige_woonsit.$value.
-                            CRM_Core_DAO::VALUE_SEPARATOR;
-                       $teller++;
-                    }
+                	if (!array_key_exists($value, $woon_sit_options)) {
+                		return civicrm_api3_create_error("Huidige woonsituatie is ongeldig");
+                	} else {
+                		$huidige_woonsit = $huidige_woonsit.$value.CRM_Core_DAO::VALUE_SEPARATOR;
+                		$teller ++;
+                	}
                 }
             }
-        }
-        if ($teller > 0) {
-            $huidige_woonsit = CRM_Core_DAO::VALUE_SEPARATOR.$huidige_woonsit;
+        	if ($teller > 0) {
+            	$huidige_woonsit = CRM_Core_DAO::VALUE_SEPARATOR.$huidige_woonsit;
+        	}
         }
         /*
          * if hoofdhuurder entered, only 0 or 1 are allowed
@@ -385,7 +361,7 @@ function civicrm_api3_dgwcontact_create($inparms) {
         if (isset($inparms['hoofdhuurder'])) {
             $hoofdhuurder = (int) trim($inparms['hoofdhuurder']);
             if ($hoofdhuurder != 0 and $hoofdhuurder != 1) {
-                return civicrm_create_error("Hoofdhuurder is ongeldig");
+                return civicrm_api3_create_error("Hoofdhuurder is ongeldig");
             }
         }
         /*
@@ -393,9 +369,10 @@ function civicrm_api3_dgwcontact_create($inparms) {
          */
         if (isset($inparms['andere_corporatie'])) {
             $andere_corp = (int) trim($inparms['andere_corporatie']);
-            $check = getOptionValue("Corporatie", "", $andere_corp);
-            if ($check == "error") {
-                return civicrm_create_error("Andere corporatie is ongeldig");
+            $andere_corp_group_id = CRM_Utils_DgwApiUtils::getOptionGroupIdByTitle('welke_andere_corporatie_20110111121815');
+            $andere_corp_options = CRM_Utils_DgwApiUtils::getOptionValuesByGroupId($andere_corp_group_id);
+            if (!array_key_exists($andere_corp, $andere_corp_options)) {
+                return civicrm_api3_create_error("Andere corporatie is ongeldig");
             }
         }
         /*
@@ -407,8 +384,7 @@ function civicrm_api3_dgwcontact_create($inparms) {
                 $bruto_jaarinkomen = 0;
             }
             if (!is_numeric($bruto_jaarinkomen)) {
-                return civicrm_create_error("Bruto jaarinkomen heeft ongeldige
-                    tekens");
+                return civicrm_api3_create_error("Bruto jaarinkomen heeft ongeldige tekens");
             }
         }
         /*
@@ -416,9 +392,10 @@ function civicrm_api3_dgwcontact_create($inparms) {
          */
         if (isset($inparms['huishoudgrootte'])) {
             $huishoudgrootte = (int) trim($inparms['huishoudgrootte']);
-            $check = getOptionValue("Huishoudgrootte", "", $huishoudgrootte);
-            if ($check == "error") {
-                return civicrm_create_error("Huishoudgrootte is ongeldig");
+            $huishoudgrootte_group_id = CRM_Utils_DgwApiUtils::getOptionGroupIdByTitle('huishoudgrootte_20110111122358');
+            $huishoudgrootte_options = CRM_Utils_DgwApiUtils::getOptionValuesByGroupId($huishoudgrootte_group_id);
+            if (!array_key_exists($huishoudgrootte, $huishoudgrootte_options)) {
+                return civicrm_api3_create_error("Huishoudgrootte is ongeldig");
             }
         }
         /*
@@ -426,19 +403,20 @@ function civicrm_api3_dgwcontact_create($inparms) {
          * error
          */
         if (isset($inparms['aanbod_bekend'])) {
+        	$aanbod_group_id = CRM_Utils_DgwApiUtils::getOptionGroupIdByTitle('bekend_met_koopaanbod_20110111122551');
+        	$aanbod_options = CRM_Utils_DgwApiUtils::getOptionValuesByGroupId($aanbod_group_id);
+        	
             $aanbod_bekend = null;
             $teller = 0;
             $values = explode(",", $inparms['aanbod_bekend']);
             foreach ($values as $value) {
                 if (!empty($value)) {
-                    $check = getOptionValue("Bekend met koopaanbod", "", $value);
-                    if ($check == "error") {
-                        return civicrm_create_error("Aanbod bekend is ongeldig");
-                    } else {
-                        $aanbod_bekend = CRM_Core_DAO::VALUE_SEPARATOR.
-                            $aanbod_bekend.$value;
-                        $teller++;
-                    }
+                	if (!array_key_exists($value, $aanbod_options)) {
+                		return civicrm_api3_create_error("Aanbod bekend is ongeldig");
+                	} else {
+                		$aanbod_bekend = $aanbod_bekend.$value.CRM_Core_DAO::VALUE_SEPARATOR;
+                		$teller ++;
+                	}
                 }
             }
             if ($teller > 0) {
@@ -451,16 +429,16 @@ function civicrm_api3_dgwcontact_create($inparms) {
         if (isset($inparms['particulier'])) {
             $particulier = (int) trim($inparms['particulier']);
             if ($particulier != 0 and $particulier != 1) {
-                return civicrm_create_error("Particulier is ongeldig");
+                return civicrm_api3_create_error("Particulier is ongeldig");
             }
         }
         /*
          * if woonkeusdatum is entered, format has to be valid
          */
         if (isset($inparms['woonkeusdatum'])) {
-            $valid_date = checkDateFormat($inparms['woonkeusdatum']);
+            $valid_date = CRM_Utils_DgwUtils::checkDateFormat($inparms['woonkeusdatum']);
             if (!$valid_date) {
-                return civicrm_create_error("Onjuiste formaat woonkeusdatum");
+                return civicrm_api3_create_error("Onjuiste formaat woonkeusdatum");
             } else {
                 $woonkeusdatum = $inparms['woonkeusdatum'];
             }
@@ -474,7 +452,10 @@ function civicrm_api3_dgwcontact_create($inparms) {
      * Issue 149: gender_id 4 means organization has to be set with
      * persoonsnummer first and name as concat(first, middle and last) name
      */
-    $middle_name = trim($inparms['middle_name']);
+    $middle_name = "";
+    if (isset($inparms['middle_name'])) {
+    	$middle_name = trim($inparms['middle_name']);
+    }
     if ($gender_id == 4) {
         $contact_type = "Organization";
         $name = null;
@@ -497,11 +478,11 @@ function civicrm_api3_dgwcontact_create($inparms) {
         }
 
     }
+    $civiparms['version'] = 3;
     switch ($contact_type) {
         case "Household":
-            $civiparms = array(
-                "contact_type"      =>  "Household",
-                "household_name"    =>  $name);
+        	$civiparms['contact_type'] = 'Household';
+        	$civiparms['household_name'] = $name;
             break;
         case "Organization":
             if (isset($inparms['home_url'])) {
@@ -514,11 +495,9 @@ function civicrm_api3_dgwcontact_create($inparms) {
             } else {
                 $kvk_nummer = "";
             }
-            $civiparms = array(
-                "contact_type"      =>  "Organization",
-                "organization_name" =>  $name,
-                "home_url"          =>  $homeURL,
-                "sic_code"          =>  $kvk_nummer);
+            $civiparms['contact_type'] = 'Organization';
+            $civiparms['organization_name'] = $name;
+            $civiparms['sic_code'] = $kvk_nummer;
             break;
         case "Individual":
             if (isset($inparms['middle_name'])) {
@@ -526,13 +505,15 @@ function civicrm_api3_dgwcontact_create($inparms) {
             } else {
                 $middle_name = "";
             }
-            $civiparms = array(
-                "contact_type"      =>  "Individual",
-                "first_name"        =>  $first_name,
-                "last_name"         =>  $last_name,
-                "middle_name"       =>  $middle_name,
-                "gender_id"         =>  $gender_id,
-                "show_all"          =>  $inparms['show_all']);
+            
+            $civiparms["contact_type"] = 'Individual';
+            $civiparms["first_name"] = $first_name;
+            $civiparms["last_name"] = $last_name;
+            $civiparms["middle_name"] = $middle_name;
+            $civiparms["gender_id"] = $gender_id;
+            if (isset($inparms['show_all'])) {
+            	$civiparms["show_all"] = $inparms['show_all'];
+            }
 
             if (isset($birth_date) && !empty($birth_date)) {
                 $civiparms['birth_date'] = date("Ymd", strtotime($birth_date));
@@ -542,109 +523,130 @@ function civicrm_api3_dgwcontact_create($inparms) {
     /*
      * use standard API to create CiviCRM contact
      */
-    $create_contact = civicrm_contact_create($civiparms);
-    /*
-     * if error, return error
-     */
+    $create_contact = civicrm_api('Contact', 'create', $civiparms);
     if (civicrm_error($create_contact)) {
-        $errmsg = $create_contact['error_message'];
-        return civicrm_create_error("Onverwachte fout, contact kon niet
-            aangemaakt worden in CiviCRM. Melding van CiviCRM : $errmsg");
-    } else {
-        $contact_id = $create_contact['contact_id'];
-        /*
-         * create custom data for Individual
-         */
-        if ($contact_type == "Individual") {
-           /*
-            * create array with required data, minimal is contact_id
-            */
-            $customparms['entityID'] = $contact_id;
-            /*
-             * add custom fields if entered
-             */
-            if (isset($pers_first)) {
-                $customparms[CFPERSNR] = $pers_first;
-            }
-            if (isset($bsn)) {
-                $customparms[CFPERSBSN] = $bsn;
-            }
-            if (isset($burg_staat_id)) {
-                $customparms[CFPERSBURG] = $burg_staat_id;
-            }
-            if (isset($saldo)) {
-                $customparms[CFPERSTOT] = $saldo;
-            }
-            if (isset($inparms['woonkeusnummer'])) {
-                $customparms[CFWKNR] = trim($inparms['woonkeusnummer']);
-            }
-            if (isset($woonkeusdatum) && !empty($woonkeusdatum)) {
-                $customparms[CFWKDAT] = date("Ymd", strtotime($woonkeusdatum));
-            }
-            if (isset($huidige_woonsit)) {
-                $customparms[CFWKSIT] = $huidige_woonsit;
-            }
-            if (isset($hoofdhuurder)) {
-                $customparms[CFWKHOOFD] = $hoofdhuurder;
-            }
-            if (isset($andere_corp)) {
-                $customparms[CFWKCORP] = $andere_corp;
-            }
-            if (isset($bruto_jaarinkomen)) {
-                $customparms[CFWKBRUTO] = $bruto_jaarinkomen;
-            }
-            if (isset($huishoudgrootte)) {
-                $customparms[CFWKHUIS] = $huishoudgrootte;
-            }
-            if (isset($aanbod_bekend)) {
-                $customparms[CFWKHOE] = $aanbod_bekend;
-            }
-            if (isset($particulier)) {
-                $customparms[CFWKPART] = $particulier;
-            }
-            /*
-             * following fields have to be entered for the synchronization of
-             * contact, address, email and phone if persoonsnummer first has
-             * been entered. Contain key values from First
-             */
-            if (isset($pers_first) && !empty($pers_first)) {
-                $customparms[CFSYNCACT] = "none";
-                $customparms[CFSYNCENT] = "contact";
-                $customparms[CFSYNCID] = $contact_id;
-                $customparms[CFSYNCKEY] = $pers_first;
-            }
-            /*
-             * add custom fields to CiviCRM if there are any
-             */
-            if (!empty($customparms)) {
-                require_once("CRM/Core/BAO/CustomValueTable.php");
-                $customres = CRM_Core_BAO_CustomValueTable::setValues(
-                        $customparms);
-            }
+    	return civicrm_api3_create_error('Onbekende fout: '.$create_contact['error_message']);
+    }
+    $contact_id = $create_contact['id'];
+    
+    /** 
+     * Set website
+     */
+    if (isset($homeURL) && !empty($homeURL)) {
+    	$home_url_params['version'] = 3;
+    	$home_url_params['contact_id'] = $contact_id;
+    	$home_url_params['website'] = $homeURL;
+    	civicrm_api('Website', 'Create', $home_url_params);
+    }
+        
+    /*
+     * create custom data for Individual
+    */
+    $bsn_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('BSN');
+    $burg_staat_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Burgerlijke_staat');
+    $saldo_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Totaal_debiteur');
+    $woonkeusnr_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Inschrijfnummer_Woonkeus');
+    $woonkeusdatum_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Datum_inschrijving_woonkeus');
+    $woonsit_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Huidige_woonsituatie');
+    $hoofdhuurder_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Hoofdhuurder');
+    $anderecorp_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Welke_andere_corporatie');
+    $jaarinkomen_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Bruto_jaarinkomen');
+    $huishoudgrootte_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Huishoudgrootte');
+    $aanbod_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Bekend_met_koopaanbod');
+    $particulier_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Particuliere_markt');
+    
+    if ($contact_type == "Individual") {
+    	/*
+         * create array with required data, minimal is contact_id
+        */
+       $customparms['version'] = 3;
+       $customparms['contact_id'] = $contact_id;
+       if (isset($pers_first)) {
+       	$customparms['custom_'.$persoonsnummer_first_field['id']] = $pers_first;
+       }
+       if (isset($bsn)) {
+       	$customparms['custom_'.$bsn_field['id']] = $bsn;
+       }
+       if (isset($burg_staat_id)) {
+       	$customparms['custom_'.$burg_staat_field['id']] = $burg_staat_id;
+       }
+       if (isset($saldo)) {
+       	$customparms['custom_'.$saldo_field['id']] = $saldo;
+       }
+       if (isset($inparms['woonkeusnummer'])) {
+       	$customparms['custom_'.$woonkeusnr_field['id']] = trim($inparms['woonkeusnummer']);
+       }
+       if (isset($woonkeusdatum) && !empty($woonkeusdatum)) {
+       	$customparms['custom_'.$woonkeusdatum_field['id']] = date("Ymd", strtotime($woonkeusdatum));
+       }
+       if (isset($huidige_woonsit)) {
+       	$customparms['custom_'.$woonsit_field['id']] = $huidige_woonsit;
+       }
+       if (isset($hoofdhuurder)) {
+       	$customparms['custom_'.$hoofdhuurder_field['id']] = $hoofdhuurder;
+       }
+       if (isset($andere_corp)) {
+       	$customparms['custom_'.$anderecorp_field['id']] = $andere_corp;
+       }
+       if (isset($bruto_jaarinkomen)) {
+       	$customparms['custom_'.$jaarinkomen_field['id']] = $bruto_jaarinkomen;
+       }
+       if (isset($huishoudgrootte)) {
+       	$customparms['custom_'.$huishoudgrootte_field['id']] = $huishoudgrootte;
+       }
+       if (isset($aanbod_bekend)) {
+       	$customparms['custom_'.$aanbod_field['id']] = $aanbod_bekend;
+       }
+       if (isset($particulier)) {
+       	$customparms['custom_'.$particulier_field['id']] = $particulier;
+       }
+       /*
+        * following fields have to be entered for the synchronization of
+        * contact, address, email and phone if persoonsnummer first has
+        * been entered. Contain key values from First
+        **/
+        if (isset($pers_first) && !empty($pers_first)) {
+        	$action_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('action');
+        	$entity_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity');
+        	$entity_id_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity_id');
+        	$key_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first');
+        	
+        	$customparms['custom_'.$action_field['id']] = "none";
+        	$customparms['custom_'.$entity_field['id']] = "contact";
+        	$customparms['custom_'.$entity_id_field['id']] = $contact_id;
+        	$customparms['custom_'.$key_first_field['id']] = $pers_first;
         }
-        /*
-         * create custom data for Organization
-         */
-        if ($contact_type == "Organization") {
-            /*
-             * add custom fields if entered
-             */
-            if ($gender_id == 4) {
-                $customparms[CFORGPERSNR] = $pers_first;
-                $customparms['entityID'] = $contact_id;
-                $customparms[CFSYNCACT] = "none";
-                $customparms[CFSYNCENT] = "contact";
-                $customparms[CFSYNCID] = $contact_id;
-                $customparms[CFSYNCKEY] = $pers_first;
-                require_once("CRM/Core/BAO/CustomValueTable.php");
-                $customres = CRM_Core_BAO_CustomValueTable::setValues(
-                        $customparms);
-            }
+        
+        $civicres2 = civicrm_api('CustomValue', 'Create', $customparms);
+    }
+    /*
+     * create custom data for Organization
+     **/
+     if ($contact_type == "Organization") {
+     	/*
+     	 * add custom fields if entered
+     	 **/
+     	if ($gender_id == 4) {
+     		$nr_in_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Nr_in_First');
+     		$action_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('action');
+     		$entity_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity');
+     		$entity_id_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity_id');
+     		$key_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first');
+     		
+     		$customparms['custom_'.$action_field['id']] = "none";
+     		$customparms['custom_'.$entity_field['id']] = "contact";
+     		$customparms['custom_'.$entity_id_field['id']] = $contact_id;
+     		$customparms['custom_'.$key_first_field['id']] = $pers_first;
+     		$customparms['custom_'.$nr_in_first_field['id']] = $pers_first;
+     		$customparms['contact_id'] = $contact_id;
+            
+     		$civicres2 = civicrm_api('CustomValue', 'Create', $customparms);
         }
-        $outparms = array(
+     }
+     $outparms = array(
             "contact_id"    =>  $contact_id,
             "is_error"      =>  0);
-    }
+    
     return $outparms;
 }
 /*
@@ -656,7 +658,7 @@ function civicrm_api3_dgwcontact_update($inparms) {
      */
     if (!isset($inparms['contact_id']) &&
             !isset($inparms['persoonsnummer_first'])) {
-        return civicrm_create_error("Contact_id en persoonsnummer_first
+        return civicrm_api3_create_error("Contact_id en persoonsnummer_first
             ontbreken beiden");
     }
     if (isset($inparms['contact_id'])) {
@@ -670,7 +672,7 @@ function civicrm_api3_dgwcontact_update($inparms) {
         $pers_nr = null;
     }
     if (empty($contact_id) && empty($pers_nr)) {
-        return civicrm_create_error("Contact_id en persoonsnummer_first
+        return civicrm_api3_create_error("Contact_id en persoonsnummer_first
             ontbreken beiden");
     }
 
@@ -701,7 +703,7 @@ function civicrm_api3_dgwcontact_update($inparms) {
 					$contact_id = $daoOrg->entity_id;
 				}
 				if ($aantal == 0) {
-					return civicrm_create_error("Contact niet gevonden");
+					return civicrm_api3_create_error("Contact niet gevonden");
 				}
             }
         }
@@ -714,7 +716,7 @@ function civicrm_api3_dgwcontact_update($inparms) {
         $contact_type = $daoPers->contact_type;
     }
     if ($aantal == 0) {
-        return civicrm_create_error("Contact niet gevonden");
+        return civicrm_api3_create_error("Contact niet gevonden");
     }
     /*
      * gender_id has to be valid if entered. 
@@ -723,7 +725,7 @@ function civicrm_api3_dgwcontact_update($inparms) {
         $gender_id = trim($inparms['gender_id']);
         if ($gender_id != 1 && $gender_id != 2 && $gender_id != 3 &&
                 $gender_id != 4) {
-            return civicrm_create_error("Gender_id is ongeldig");
+            return civicrm_api3_create_error("Gender_id is ongeldig");
         }
     }
     /*
@@ -734,13 +736,13 @@ function civicrm_api3_dgwcontact_update($inparms) {
         if ($gender_id != 4) {
             if (!isset($inparms['first_name']) || !isset($inparms['last_name'])
                     || !isset($pers_nr)) {
-                return civicrm_create_error("First name, last name en
+                return civicrm_api3_create_error("First name, last name en
                     persoonsnummer first moeten gevuld zijn als gewijzigd wordt
                     van organisatie naar persoon");
             }
             if (empty($inparms['first_name']) || empty($inparms['last_name']) ||
                     empty($pers_nr)) {
-                return civicrm_create_error("First name, last name en
+                return civicrm_api3_create_error("First name, last name en
                     persoonsnummer first moeten gevuld zijn als gewijzigd wordt
                     van organisatie naar persoon");
             }
@@ -754,7 +756,7 @@ function civicrm_api3_dgwcontact_update($inparms) {
         if (!empty($bsn)) {
             $bsn_valid = validateBsn($bsn);
             if (!$bsn_valid) {
-                return civicrm_create_error("Bsn voldoet niet aan 11-proef");
+                return civicrm_api3_create_error("Bsn voldoet niet aan 11-proef");
             }
         }
     }
@@ -762,9 +764,9 @@ function civicrm_api3_dgwcontact_update($inparms) {
      * if birth date is entered, format has to be valid
      */
     if ( isset( $inparms['birth_date'] ) && !empty( $inparms['birth_date'] ) ) {
-        $valid_date = checkDateFormat($inparms['birth_date']);
+        $valid_date = CRM_Utils_DgwUtils::checkDateFormat($inparms['birth_date']);
         if (!$valid_date) {
-            return civicrm_create_error("Onjuiste formaat birth_date");
+            return civicrm_api3_create_error("Onjuiste formaat birth_date");
         } else {
             $birth_date = $inparms['birth_date'];
         }
@@ -776,7 +778,7 @@ function civicrm_api3_dgwcontact_update($inparms) {
         $check = getOptionValue("Burgerlijke staat", "",
             $inparms['burg_staat_id']);
         if ($check == "error") {
-            return civicrm_create_error("Burg_staat_id is ongeldig");
+            return civicrm_api3_create_error("Burg_staat_id is ongeldig");
         } else {
             $burg_staat_id = $inparms['burg_staat_id'];
         }
@@ -793,7 +795,7 @@ function civicrm_api3_dgwcontact_update($inparms) {
             if (!empty($value)) {
                 $check = getOptionValue("Huidige woonsituatie", "", $value, "");
                 if ($check == "error") {
-                    return civicrm_create_error("Huidige woonsituatie is ongeldig");
+                    return civicrm_api3_create_error("Huidige woonsituatie is ongeldig");
                 } else {
                     $huidige_woonsit = $huidige_woonsit.$value.
                         CRM_Core_DAO::VALUE_SEPARATOR;
@@ -811,7 +813,7 @@ function civicrm_api3_dgwcontact_update($inparms) {
     if (isset($inparms['hoofdhuurder'])) {
         $hoofdhuurder = (int) trim($inparms['hoofdhuurder']);
         if ($hoofdhuurder != 0 and $hoofdhuurder != 1) {
-            return civicrm_create_error("Hoofdhuurder is ongeldig");
+            return civicrm_api3_create_error("Hoofdhuurder is ongeldig");
         }
     }
     /*
@@ -821,7 +823,7 @@ function civicrm_api3_dgwcontact_update($inparms) {
         $andere_corp = (int) trim($inparms['andere_corporatie']);
         $check = getOptionValue("Corporatie", "", $andere_corp);
         if ($check == "error") {
-            return civicrm_create_error("Andere corporatie is ongeldig");
+            return civicrm_api3_create_error("Andere corporatie is ongeldig");
         }
     }
     /*
@@ -833,7 +835,7 @@ function civicrm_api3_dgwcontact_update($inparms) {
             $bruto_jaarinkomen = 0;
         }
         if (!is_numeric($bruto_jaarinkomen)) {
-            return civicrm_create_error("Bruto jaarinkomen heeft ongeldige
+            return civicrm_api3_create_error("Bruto jaarinkomen heeft ongeldige
                 tekens");
         }
     }
@@ -844,7 +846,7 @@ function civicrm_api3_dgwcontact_update($inparms) {
         $huishoudgrootte = (int) trim($inparms['huishoudgrootte']);
         $check = getOptionValue("Huishoudgrootte", "", $huishoudgrootte);
         if ($check == "error") {
-            return civicrm_create_error("Huishoudgrootte is ongeldig");
+            return civicrm_api3_create_error("Huishoudgrootte is ongeldig");
         }
     }
     /*
@@ -859,7 +861,7 @@ function civicrm_api3_dgwcontact_update($inparms) {
             if (!empty($value)) {
                 $check = getOptionValue("Bekend met koopaanbod", "", $value, "");
                 if ($check == "error") {
-                    return civicrm_create_error("Aanbod bekend is ongeldig");
+                    return civicrm_api3_create_error("Aanbod bekend is ongeldig");
                 } else {
                     $aanbod_bekend = $aanbod_bekend.$value.
                         CRM_Core_DAO::VALUE_SEPARATOR;
@@ -877,16 +879,16 @@ function civicrm_api3_dgwcontact_update($inparms) {
     if (isset($inparms['particulier'])) {
         $particulier = (int) trim($inparms['particulier']);
         if ($particulier != 0 and $particulier != 1) {
-            return civicrm_create_error("Particulier is ongeldig");
+            return civicrm_api3_create_error("Particulier is ongeldig");
         }
     }
     /*
      * if woonkeusdatum is entered, format has to be valid
      */
     if (isset($inparms['woonkeusdatum'])) {
-        $valid_date = checkDateFormat($inparms['woonkeusdatum']);
+        $valid_date = CRM_Utils_DgwUtils::checkDateFormat($inparms['woonkeusdatum']);
         if (!$valid_date) {
-            return civicrm_create_error("Onjuiste formaat woonkeusdatum");
+            return civicrm_api3_create_error("Onjuiste formaat woonkeusdatum");
         } else {
             $woonkeusdatum = $inparms['woonkeusdatum'];
         }
@@ -900,7 +902,7 @@ function civicrm_api3_dgwcontact_update($inparms) {
         $civiparms = array("contact_id" => $contact_id);
         $res_del = civicrm_contact_delete($civiparms);
         if (civicrm_error($res_del)) {
-            return civicrm_create_error("Contact kon niet verwijderd worden
+            return civicrm_api3_create_error("Contact kon niet verwijderd worden
                 uit CiviCRM, melding : ".$res_del['error_message']);
         } else {
             $outparms['is_error'] = "0";
@@ -1002,7 +1004,7 @@ function civicrm_api3_dgwcontact_update($inparms) {
                     }
                     $addres = civicrm_contact_create($addparms);
                     if (civicrm_error($addres)) {
-                        return civicrm_create_error("Onverwachte fout - persoon
+                        return civicrm_api3_create_error("Onverwachte fout - persoon
                             kon niet aangemaakt in dgwcontact_update voor
                             organisatie naar persoon - ".$addres['error_message']);
                     } else {
@@ -1094,7 +1096,7 @@ function civicrm_api3_dgwcontact_update($inparms) {
         if (!$orgtopers) {
             $res_contact = civicrm_contact_update($civiparms);
             if (civicrm_error($res_contact)) {
-                return civicrm_create_error("Onverwachte fout, contact $contact_id
+                return civicrm_api3_create_error("Onverwachte fout, contact $contact_id
                     kon niet bijgewerkt worden in CiviCRM, melding : ".
                     $res_contact['error_message']);
             }

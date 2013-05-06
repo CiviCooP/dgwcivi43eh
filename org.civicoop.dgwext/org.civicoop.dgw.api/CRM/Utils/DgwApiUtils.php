@@ -35,7 +35,7 @@ class CRM_Utils_DgwApiUtils {
 			'remove' => 'delete'
 		);*/
 		
-		$return['entity'] = 'Dgwcontact';
+		$return['entity'] = 'DgwContact';
 		$return['action'] = $action;
 		
 		foreach($entities as $key => $value) {
@@ -73,6 +73,16 @@ class CRM_Utils_DgwApiUtils {
 		return $locationType;
 	}
 	
+	public static function getContactTypeByName($name) {
+		$civiparms2 = array('version' => 3, 'name' => $name);
+		$civires2 = civicrm_api('ContactType', 'getsingle', $civiparms2);
+		$locationType = "";
+		if (!civicrm_error($civires2)) {
+			$locationType = $civires2['id'];
+		}
+		return $locationType;
+	}
+	
 	public static function getGroupIdByTitle($title) {
 		$civiparms2 = array('version' => 3, 'title' => $title);
 		$civires2 = civicrm_api('Group', 'getsingle', $civiparms2);
@@ -81,6 +91,28 @@ class CRM_Utils_DgwApiUtils {
 			$id = $civires2['id'];
 		}
 		return $id;
+	}
+	
+	public static function getOptionGroupIdByTitle($title) {
+		$civiparms2 = array('version' => 3, 'name' => $title);
+		$civires2 = civicrm_api('OptionGroup', 'getsingle', $civiparms2);
+		$id = false;
+		if (!civicrm_error($civires2)) {
+			$id = $civires2['id'];
+		}
+		return $id;
+	}
+	
+	public static function getOptionValuesByGroupId($group_id) {
+		$civiparms2 = array('version' => 3, 'option_group_id' => $group_id);
+		$civires2 = civicrm_api('OptionValue', 'get', $civiparms2);
+		$return = array();
+		if (!civicrm_error($civires2)) {
+			foreach($civires2['values'] as $val) {
+				$return[$val['value']] = $val;
+			}
+		}
+		return $return;
 	}
 	
 	/*

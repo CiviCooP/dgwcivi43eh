@@ -378,5 +378,70 @@ class CRM_Utils_DgwUtils {
     	}
     	return true;
     }
+    
+    /*
+     * Function to check BSN with 11-check
+    */
+    public static function validateBsn($bsn) {
+    	$bsn = trim(strip_tags($bsn));
+    	/*
+    	 * if bsn is empty, return false
+    	*/
+    	if (empty($bsn)) {
+    		return false;
+    	}
+    	/*
+    	 * if bsn contains non-numeric digits, return false
+    	*/
+    	if (!is_numeric($bsn)) {
+    		return false;
+    	}
+    	/*
+    	 * if bsn has 8 digits, put '0' in front
+    	*/
+    	if (strlen($bsn) == 8) {
+    		$bsn = "0".$bsn;
+    	}
+    	/*
+    	 * if length bsn is not 9 now, return false
+    	*/
+    	if (strlen($bsn) != 9) {
+    		return false;
+    	}
+    
+    	$digits = array("");
+    	/*
+    	 * put each digit in array
+    	*/
+    	$i = 0;
+    	while ($i < 9) {
+    		$digits[$i] = substr($bsn,$i,1);
+    		$i++;
+    	}
+    	/*
+    	 * compute total for 11 check
+    	*/
+    	$check = 0;
+    	$number1 = $digits[0] * 9;
+    	$number2 = $digits[1] * 8;
+    	$number3 = $digits[2] * 7;
+    	$number4 = $digits[3] * 6;
+    	$number5 = $digits[4] * 5;
+    	$number6 = $digits[5] * 4;
+    	$number7 = $digits[6] * 3;
+    	$number8 = $digits[7] * 2;
+    	$number9 = $digits[8] * -1;
+    	$check = $number1 + $number2 + $number3 + $number4 + $number5 + $number6 +
+    	$number7 + $number8 + $number9;
+    	/*
+    	 * divide check by 11 and use remainder
+    	*/
+    	$remain = $check % 11;
+    	if ($remain == 0) {
+    		return true;
+    	} else {
+    		return false;
+    	}
+    }
 }
 
