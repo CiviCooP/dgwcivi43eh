@@ -443,5 +443,27 @@ class CRM_Utils_DgwUtils {
     		return false;
     	}
     }
+    /**
+     * Static function to retrieve dgw_config value by label
+     * 
+     * @author Erik Hommel (erik.hommel@civicoop.org)
+     * @params $label
+     * @return $value
+     */
+    static function getDgwConfigValue( $label ) {
+        $value = null;
+        if ( empty( $label ) ) {
+            return $value;
+        }
+        $selDgwConfig = 
+"SELECT value FROM dgw_config WHERE label = '$label'";
+        $daoDgwConfig = CRM_Core_DAO::executeQuery( $selDgwConfig );
+        if ( $daoDgwConfig->fetch() ) {
+            if ( isset( $daoDgwConfig->value ) ) {
+                $value = $daoDgwConfig->value;
+            }
+        }
+        return $value;
+    }
 }
 
