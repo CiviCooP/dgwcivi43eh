@@ -58,7 +58,7 @@ function civicrm_api3_dgw_address_update($inparms) {
 	 * if $adr_refno is used, retrieve address from synchronisation First table
 	*/
 	/*
-	 * if $cde_refno is used, retrieve $email_id from synchronisation First table
+	 * if $cde_refno is used, retrieve $address_id from synchronisation First table
 	*/
 	if (!empty($cde_refno)) {
 		$address_id = CRM_Utils_DgwApiUtils::getEntityIdFromSyncTable($cde_refno, 'address');
@@ -295,7 +295,7 @@ function civicrm_api3_dgw_address_update($inparms) {
 		$fields = CRM_Utils_DgwApiUtils::retrieveCustomValuesForContactAndCustomGroupSorted($res_check['contact_id'], $group['id']);
 		$fid = "";
 		foreach($fields as $key => $field) {
-			if ($field['entity_id'] == $phone_id  && $field['entity'] == "email") {
+			if ($field['entity_id'] == $address_id  && $field['entity'] == "address") {
 				$fid = ":".$key;
 				break;
 			}
@@ -665,7 +665,7 @@ function civicrm_api3_dgw_address_create($inparms) {
 }
 
 /*
- * Function to get phones for a contact
+ * Function to get addresss for a contact
 */
 function civicrm_api3_dgw_address_get($inparms) {
 
@@ -719,12 +719,12 @@ function civicrm_api3_dgw_address_get($inparms) {
 	foreach ($civires1['values'] as $result) {
 		/* Get location type name */
 		$locationType = CRM_Utils_DgwApiUtils::getLocationByid($result['location_type_id']);
-		/* Get phone type name */
+		/* Get address type name */
 		$civiparms3 = array('version' => 3, 'id' => $result['location_type_id']);
 		$civires3 = civicrm_api('Country', 'getsingle', $civiparms3);
 		$country = "";
 		if (!civicrm_error($civires3)) {
-			$phoneType = $civires3['label'];
+			$addressType = $civires3['label'];
 		}
 		
 		$data = $result;

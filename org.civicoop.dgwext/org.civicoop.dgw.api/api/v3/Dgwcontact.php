@@ -262,7 +262,7 @@ function civicrm_api3_dgw_contact_create($inparms) {
          */
         if (isset($inparms['gender_id'])) {
             $gender_id = trim($inparms['gender_id']);
-            if (!array_key_exists($inparms['gender_id'], $gender_values)) {
+            if (!array_key_exists($inparms['gender_id'], $gender_values) && gender_id != 4) {
                 return civicrm_api3_create_error("Gender_id is ongeldig");
             }
         } else {
@@ -707,13 +707,16 @@ function civicrm_api3_dgw_contact_update($inparms) {
     
     /*
      * gender_id has to be valid if entered. 
+     * 
+     * In first gender_id  = 4 wordt gebruikt om te geven dat het contact een organisatie is.
+     * Nummer 4 bestaat niet in Civi vandaar dat bij nummer 4 de validatie wel correct is
      */
     $gender_group_id = CRM_Utils_DgwApiUtils::getOptionGroupIdByTitle('gender');
     $gender_values = CRM_Utils_DgwApiUtils::getOptionValuesByGroupId($gender_group_id);
     $default_gender_id = 3;
     if (isset($inparms['gender_id'])) {
     	$gender_id = trim($inparms['gender_id']);
-        if (!array_key_exists($inparms['gender_id'], $gender_values)) {
+        if (!array_key_exists($inparms['gender_id'], $gender_values) && gender_id != 4) {
         	return civicrm_api3_create_error("Gender_id is ongeldig");
         }
     }

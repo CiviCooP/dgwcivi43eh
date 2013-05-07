@@ -336,7 +336,7 @@ class CRM_Utils_DgwREST {
     // AJAX methods.
     $session = CRM_Core_Session::singleton();
     if ($session->get('PHPSESSID')) {
-      $valid_user = TRUE;
+      $valid_user = $session->get('cms_user_id');
     }
 
     // If the user does not have a valid session (most likely to be used by people using
@@ -349,16 +349,16 @@ class CRM_Utils_DgwREST {
       }
       $valid_user = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact', $api_key, 'id', 'api_key');
     }
-
+    
     // If we didn't find a valid user either way, then die.
     if (empty($valid_user)) {
       return self::error("Invalid session or user api_key invalid");
     }
 
-    return self::process($args);
+    return self::process($args, true, $valid_user);
   }
 
-  static function process(&$args, $restInterface = TRUE) {
+  static function process(&$args, $restInterface = TRUE, $userID = 0) {
     $params = &self::buildParamList();
 
     $params['check_permissions'] = TRUE;
@@ -393,10 +393,13 @@ class CRM_Utils_DgwREST {
       $result['deprecated'] = "Please upgrade to API v3";
       return $result;
     }
+    
+    $hasAdminRights = false;
+    $grp_check = civicrm_api('GroupContact', 'getsingle', array('version' => 3, 'group_id' => 1, 'contact_id' => $userID));
+    if (!civicrm_error($grp_check)) {
+    	$hasAdminRights = true;
+    }
 
-    /** 
-     * @Todo Rewrite make it more secure: I hadd to comment this out for the phoneget api
-     */
     if (strtolower(substr($args[1],0,3)) != 'dgw' && $_SERVER['REQUEST_METHOD'] == 'GET' && strtolower (substr( $args[2],0,3)) != 'get' ) {
     // get only valid for non destructive methods
       require_once 'api/v3/utils.php';
@@ -408,6 +411,11 @@ class CRM_Utils_DgwREST {
           'reason' => 'Destructive HTTP GET',
         )
       );
+    }
+    
+    if (strtolower(substr($args[1],0,3)) != 'dgw' && !$hasAdminRight) {
+    	require_once 'api/v3/utils.php';
+    	return civicrm_api3_create_error("SECURITY: You don't have access to this api's.");
     }
 
     // trap all fatal errors
