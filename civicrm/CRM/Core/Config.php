@@ -184,8 +184,7 @@ class CRM_Core_Config extends CRM_Core_Config_Variables {
 
       // first, attempt to get configuration object from cache
       $cache = CRM_Utils_Cache::singleton();
-      self::$_singleton = $cache->get('CRM_Core_Config');
-
+      self::$_singleton = $cache->get('CRM_Core_Config' . CRM_Core_Config::domainID());
       // if not in cache, fire off config construction
       if (!self::$_singleton) {
         self::$_singleton = new CRM_Core_Config;
@@ -199,7 +198,7 @@ class CRM_Core_Config extends CRM_Core_Config_Variables {
           // retrieve and overwrite stuff from the settings file
           self::$_singleton->setCoreVariables();
         }
-        $cache->set('CRM_Core_Config', self::$_singleton);
+        $cache->set('CRM_Core_Config' . CRM_Core_Config::domainID(), self::$_singleton);
       }
       else {
         // we retrieve the object from memcache, so we now initialize the objects
@@ -519,6 +518,7 @@ class CRM_Core_Config extends CRM_Core_Config_Variables {
       }
       elseif ($mailingInfo['outBound_option'] == CRM_Mailing_Config::OUTBOUND_OPTION_SMTP) {
         if ($mailingInfo['smtpServer'] == '' || !$mailingInfo['smtpServer']) {
+          CRM_Core_Error::debug_log_message(ts('There is no valid smtp server setting. Click <a href=\'%1\'>Administer CiviCRM >> Global Settings</a> to set the SMTP Server.', array(1 => CRM_Utils_System::url('civicrm/admin/setting', 'reset=1'))));
           CRM_Core_Error::fatal(ts('There is no valid smtp server setting. Click <a href=\'%1\'>Administer CiviCRM >> Global Settings</a> to set the SMTP Server.', array(1 => CRM_Utils_System::url('civicrm/admin/setting', 'reset=1'))));
         }
 
@@ -550,6 +550,7 @@ class CRM_Core_Config extends CRM_Core_Config_Variables {
         if ($mailingInfo['sendmail_path'] == '' ||
           !$mailingInfo['sendmail_path']
         ) {
+          CRM_Core_Error::debug_log_message(ts('There is no valid sendmail path setting. Click <a href=\'%1\'>Administer CiviCRM >> Global Settings</a> to set the Sendmail Server.', array(1 => CRM_Utils_System::url('civicrm/admin/setting', 'reset=1'))));
           CRM_Core_Error::fatal(ts('There is no valid sendmail path setting. Click <a href=\'%1\'>Administer CiviCRM >> Global Settings</a> to set the Sendmail Server.', array(1 => CRM_Utils_System::url('civicrm/admin/setting', 'reset=1'))));
         }
         $params['sendmail_path'] = $mailingInfo['sendmail_path'];
@@ -564,8 +565,14 @@ class CRM_Core_Config extends CRM_Core_Config_Variables {
       elseif ($mailingInfo['outBound_option'] == CRM_Mailing_Config::OUTBOUND_OPTION_MOCK) {
         self::$_mail = Mail::factory('mock', $params);
       }
-      else {
-        CRM_Core_Session::setStatus(ts('There is no valid SMTP server Setting Or SendMail path setting. Click <a href=\'%1\'>Administer CiviCRM >> Global Settings</a> to set the OutBound Email.', array(1 => CRM_Utils_System::url('civicrm/admin/setting', 'reset=1'))), ts('Check Settings'), 'alert');
+      elseif ($mailingInfo['outBound_option'] == 2) {
+        CRM_Core_Error::debug_log_message(ts('Outbound mail has been disabled. Click <a href=\'%1\'>Administer CiviCRM >> Global Settings</a> to set the OutBound Email.', array(1 => CRM_Utils_System::url('civicrm/admin/setting', 'reset=1'))));
+        CRM_Core_Session::setStatus(ts('Outbound mail has been disabled. Click <a href=\'%1\'>Administer CiviCRM >> Global Settings</a> to set the OutBound Email.', array(1 => CRM_Utils_System::url('civicrm/admin/setting', 'reset=1'))));
+      }
+      else{
+        CRM_Core_Error::debug_log_message(ts('There is no valid SMTP server Setting Or SendMail path setting. Click <a href=\'%1\'>Administer CiviCRM >> Global Settings</a> to set the OutBound Email.', array(1 => CRM_Utils_System::url('civicrm/admin/setting', 'reset=1'))));
+        CRM_Core_Session::setStatus(ts('There is no valid SMTP server Setting Or SendMail path setting. Click <a href=\'%1\'>Administer CiviCRM >> Global Settings</a> to set the OutBound Email.', array(1 => CRM_Utils_System::url('civicrm/admin/setting', 'reset=1'))));
+        CRM_Core_Error::debug_var('mailing_info', $mailingInfo);
       }
     }
     return self::$_mail;
@@ -729,9 +736,12 @@ class CRM_Core_Config extends CRM_Core_Config_Variables {
 SELECT TABLE_NAME as tableName
 FROM   INFORMATION_SCHEMA.TABLES
 WHERE  TABLE_SCHEMA = %1
-AND    ( TABLE_NAME LIKE 'civicrm_import_job_%'
-OR       TABLE_NAME LIKE 'civicrm_export_temp%'
-OR       TABLE_NAME LIKE 'civicrm_task_action_temp%' )
+AND
+  ( TABLE_NAME LIKE 'civicrm_import_job_%'
+  OR       TABLE_NAME LIKE 'civicrm_export_temp%'
+  OR       TABLE_NAME LIKE 'civicrm_task_action_temp%'
+  OR       TABLE_NAME LIKE 'civicrm_report_temp%'
+  )
 ";
 
     $params = array(1 => array($dao->database(), 'String'));

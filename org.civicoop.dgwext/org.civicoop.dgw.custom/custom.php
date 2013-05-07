@@ -201,7 +201,10 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
  *   
  */
 function custom_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
-    
+    if ( $objectName == "Individual" ) {
+        CRM_Core_Error::debug("ref", $objectRef);
+        exit();
+    }
     if ( $objectName == "Address" ) {
         if ( isset( $objectRef['street_address'] ) ) {
             if ( !empty( $objectRef['street_address'] ) ) {

@@ -87,13 +87,8 @@ class CRM_Utils_DgwUtils {
         /*
          * retrieve value from dgw_config with label if no value in params
          */
-        $customLabel = "";
         if ( isset( $params['label'] ) )  {
-            $selConfig = "SELECT value FROM dgw_config WHERE label = '{$params['label']}'";
-            $daoConfig = CRM_Core_DAO::executeQuery( $selConfig );
-            if ( $daoConfig->fetch () ) {
-                $customLabel = $daoConfig->value;
-            }
+            $customLabel = self::getDgwConfigValue( $params['label'] );
         } else {
             if ( isset( $params['value'] ) ) {
                 $customLabel = $params['value'];
@@ -442,6 +437,28 @@ class CRM_Utils_DgwUtils {
     	} else {
     		return false;
     	}
+    }
+    /**
+     * Static function to retrieve dgw_config value by label
+     * 
+     * @author Erik Hommel (erik.hommel@civicoop.org)
+     * @params $label
+     * @return $value
+     */
+    static function getDgwConfigValue( $label ) {
+        $value = null;
+        if ( empty( $label ) ) {
+            return $value;
+        }
+        $selDgwConfig = 
+"SELECT value FROM dgw_config WHERE label = '$label'";
+        $daoDgwConfig = CRM_Core_DAO::executeQuery( $selDgwConfig );
+        if ( $daoDgwConfig->fetch() ) {
+            if ( isset( $daoDgwConfig->value ) ) {
+                $value = $daoDgwConfig->value;
+            }
+        }
+        return $value;
     }
 }
 
