@@ -232,7 +232,7 @@ function civicrm_api3_dgw_email_update($inparms) {
 			$fields = CRM_Utils_DgwApiUtils::retrieveCustomValuesForContactAndCustomGroupSorted($res_check['contact_id'], $group['id']);
 			$fid = "";
 			foreach($fields as $key => $field) {
-				if ($field['entity_id'] == $phone_id  && $field['entity'] == "email") {
+				if ($field['entity_id'] == $email_id  && $field['entity'] == "email") {
 					$fid = ":".$key;
 					break;
 				}
