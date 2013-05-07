@@ -96,16 +96,91 @@ function custom_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
         /*
          * check if sync action is required
          */
-        $syncAction = _checkSyncRequired ( $objectName, $objectId, $objectRef );
+        $syncRequired = _checkSyncRequired ( $objectName, $objectId, $objectRef );
         /*
          * if syncAction is required, process sync
          */
-        if ( $syncAction ) {
-            $syncResult = _processSync ( $objectName, $objectId, $objectRef );
+        if ( $syncRequired ) {
+            switch ( $objectName ) {
+                case "Individual":
+                    $syncResult = _syncIndividual( $objectId, $objectRef );
+                    break;
+                case "Organization":
+                    $syncResult = _syncOrganization( $objectId, $objectRef );
+                    break;
+                case "Address":
+                    $syncResult = _syncAddress( $objectId, $objectRef );
+                    break;
+                case "Email":
+                    $syncResult = _syncEmail( $objectId, $objectRef );
+                    break;
+                case "Phone":
+                    $syncResult = _syncPhone( $objectId, $objectRef );
+                    break;
+            }
         }
             
     }
     return;
-
 }
-
+/**
+ * Function to check if synchronization is required
+ * @author Erik Hommel (erik.hommel@civicoop.org)
+ * @params $objectName, $objectId, $objectRef
+ * @return $syncRequired (boolean)
+ */
+function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
+    $syncRequired = false;
+    $apiParams = array(
+        'version'   => 3,
+        'id'        => $objectId
+    );
+    $resultCheck = civicrm_api( $objectName, 'Getsingle', $apiParams );
+    /*
+     * return false if error in api
+     */
+    if ( $resultCheck['is_error'] == 1 ) {
+        return $syncRequired;
+    }
+    /*
+     * check fields in object against database fields depending on object
+     */
+    switch ( $objectName ) {
+        case "Indivdual":
+            if ( isset( $resultCheck['gender_id'] ) ) {
+                if ( $resultCheck['gender_id'] != $objectRef->gender_id ) {
+                    $syncRequired = true;
+                }
+            }
+            if ( isset( $resultCheck['first_name'] ) ) {
+                if ( $resultCheck['first_name'] != $objectRef->first_name ) {
+                    $syncRequired = true;
+                }
+            }
+            if ( isset( $resultCheck['middle_name'] ) ) {
+                if ( $resultCheck['middle_name'] != $objectRef->middle_name ) {
+                    $syncRequired = true;
+                }
+            }
+            if ( isset( $resultCheck['last_name'] ) ) {
+                if ( $resultCheck['last_name'] != $objectRef->last_name ) {
+                    $syncRequired = true;
+                }
+            }
+            if ( isset( $resultCheck['birth_date'] ) ) {
+                if ( $resultCheck['birth_date'] != $objectRef->birth_date ) {
+                    $syncRequired = true;
+                }
+            }
+            /*
+             * if still no sync required, also check custom field for
+             * burgerlijke staat
+             */
+            break;
+        
+            
+        
+    }
+    
+    
+}
