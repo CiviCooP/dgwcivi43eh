@@ -463,8 +463,8 @@ class CRM_Core_BAO_UFGroup extends CRM_Core_DAO_UFGroup {
       'location_type_id' => isset($field->location_type_id) ? $field->location_type_id : NULL,
       'phone_type_id' => isset($field->phone_type_id) ? $field->phone_type_id : NULL,
       'group_id' => $group->id,
-      'add_to_group_id' => isset($field->add_to_group_id) ? $field->add_to_group_id : NULL,
-      'add_captcha' => isset($field->add_captcha) ? $field->add_captcha : NULL,
+      'add_to_group_id' => isset($group->add_to_group_id) ? $group->add_to_group_id : NULL,
+      'add_captcha' => isset($group->add_captcha) ? $group->add_captcha : NULL,
       'field_type' => $field->field_type,
       'field_id' => $field->id,
       'skipDisplay' => 0,
@@ -2527,15 +2527,15 @@ AND    ( entity_id IS NULL OR entity_id <= 0 )
    * @access public
    */
   static function setRegisterDefaults(&$fields, &$defaults) {
+    $config = CRM_Core_Config::singleton();
     foreach ($fields as $name => $field) {
       if (substr($name, 0, 8) == 'country-') {
-        $config = CRM_Core_Config::singleton();
-        if ($config->defaultContactCountry) {
+        if (!empty($config->defaultContactCountry)) {
           $defaults[$name] = $config->defaultContactCountry;
         }
       }
       elseif (substr($name, 0, 15) == 'state_province-') {
-        if ($config->defaultContactStateProvince) {
+        if (!empty($config->defaultContactStateProvince)) {
           $defaults[$name] = $config->defaultContactStateProvince;
         }
       }

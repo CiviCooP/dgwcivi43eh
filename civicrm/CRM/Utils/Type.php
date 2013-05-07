@@ -199,6 +199,7 @@ class CRM_Utils_Type {
         if (strlen(trim($data)) == 0) {
           return trim($data);
         }
+
         if ((preg_match('/^\d{8}$/', $data) ||
             preg_match('/^\d{14}$/', $data)
           ) &&
