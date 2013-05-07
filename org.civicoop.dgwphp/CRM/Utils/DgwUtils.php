@@ -87,13 +87,8 @@ class CRM_Utils_DgwUtils {
         /*
          * retrieve value from dgw_config with label if no value in params
          */
-        $customLabel = "";
         if ( isset( $params['label'] ) )  {
-            $selConfig = "SELECT value FROM dgw_config WHERE label = '{$params['label']}'";
-            $daoConfig = CRM_Core_DAO::executeQuery( $selConfig );
-            if ( $daoConfig->fetch () ) {
-                $customLabel = $daoConfig->value;
-            }
+            $customLabel = self::getDgwConfigValue( $params['label'] );
         } else {
             if ( isset( $params['value'] ) ) {
                 $customLabel = $params['value'];

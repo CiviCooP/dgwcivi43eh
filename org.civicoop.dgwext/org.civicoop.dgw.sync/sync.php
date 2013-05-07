@@ -146,7 +146,7 @@ function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
      * check fields in object against database fields depending on object
      */
     switch ( $objectName ) {
-        case "Indivdual":
+        case "Individual":
             if ( isset( $resultCheck['gender_id'] ) ) {
                 if ( $resultCheck['gender_id'] != $objectRef->gender_id ) {
                     $syncRequired = true;
@@ -176,6 +176,31 @@ function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
              * if still no sync required, also check custom field for
              * burgerlijke staat
              */
+            if ( !$syncRequired ) {
+                require_once 'CRM/Utils/DgwUtils.php';
+                $customFieldData = CRM_Utils_DgwUtils::getCustomField ( array( 'label' => "burgerlijke staat") );
+                if ( isset( $customFieldData['id'] ) ) {
+                    $apiParams = array(
+                        'version'   =>  3,
+                        'entity_id' =>  $objectId
+                    );
+                    $customValues = civicrm_api('CustomValue', 'Get', $apiParams );
+                    if ( $customValues['is_error'] == 0 ) {
+                        foreach ( $customValues['values'] as $customId => $customValue ) {
+                            if ( $customId == $customFieldData['id'] ) {
+                                /*
+                                 * temp fix
+                                 */
+                                
+                                
+                            }
+                        }
+                        
+                    }
+                    
+                        
+                }
+            }
             break;
         
             
