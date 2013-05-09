@@ -211,14 +211,14 @@ function civicrm_api3_dgw_email_update($inparms) {
 		$huishoudenID = CRM_Utils_DgwApiUtils::is_hoofdhuurder($res_check['contact_id']);
 		if ($huishoudenID != 0) {
 			/*
-			 * update huishouden phone if there is one, if not create
+			 * update huishouden email if there is one, if not create
 			*/
 			unset($params['email_id']);
 			$params['contact_id'] = $huishoudenID;
 			$res_update_hh = civicrm('Email', 'Create', $params);
 		}
 		/*
-		 * retrieve phone_id from result array
+		 * retrieve email_id from result array
 		*/
 		$email_id = $res_update['id'];
 		
@@ -473,7 +473,7 @@ function civicrm_api3_dgw_email_create($inparms) {
 }
 
 /*
- * Function to get phones for a contact
+ * Function to get emails for a contact
 */
 function civicrm_api3_dgw_email_get($inparms) {
 
@@ -486,7 +486,7 @@ function civicrm_api3_dgw_email_get($inparms) {
 	);
 
 	/*
-	 * if contact_id empty and phone_id empty, error
+	 * if contact_id empty and email_id empty, error
 	*
 	* @Todo write a spec function
 	*/
@@ -513,14 +513,14 @@ function civicrm_api3_dgw_email_get($inparms) {
 	}
 
 	/*
-	 * if phone_id is used and contains non-numeric data, error
+	 * if email_id is used and contains non-numeric data, error
 	*/
 	if (!empty($inparms['email_id']) && !is_numeric($inparms['email_id'])) {
 		return civicrm_api3_create_error("email_id bevat ongeldige waarde in
             dgwcontact_emailget.");
 	} else if (!empty($inparms['email_id'])) {
 		$civiparms['email_id'] = $inparms['email_id'];
-		unset($civiparms['contact_id']); //phone id is use to request a specific phonenumber
+		unset($civiparms['contact_id']); //email id is use to request a specific emailnumber
 	}
 
 	/**
