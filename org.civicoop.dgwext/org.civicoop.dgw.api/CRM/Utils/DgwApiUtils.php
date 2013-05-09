@@ -375,4 +375,33 @@ class CRM_Utils_DgwApiUtils {
 		}
 		return $return;
 	}
+        /**
+         * static function to return the id of the civicrm_value_xxx table record
+         * for the custom group. You should pass in the result array of an individual
+         * custom field as retrieved from the CustomValue API.
+         * 
+         * @author Erik Hommel (erik.hommel@civicoop.org)
+         * @params $params array (single element from resul['values'] array from CustomValue API
+         * @return $result holding entity_id, custom_id, record_id and value
+         */
+        static function getCustomValueTableRecordId( $params ) {
+            $results = array( );
+            $ignoredKeys = array( "id", "latest", "name", "entity_id" );
+            if ( empty( $params ) ) {
+                return $results;
+            }
+            if ( !isset( $params['id'] ) || !isset( $params['entity_id'] ) ) {
+                return $results;
+            }
+            foreach ( $params as $key => $value ) {
+                if ( !in_array( $key, $ignoredKeys ) ) {
+                    $result['entity_id'] = $params['entity_id'];
+                    $result['custom_id'] = $params['id'];
+                    $result['record_id'] = $key;
+                    $result['value'] = $value;
+                    $results[] = $result;
+                }
+            }
+            return $results;
+        }
 }
