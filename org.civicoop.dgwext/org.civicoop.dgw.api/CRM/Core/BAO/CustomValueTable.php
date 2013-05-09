@@ -653,8 +653,6 @@ AND    cf.id IN ( $fieldIDList )
       false,
       $onlyActiveFields
     );
-        CRM_Core_Error::debug("values", $values );
-    exit();
 
     if (empty($values)) {
       // note that this behaviour is undesirable from an API point of view - it should return an empty array
