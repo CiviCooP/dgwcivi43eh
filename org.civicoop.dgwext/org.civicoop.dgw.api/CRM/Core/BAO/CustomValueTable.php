@@ -431,16 +431,18 @@ WHERE  cf.custom_group_id = cg.id
       while ($dao->fetch()) {
         foreach ($fields[$tableName] as $fieldID) {
           $fieldName = "custom_{$fieldID}";
-          if ($isMultiple[$tableName]) {
+          //temp fix Erik Hommel (erik.hommel@civicoop.org) for CRM-12576
+          //if ($isMultiple[$tableName]) {
             if ($formatMultiRecordField) {
               $result["{$dao->id}"]["{$fieldID}"] = $dao->$fieldName;
             } else {
               $result["{$fieldID}_{$dao->id}"] = $dao->$fieldName;
             }
-          }
-          else {
-            $result[$fieldID] = $dao->$fieldName;
-          }
+          //temp fix Erik Hommel (erik.hommel@civicoop.org) for CRM-12576
+          //}
+          //else {
+            //$result[$fieldID] = $dao->$fieldName;
+          //}
         }
       }
     }
@@ -651,6 +653,9 @@ AND    cf.id IN ( $fieldIDList )
       false,
       $onlyActiveFields
     );
+        CRM_Core_Error::debug("values", $values );
+    exit();
+
     if (empty($values)) {
       // note that this behaviour is undesirable from an API point of view - it should return an empty array
       // since this is also called by the merger code & not sure the consequences of changing
