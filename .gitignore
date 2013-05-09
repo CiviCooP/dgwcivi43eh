@@ -1,2 +1,10 @@
 org.civicoop.dgwphp/cache
 org.civicoop.dgwext/cache
+org.civicoop.dgwext/org.civicoop.dgw.custom/sql/dgwcustomuninstall.sql~
+org.civicoop.dgwext/.gitignore~
+org.civicoop.dgwext/.gitignore
+civicrm/packages/.gitignore
+civicrm/drupal/.gitignore
+README.txt
+.gitignore
+.gitignore~
