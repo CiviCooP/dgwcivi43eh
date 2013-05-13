@@ -34,18 +34,18 @@ function sync_civicrm_uninstall() {
 
 /**
  * Implementation of hook_civicrm_enable
- * 
+ *
  * @author Erik Hommel (erik.hommel@civicoop.org)
  */
 function sync_civicrm_enable() {
     /*
      * check if extension org.civicoop.dgw.custom enabled. Is required
      */
-    
+
     /*
      * check if required MySQL tables exist. If not, create
      */
-    
+
   return _sync_civix_civicrm_enable();
 }
 
@@ -80,14 +80,14 @@ function sync_civicrm_managed(&$entities) {
 }
 /**
  * Implementation of hook_civicrm_pre
- * 
+ *
  * @author Erik Hommel (erik.hommel@civicoop.org)
- * 
- * - check for changes to individual or organization that requires 
+ *
+ * - check for changes to individual or organization that requires
  *   synchronization work.
- *   
+ *
  */
-function custom_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
+function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
     /*
      * only for some objects
      */
@@ -119,7 +119,7 @@ function custom_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
                     break;
             }
         }
-            
+
     }
     return;
 }
@@ -131,11 +131,16 @@ function custom_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
  */
 function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
     $syncRequired = false;
+
     $apiParams = array(
         'version'   => 3,
         'id'        => $objectId
     );
-    $resultCheck = civicrm_api( $objectName, 'Getsingle', $apiParams );
+    if ( $objectName == "Individual" || $objectName == "Organization" ) {
+        $resultCheck = civicrm_api( 'Contact', 'Getsingle', $apiParams );
+    } else {
+        $resultCheck = civicrm_api( $objectName, 'Getsingle', $apiParams );
+    }
     /*
      * return false if error in api
      */
@@ -148,27 +153,31 @@ function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
     switch ( $objectName ) {
         case "Individual":
             if ( isset( $resultCheck['gender_id'] ) ) {
-                if ( $resultCheck['gender_id'] != $objectRef->gender_id ) {
+                if ( $resultCheck['gender_id'] != $objectRef['gender_id'] ) {
                     $syncRequired = true;
                 }
             }
             if ( isset( $resultCheck['first_name'] ) ) {
-                if ( $resultCheck['first_name'] != $objectRef->first_name ) {
+                if ( $resultCheck['first_name'] != $objectRef['first_name'] ) {
                     $syncRequired = true;
                 }
             }
             if ( isset( $resultCheck['middle_name'] ) ) {
-                if ( $resultCheck['middle_name'] != $objectRef->middle_name ) {
+                if ( $resultCheck['middle_name'] != $objectRef['middle_name'] ) {
                     $syncRequired = true;
                 }
             }
             if ( isset( $resultCheck['last_name'] ) ) {
-                if ( $resultCheck['last_name'] != $objectRef->last_name ) {
+                if ( $resultCheck['last_name'] != $objectRef['last_name'] ) {
                     $syncRequired = true;
                 }
             }
+            /*
+             * reformat birth date because API and object use diffent formats
+             */
             if ( isset( $resultCheck['birth_date'] ) ) {
-                if ( $resultCheck['birth_date'] != $objectRef->birth_date ) {
+                if ( strtotime($resultCheck['birth_date'] ) !=
+                        strtotime($objectRef['birth_date'] ) ) {
                     $syncRequired = true;
                 }
             }
@@ -188,15 +197,16 @@ function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
                     if ( $customValues['is_error'] == 0 ) {
                         foreach ( $customValues['values'] as $customId => $customValue ) {
                             /*
-                             * if id of custom field retrieved from API is the same as 
+                             * if id of custom field retrieved from API is the same as
                              * the id of the custom field for burgerlijke staat
                              */
                             if ( $customFieldData['id'] == $customValue['id'] ) {
                                 require_once 'CRM/Utils/DgwApiUtils.php';
-                                $customElement = CRM_Utils_DgwApiUtils::getCustomValueTableRecordId( $customValue );
+                                $customElement = CRM_Utils_DgwApiUtils::getCustomValueTableElement( $customValue );
                                 if ( !empty( $customElement ) ) {
-                                    $customCompare = "custom_".$customElement['custom_id']."_".$customElement['record_id'];
-                                    if ( $customElement['value'] != $objectRef->$customCompare ) {
+                                    // safe to use array element 0 because it is not a repeating group
+                                    $customCompare = "custom_".$customElement[0]['custom_id']."_".$customElement[0]['record_id'];
+                                    if ( $customElement[0]['value'] != $objectRef[$customCompare] ) {
                                         $syncRequired = true;
                                     }
                                 }
