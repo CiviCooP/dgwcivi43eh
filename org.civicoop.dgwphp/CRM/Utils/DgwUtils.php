@@ -25,7 +25,7 @@ class CRM_Utils_DgwUtils {
      *         if no error, id is passed with ['custom_id']
      */
     static function getCustomFieldId( $params ) {
-        $result = array( );       
+        $result = array( );
         /*
          * error if no title and no label in params
          */
@@ -139,7 +139,7 @@ class CRM_Utils_DgwUtils {
         $result['parsed_street_address'] = $parsedStreetAddressNl;
         return $result;
     }
-    
+
     /*
      * function to check the date format
     */
@@ -244,7 +244,7 @@ class CRM_Utils_DgwUtils {
         }
     	return $valid;
     }
-    
+
     /**
      * Static function to split street_address in components street_name,
      * street_number and street_unit
@@ -306,7 +306,7 @@ class CRM_Utils_DgwUtils {
                         $splitFields['street_name'] .= " ".$part;
                     } else {
                         /*
-                         * if part has numbers first and non-numbers later put number 
+                         * if part has numbers first and non-numbers later put number
                          * into street_number and rest in unit and set foundNumber = true
                          */
                         $length = strlen( $part );
@@ -333,7 +333,7 @@ class CRM_Utils_DgwUtils {
         $result['street_unit'] = $splitFields['street_unit'];
         return $result;
     }
-    
+
     /*
      * Function to check format of postcode (Dutch) 1234AA or 1234 AA
     */
@@ -373,7 +373,7 @@ class CRM_Utils_DgwUtils {
     	}
     	return true;
     }
-    
+
     /*
      * Function to check BSN with 11-check
     */
@@ -403,7 +403,7 @@ class CRM_Utils_DgwUtils {
     	if (strlen($bsn) != 9) {
     		return false;
     	}
-    
+
     	$digits = array("");
     	/*
     	 * put each digit in array
@@ -440,7 +440,7 @@ class CRM_Utils_DgwUtils {
     }
     /**
      * Static function to retrieve dgw_config value by label
-     * 
+     *
      * @author Erik Hommel (erik.hommel@civicoop.org)
      * @params $label
      * @return $value
@@ -450,7 +450,7 @@ class CRM_Utils_DgwUtils {
         if ( empty( $label ) ) {
             return $value;
         }
-        $selDgwConfig = 
+        $selDgwConfig =
 "SELECT value FROM dgw_config WHERE label = '$label'";
         $daoDgwConfig = CRM_Core_DAO::executeQuery( $selDgwConfig );
         if ( $daoDgwConfig->fetch() ) {
@@ -459,6 +459,35 @@ class CRM_Utils_DgwUtils {
             }
         }
         return $value;
+    }
+    /**
+     * function to retrieve custom group table name with custom group title
+     * @author Erik Hommel (erik.hommel@civicoop.org)
+     * @param $label
+     * @return $tableName
+     */
+    static function getCustomGroupTableName( $title ) {
+        $tableName = "";
+        /*
+         * return empty name if title empty
+         */
+        if ( empty( $title ) ) {
+            return $tableName;
+        }
+        $apiParams = array(
+            'version'   =>  3,
+            'title'     =>  $title
+            );
+        $customGroup = civicrm_api( 'CustomGroup', 'Getsingle', $apiParams );
+        if ( isset( $customGroup[ 'is_error'] ) ) {
+            if ( $customGroup['is_error'] == 1) {
+                return $tableName;
+            }
+        }
+        if ( isset( $customGroup['table_name'] ) ) {
+            $tableName = $customGroup['table_name'];
+        }
+        return $tableName;
     }
 }
 

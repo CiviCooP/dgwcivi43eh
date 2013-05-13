@@ -131,164 +131,215 @@ function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
  */
 function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
     $syncRequired = false;
+    /*
+     * sync is only required if contact also exists in NCCW First.
+     * This is checked against the synchronization table
+     */
+    $objectInFirst = _checkObjectInFirst( $objectName, $objectId );
+    if ( $objectInFirst ) {
+        CRM_Core_Error::debug("syncRequired bij aanvang", $syncRequired );
+        CRM_Core_Error::debug( "object", $objectName );
 
-    $apiParams = array(
-        'version'   => 3,
-        'id'        => $objectId
-    );
-    if ( $objectName == "Individual" || $objectName == "Organization" ) {
-        $resultCheck = civicrm_api( 'Contact', 'Getsingle', $apiParams );
-    } else {
-        $resultCheck = civicrm_api( $objectName, 'Getsingle', $apiParams );
-    }
-    /*
-     * return false if error in api
-     */
-    if ( $resultCheck['is_error'] == 1 ) {
-        return $syncRequired;
-    }
-    /*
-     * check fields in object against database fields depending on object
-     */
-    switch ( $objectName ) {
-        case "Individual":
-            if ( isset( $resultCheck['gender_id'] ) ) {
-                if ( $resultCheck['gender_id'] != $objectRef['gender_id'] ) {
-                    $syncRequired = true;
+        $apiParams = array(
+            'version'   => 3,
+            'id'        => $objectId
+        );
+        if ( $objectName == "Individual" || $objectName == "Organization" ) {
+            $resultCheck = civicrm_api( 'Contact', 'Getsingle', $apiParams );
+        } else {
+            $resultCheck = civicrm_api( $objectName, 'Getsingle', $apiParams );
+        }
+        /*
+         * return false if error in api
+         */
+        if ( $resultCheck['is_error'] == 1 ) {
+            return $syncRequired;
+        }
+        /*
+         * check fields in object against database fields depending on object
+         */
+        switch ( $objectName ) {
+            case "Individual":
+                if ( isset( $resultCheck['gender_id'] ) ) {
+                    if ( $resultCheck['gender_id'] != $objectRef['gender_id'] ) {
+                        $syncRequired = true;
+                    }
                 }
-            }
-            if ( isset( $resultCheck['first_name'] ) ) {
-                if ( $resultCheck['first_name'] != $objectRef['first_name'] ) {
-                    $syncRequired = true;
+                if ( isset( $resultCheck['first_name'] ) ) {
+                    if ( $resultCheck['first_name'] != $objectRef['first_name'] ) {
+                        $syncRequired = true;
+                    }
                 }
-            }
-            if ( isset( $resultCheck['middle_name'] ) ) {
-                if ( $resultCheck['middle_name'] != $objectRef['middle_name'] ) {
-                    $syncRequired = true;
+                if ( isset( $resultCheck['middle_name'] ) ) {
+                    if ( $resultCheck['middle_name'] != $objectRef['middle_name'] ) {
+                        $syncRequired = true;
+                    }
                 }
-            }
-            if ( isset( $resultCheck['last_name'] ) ) {
-                if ( $resultCheck['last_name'] != $objectRef['last_name'] ) {
-                    $syncRequired = true;
+                if ( isset( $resultCheck['last_name'] ) ) {
+                    if ( $resultCheck['last_name'] != $objectRef['last_name'] ) {
+                        $syncRequired = true;
+                    }
                 }
-            }
-            /*
-             * reformat birth date because API and object use diffent formats
-             */
-            if ( isset( $resultCheck['birth_date'] ) ) {
-                if ( strtotime($resultCheck['birth_date'] ) !=
-                        strtotime($objectRef['birth_date'] ) ) {
-                    $syncRequired = true;
+                /*
+                 * reformat birth date because API and object use diffent formats
+                 */
+                if ( isset( $resultCheck['birth_date'] ) ) {
+                    if ( strtotime($resultCheck['birth_date'] ) !=
+                            strtotime($objectRef['birth_date'] ) ) {
+                        $syncRequired = true;
+                    }
                 }
-            }
-            /*
-             * if still no sync required, also check custom field for
-             * burgerlijke staat
-             */
-            if ( !$syncRequired ) {
-                require_once 'CRM/Utils/DgwUtils.php';
-                $customFieldData = CRM_Utils_DgwUtils::getCustomField ( array( 'label' => "burgerlijke staat") );
-                if ( isset( $customFieldData['id'] ) ) {
-                    $apiParams = array(
-                        'version'   =>  3,
-                        'entity_id' =>  $objectId
-                    );
-                    $customValues = civicrm_api('CustomValue', 'Get', $apiParams );
-                    if ( $customValues['is_error'] == 0 ) {
-                        foreach ( $customValues['values'] as $customId => $customValue ) {
-                            /*
-                             * if id of custom field retrieved from API is the same as
-                             * the id of the custom field for burgerlijke staat
-                             */
-                            if ( $customFieldData['id'] == $customValue['id'] ) {
-                                require_once 'CRM/Utils/DgwApiUtils.php';
-                                $customElement = CRM_Utils_DgwApiUtils::getCustomValueTableElement( $customValue );
-                                if ( !empty( $customElement ) ) {
-                                    // safe to use array element 0 because it is not a repeating group
-                                    $customCompare = "custom_".$customElement[0]['custom_id']."_".$customElement[0]['record_id'];
-                                    if ( $customElement[0]['value'] != $objectRef[$customCompare] ) {
-                                        $syncRequired = true;
+                /*
+                 * if still no sync required, also check custom field for
+                 * burgerlijke staat
+                 */
+                if ( !$syncRequired ) {
+                    require_once 'CRM/Utils/DgwUtils.php';
+                    $customFieldData = CRM_Utils_DgwUtils::getCustomField ( array( 'label' => "burgerlijke staat") );
+                    if ( isset( $customFieldData['id'] ) ) {
+                        $apiParams = array(
+                            'version'   =>  3,
+                            'entity_id' =>  $objectId
+                        );
+                        $customValues = civicrm_api('CustomValue', 'Get', $apiParams );
+                        if ( $customValues['is_error'] == 0 ) {
+                            foreach ( $customValues['values'] as $customId => $customValue ) {
+                                /*
+                                 * if id of custom field retrieved from API is the same as
+                                 * the id of the custom field for burgerlijke staat
+                                 */
+                                if ( $customFieldData['id'] == $customValue['id'] ) {
+                                    require_once 'CRM/Utils/DgwApiUtils.php';
+                                    $customElement = CRM_Utils_DgwApiUtils::getCustomValueTableElement( $customValue );
+                                    if ( !empty( $customElement ) ) {
+                                        // safe to use array element 0 because it is not a repeating group
+                                        $customCompare = "custom_".$customElement[0]['custom_id']."_".$customElement[0]['record_id'];
+                                        if ( $customElement[0]['value'] != $objectRef[$customCompare] ) {
+                                            $syncRequired = true;
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
-            break;
-        case "Organization":
-            if ( isset( $resultCheck['organization_name'] ) ) {
-                if ( $resultCheck['organization_name'] != $objectRef->organization_name ) {
-                    $syncRequired = true;
+                break;
+            case "Organization":
+                if ( isset( $resultCheck['organization_name'] ) ) {
+                    if ( $resultCheck['organization_name'] != $objectRef['organization_name'] ) {
+                        $syncRequired = true;
+                    }
                 }
-            }
-            break;
-        case "Address":
-            if ( isset( $resultCheck['street_address'] ) ) {
-                if ( $resultCheck['street_address'] != $objectRef->street_address ) {
-                    $syncRequired = true;
+                break;
+            case "Address":
+                if ( isset( $resultCheck['street_address'] ) ) {
+                    if ( $resultCheck['street_address'] != $objectRef->street_address ) {
+                        $syncRequired = true;
+                    }
                 }
-            }
-            if ( isset( $resultCheck['street_name'] ) ) {
-                if ( $resultCheck['street_name'] != $objectRef->street_name ) {
-                    $syncRequired = true;
+                if ( isset( $resultCheck['street_name'] ) ) {
+                    if ( $resultCheck['street_name'] != $objectRef->street_name ) {
+                        $syncRequired = true;
+                    }
                 }
-            }
-            if ( isset( $resultCheck['street_number'] ) ) {
-                if ( $resultCheck['street_number'] != $objectRef->street_number ) {
-                    $syncRequired = true;
+                if ( isset( $resultCheck['street_number'] ) ) {
+                    if ( $resultCheck['street_number'] != $objectRef->street_number ) {
+                        $syncRequired = true;
+                    }
                 }
-            }
-            if ( isset( $resultCheck['street_unit'] ) ) {
-                if ( $resultCheck['street_unit'] != $objectRef->street_unit ) {
-                    $syncRequired = true;
+                if ( isset( $resultCheck['street_unit'] ) ) {
+                    if ( $resultCheck['street_unit'] != $objectRef->street_unit ) {
+                        $syncRequired = true;
+                    }
                 }
-            }
-            if ( isset( $resultCheck['postal_code'] ) ) {
-                if ( $resultCheck['postal_code'] != $objectRef->postal_code ) {
-                    $syncRequired = true;
+                if ( isset( $resultCheck['postal_code'] ) ) {
+                    if ( $resultCheck['postal_code'] != $objectRef->postal_code ) {
+                        $syncRequired = true;
+                    }
                 }
-            }
-            if ( isset( $resultCheck['city'] ) ) {
-                if ( $resultCheck['city'] != $objectRef->city ) {
-                    $syncRequired = true;
+                if ( isset( $resultCheck['city'] ) ) {
+                    if ( $resultCheck['city'] != $objectRef->city ) {
+                        $syncRequired = true;
+                    }
                 }
-            }
-            if ( isset( $resultCheck['country_id'] ) ) {
-                if ( $resultCheck['country_id'] != $objectRef->country_id ) {
-                    $syncRequired = true;
+                if ( isset( $resultCheck['country_id'] ) ) {
+                    if ( $resultCheck['country_id'] != $objectRef->country_id ) {
+                        $syncRequired = true;
+                    }
                 }
-            }
-            break;
-        case "Phone":
-            if ( isset( $resultCheck['location_type_id'] ) ) {
-                if ( $resultCheck['location_type_id'] != $objectRef->location_type_id ) {
-                    $syncRequired = true;
+                break;
+            case "Phone":
+                if ( isset( $resultCheck['location_type_id'] ) ) {
+                    if ( $resultCheck['location_type_id'] != $objectRef->location_type_id ) {
+                        $syncRequired = true;
+                    }
                 }
-            }
-            if ( isset( $resultCheck['phone_type_id'] ) ) {
-                if ( $resultCheck['phone_type_id'] != $objectRef->phone_type_id ) {
-                    $syncRequired = true;
+                if ( isset( $resultCheck['phone_type_id'] ) ) {
+                    if ( $resultCheck['phone_type_id'] != $objectRef->phone_type_id ) {
+                        $syncRequired = true;
+                    }
                 }
-            }
-            if ( isset( $resultCheck['phone'] ) ) {
-                if ( $resultCheck['phone'] != $objectRef->phone ) {
-                    $syncRequired = true;
+                if ( isset( $resultCheck['phone'] ) ) {
+                    if ( $resultCheck['phone'] != $objectRef->phone ) {
+                        $syncRequired = true;
+                    }
                 }
-            }
-            break;
-        case "Email":
-            if ( isset( $resultCheck['location_type_id'] ) ) {
-                if ( $resultCheck['location_type_id'] != $objectRef->location_type_id ) {
-                    $syncRequired = true;
+                break;
+            case "Email":
+                if ( isset( $resultCheck['location_type_id'] ) ) {
+                    if ( $resultCheck['location_type_id'] != $objectRef->location_type_id ) {
+                        $syncRequired = true;
+                    }
                 }
-            }
-            if ( isset( $resultCheck['email'] ) ) {
-                if ( $resultCheck['email'] != $objectRef->email ) {
-                    $syncRequired = true;
+                if ( isset( $resultCheck['email'] ) ) {
+                    if ( $resultCheck['email'] != $objectRef->email ) {
+                        $syncRequired = true;
+                    }
                 }
-            }
-            break;
+                break;
+        }
     }
+    CRM_Core_Error::debug( "syncRequired voor return", $syncRequired );
+    exit();
     return $syncRequired;
+}
+/**
+ * Function to check if object exists in First Noa
+ * @author Erik Hommel (erik.hommel@civicoop.org)
+ * @params $objectName, $objectId
+ * @return $objectInFirst (boolean)
+ */
+function _checkObjectInFirst( $objectName, $objectId ) {
+    $objectInFirst = false;
+    /*
+     * no synchronization required for household
+     */
+    $lowerObject = strtolower( $objectName );
+    if ( $lowerObject == "household" ) {
+        return $objectInFirst;
+    }
+    /*
+     * retrieve record for object from synchronization table
+     */
+    if ( $lowerObject == "individual" || $lowerObject == "organization" ) {
+        $syncObject = "contact";
+    } else {
+        $syncObject = $lowerObject;
+    }
+    require_once "CRM/Utils/DgwUtils.php";
+    $customTableTitle = CRM_Utils_DgwUtils::getDgwConfigValue( 'synchronisatietabel first' );
+    $customTable = CRM_Utils_DgwUtils::getCustomGroupTableName( $customTableTitle );
+    $customField = CRM_Utils_DgwUtils::getCustomField( array('label' => 'sync first entity veld' ) );
+    if ( isset( $customField['column_name'] ) ) {
+        $customEntityColumn = $customField['column_name'];
+        $selSync =
+"SELECT COUNT(*) AS aantal FROM $customTable WHERE entity_id = $objectId and $customEntityColumn = '$syncObject'";
+        $daoSync = CRM_Core_DAO::executeQuery( $selSync );
+        if ( $daoSync->fetch() ) {
+            if ( $daoSync->aantal > 0 ) {
+                $objectInFirst = true;
+            }
+        }
+    }
+    return $objectInFirst;
 }

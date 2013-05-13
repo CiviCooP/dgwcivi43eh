@@ -8,7 +8,7 @@ DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_general_ci;
 
 INSERT INTO `dgw_config` SET label = 'tabel data first', value = 'Aanvullende persoonsgegevens';
-INSERT INTO `dgw_config` SET label = 'persoonsnummer first', value = 'Persoonsnummer First'; 
+INSERT INTO `dgw_config` SET label = 'persoonsnummer first', value = 'Persoonsnummer First';
 INSERT INTO `dgw_config` SET label = 'bsn', value = 'BSN';
 INSERT INTO `dgw_config` SET label = 'burgerlijke staat', value = 'Burgerlijke staat';
 
@@ -38,6 +38,8 @@ INSERT INTO `dgw_config` SET label = 'datum bouwkeuring', value = 'Datum bouwkun
 
 INSERT INTO `dgw_config` SET label = 'default burgerlijke staat', value = 'Onbekend';
 INSERT INTO `dgw_config` SET label = 'groep sync first', value = 'FirstSync';
+INSERT INTO `dgw_config` SET label = 'synchronisatietabel first', value = 'Synchronisatie First Noa';
+INSERT INTO `dgw_config` SET label = 'sync first entity veld', value = 'entity';
 INSERT INTO `dgw_config` SET label = 'relatie hoofdhuurder', value = 'Hoofdhuurder';
 INSERT INTO `dgw_config` SET label = 'relatie medehuurder', value = 'Medehuurder';
 INSERT INTO `dgw_config` SET label = 'default location type', value = 'Thuis';
@@ -60,5 +62,5 @@ INSERT INTO `dgw_config` SET label = 'kov bestandsnaam', value = 'kov_';
 INSERT INTO `dgw_config` SET label = 'kov pad', value = '/home/kov';
 INSERT INTO `dgw_config` SET label = 'kov tabel', value = 'kovimport';
 INSERT INTO `dgw_config` SET label = 'kov header', value = 'kovhdr';
-INSERT INTO `dgw_config` SET label = 'kov foutgroep', value = 'Koopovereenkomst Huishouden Fout'; 
+INSERT INTO `dgw_config` SET label = 'kov foutgroep', value = 'Koopovereenkomst Huishouden Fout';
 
