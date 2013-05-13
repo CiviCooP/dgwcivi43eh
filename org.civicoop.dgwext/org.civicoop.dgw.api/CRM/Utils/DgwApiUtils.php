@@ -17,7 +17,7 @@
 *
 */
 class CRM_Utils_DgwApiUtils {
-	
+
 	public static function parseEntity($action) {
 		$entities = array(
 				'phone' => 'DgwPhone',
@@ -30,14 +30,14 @@ class CRM_Utils_DgwApiUtils {
 				'relationship' => 'DgwRelationship',
 				'firstsync' => 'DgwFirstsync',
 		);
-		
+
 		/*$actions = array(
 			'remove' => 'delete'
 		);*/
-		
+
 		$return['entity'] = 'DgwContact';
 		$return['action'] = $action;
-		
+
 		foreach($entities as $key => $value) {
 			if (strpos($action, $key) === 0) {
 				$return['entity'] = $value;
@@ -49,10 +49,10 @@ class CRM_Utils_DgwApiUtils {
 				$return['action'] = $value;
 			}
 		}*/
-		
+
 		return $return;
 	}
-	
+
 	public static function getLocationByid($id) {
 		$civiparms2 = array('version' => 3, 'id' => $id);
 		$civires2 = civicrm_api('LocationType', 'getsingle', $civiparms2);
@@ -62,7 +62,7 @@ class CRM_Utils_DgwApiUtils {
 		}
 		return $locationType;
 	}
-	
+
 	public static function getLocationIdByName($name) {
 		$civiparms2 = array('version' => 3, 'name' => $name);
 		$civires2 = civicrm_api('LocationType', 'getsingle', $civiparms2);
@@ -72,7 +72,7 @@ class CRM_Utils_DgwApiUtils {
 		}
 		return $locationType;
 	}
-	
+
 	public static function getContactTypeByName($name) {
 		$civiparms2 = array('version' => 3, 'name' => $name);
 		$civires2 = civicrm_api('ContactType', 'getsingle', $civiparms2);
@@ -82,7 +82,7 @@ class CRM_Utils_DgwApiUtils {
 		}
 		return $locationType;
 	}
-	
+
 	public static function getGroupIdByTitle($title) {
 		$civiparms2 = array('version' => 3, 'title' => $title);
 		$civires2 = civicrm_api('Group', 'getsingle', $civiparms2);
@@ -92,7 +92,7 @@ class CRM_Utils_DgwApiUtils {
 		}
 		return $id;
 	}
-	
+
 	public static function getOptionGroupIdByTitle($title) {
 		$civiparms2 = array('version' => 3, 'name' => $title);
 		$civires2 = civicrm_api('OptionGroup', 'getsingle', $civiparms2);
@@ -102,7 +102,7 @@ class CRM_Utils_DgwApiUtils {
 		}
 		return $id;
 	}
-	
+
 	public static function getOptionValuesByGroupId($group_id) {
 		$civiparms2 = array('version' => 3, 'option_group_id' => $group_id);
 		$civires2 = civicrm_api('OptionValue', 'get', $civiparms2);
@@ -114,7 +114,7 @@ class CRM_Utils_DgwApiUtils {
 		}
 		return $return;
 	}
-	
+
 	/*
 	 * function to check if a contact is a hoofdhuurder
 	*/
@@ -141,7 +141,7 @@ class CRM_Utils_DgwApiUtils {
 		}
 		return 0;
 	}
-	
+
 	public static function aantalMedehuurders($huishouden_id) {
 		/*
 		 * only if contact_id is not empty
@@ -164,7 +164,7 @@ class CRM_Utils_DgwApiUtils {
 		}
 		return $res['count'];
 	}
-	
+
 	public static function retrieveRelationshipTypeIdByNameAB($name) {
 		$id = 0;
 		$parms = array(
@@ -177,14 +177,14 @@ class CRM_Utils_DgwApiUtils {
 		}
 		return $id;
 	}
-	
+
 	public static function getEntityIdFromSyncTable($first_key, $entity_type) {
 		$id = 0;
 		$cde_refno_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first');
 		$entity_id_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity_id');
 		$entity_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity');
 		$cde_refno_field_froup = CRM_Utils_DgwApiUtils::retrieveCustomGroupByid($cde_refno_field['custom_group_id']);
-		
+
 		/*
 		 * Onderstaande query is niet om te bouwen naar API calls
 		* Want er moet dan gebruik gemaakt worden van de CustomValues van de api
@@ -200,12 +200,12 @@ class CRM_Utils_DgwApiUtils {
 		}
 		return $id;
 	}
-	
+
 	public static function getHovFromTable($hovnummer, $hovnr_field) {
 		$id = 0;
 		$hovnr_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName($hovnr_field);
 		$hovnr_field_field_froup = CRM_Utils_DgwApiUtils::retrieveCustomGroupByid($hovnr_field['custom_group_id']);
-	
+
 		/*
 		 * Onderstaande query is niet om te bouwen naar API calls
 		* Want er moet dan gebruik gemaakt worden van de CustomValues van de api
@@ -221,7 +221,7 @@ class CRM_Utils_DgwApiUtils {
 		}
 		return $id;
 	}
-	
+
 	public static function retrieveCustomGroupByid($group_id) {
 		$civiparms2 = array('version' => 3, 'id' => $group_id);
 		$civires2 = civicrm_api('CustomGroup', 'getsingle', $civiparms2);
@@ -231,7 +231,7 @@ class CRM_Utils_DgwApiUtils {
 		}
 		return false;
 	}
-	
+
 	public static function retrieveCustomGroupByName($name) {
 		$civiparms2 = array('version' => 3, 'name' => $name);
 		$civires2 = civicrm_api('CustomGroup', 'getsingle', $civiparms2);
@@ -241,7 +241,7 @@ class CRM_Utils_DgwApiUtils {
 		}
 		return false;
 	}
-	
+
 	public static function retrieveCustomFieldByName($name) {
 		$civiparms2 = array('version' => 3, 'name' => $name);
 		$civires2 = civicrm_api('CustomField', 'getsingle', $civiparms2);
@@ -251,7 +251,7 @@ class CRM_Utils_DgwApiUtils {
 		}
 		return false;
 	}
-	
+
 	public static function removeCustomValuesRecord($group_id, $entity_id, $fields) {
 		$custom_group = CRM_Utils_DgwApiUtils::retrieveCustomGroupByid($group_id);
 		$where = "";
@@ -267,7 +267,7 @@ class CRM_Utils_DgwApiUtils {
 			CRM_Core_DAO::executeQuery($qry1);
 		}
 	}
-	
+
 	public static function retrieveCustomValuesForContactAndCustomGroupSorted($contact_id, $group_id) {
 		$customValues = CRM_Utils_DgwApiUtils::retrieveCustomValuesForContactAndCustomGroup($contact_id, $group_id);
 		$fields = array();
@@ -276,13 +276,13 @@ class CRM_Utils_DgwApiUtils {
 				foreach($values as $key => $v) {
 					if ($key != 'entity_id' && $key != 'id' && $key != 'latest' && $key != 'name') {
 						$fields[$key][$values['name']] = $v;
-					} 
+					}
 				}
 			}
 		}
 		return $fields;
 	}
-	
+
 	public static function retrieveCustomValuesForContactAndCustomGroup($contact_id, $group_id) {
 		$data['contact_id'] = $contact_id;
 		$return['is_error'] = '0';
@@ -291,7 +291,7 @@ class CRM_Utils_DgwApiUtils {
 			$return['error_message'] ='Invalid input parameters expected contact_id and contact_type';
 			return $return;
 		}
-	
+
 		$params = array(
 				'version' => 3,
 				'sequential' => 1,
@@ -302,7 +302,7 @@ class CRM_Utils_DgwApiUtils {
 		if (isset($values['is_error']) && $values['is_error'] == '1') {
 			return $values;
 		}
-		
+
 		$i = 0;
 		foreach($values['values'] as $value) {
 			$params = array(
@@ -315,12 +315,12 @@ class CRM_Utils_DgwApiUtils {
 			if (!isset($fields['is_error'])) {
 				$return['values'][$i] = $value;
 				$return['values'][$i]['name'] = $fields['name'];
-				$i++;					
+				$i++;
 			}
 		}
 		return $return;
 	}
-	
+
 	public static function retrievePersoonsNummerFirst($contact_id) {
 		$pers_first = "onbekend";
 		$return = self::retrieveCustomValuesForContact(array('contact_id' => $contact_id));
@@ -329,7 +329,7 @@ class CRM_Utils_DgwApiUtils {
 		}
 		return $pers_first;
 	}
-	
+
 	public static function retrieveCustomValuesForContact($data) {
 		$return['is_error'] = '0';
 		if (!isset($data['contact_id'])) {
@@ -337,7 +337,7 @@ class CRM_Utils_DgwApiUtils {
 			$return['error_message'] ='Invalid input parameters expected contact_id and contact_type';
 			return $return;
 		}
-		
+
 		$params = array(
 				'version' => 3,
 				'sequential' => 1,
@@ -370,7 +370,7 @@ class CRM_Utils_DgwApiUtils {
 						$return['values'][$name]['normalized_value'] = $options['label'];
 					}
 				}
-					
+
 			}
 		}
 		return $return;
@@ -379,12 +379,14 @@ class CRM_Utils_DgwApiUtils {
          * static function to return the id of the civicrm_value_xxx table record
          * for the custom group. You should pass in the result array of an individual
          * custom field as retrieved from the CustomValue API.
-         * 
+         *
          * @author Erik Hommel (erik.hommel@civicoop.org)
          * @params $params array (single element from resul['values'] array from CustomValue API
          * @return $result holding entity_id, custom_id, record_id and value
          */
-        static function getCustomValueTableRecordId( $params ) {
+        static function getCustomValueTableElement( $params ) {
+            CRM_Core_Error::debug("params in functie", $params );
+            CRM_Core_Error::debug("elementen", count($params ));
             $results = array( );
             $ignoredKeys = array( "id", "latest", "name", "entity_id" );
             if ( empty( $params ) ) {
