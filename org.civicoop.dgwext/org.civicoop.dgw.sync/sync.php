@@ -36,10 +36,6 @@ function sync_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function sync_civicrm_enable() {
-    /*
-     * check if required MySQL tables exist. If not, create
-     */
-
   return _sync_civix_civicrm_enable();
 }
 
@@ -362,4 +358,102 @@ function _addContactSyncGroup( $contactId ) {
         }
     }
     return;
+}
+/**
+ * Function to add or update record in synchronization table
+ * @author Erik Hommel (erik.hommel@civicoop.org)
+ * @param $action = operation (create, update or delete)
+ * @param $contactId = id of the contact the sync record
+ * @param $entityId = CiviCRM id of the entity affected
+ * @param $entityName = name of the entity
+ * @return none
+ */
+function _setSyncRecord( $action, $contactId, $entityId, $entityName, $keyFirst = null ) {
+    /*
+     * return without further processing if one of the params is empty
+     */
+    if ( empty( $action ) || empty( $contactId ) || empty( $entityId ) || empty( $entityName ) ) {
+        return;
+    }
+    /*
+     * retrieve custom_id's of the required fields
+     */
+    require_once 'CRM/Utils/DgwUtils.php';
+    $customLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'first sync action veld' );
+    $customId = CRM_Utils_DgwUtils::getCustomFieldId( array( 'label' => $customLabel ) );
+    $actionFldName = "custom_".$customId;
+
+    $customLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'first sync entity veld' );
+    $customId = CRM_Utils_DgwUtils::getCustomFieldId( array( 'label' => $customLabel ) );
+    $entityFldName = "custom_".$customId;
+
+    $customLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'first sync entity_id veld' );
+    $customId = CRM_Utils_DgwUtils::getCustomFieldId( array( 'label' => $customLabel ) );
+    $entityIdFldName = "custom_".$customId;
+
+    $customLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'first sync key_first veld' );
+    $customId = CRM_Utils_DgwUtils::getCustomFieldId( array( 'label' => $customLabel ) );
+    $keyFirstFldName = "custom_".$customId;
+
+    $customLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'first sync change_date veld' );
+    $customId = CRM_Utils_DgwUtils::getCustomFieldId( array( 'label' => $customLabel ) );
+    $changeDateFldName = "custom_".$customId;
+
+    /*
+     * process based on action
+     */
+    $customValueParams = array(
+        'version'   =>  3,
+        'entity_id' =>  $contactId
+    );
+    switch( $action ) {
+        case "create":
+            $customValueParams[$actionFldName] = "ins";
+            $customValueParams[$entityFldName] = $entityName;
+            $customValueParams[$entityIdFldName] = $entityId;
+            $customValueParams[$changeDateFldName] = date('Ymd');
+            $resultSync = civicrm_api( 'CustomValue', 'Create', $customValueParams );
+            break;
+        case "update":
+            /*
+             * retrieve record id of the relevant custom group record
+             */
+            $customRecordId = _retrieveSyncRecordId ( $entityName, $contactId, $entityId, $entityFldName, $entityIdFldName );
+            if ( $customRecordId != 0 ) {
+                $customValueParams[$actionFldName.":".$customRecordId] = "upd";
+                if ( isset( $keyFirst ) ) {
+                    $customValueParams[$keyFirstFldName.":".$customRecordId] = $keyFirst;
+                }
+                $customValueParams[$changeDateFldName.":".$customRecordId] = date('Ymd');
+                $resultSync = civicrm_api( 'CustomValue', 'Create', $customValueParams );
+            }
+            break;
+        case "delete":
+            $customRecordId = _retrieveSyncRecordId ( $entityName, $contactId, $entityId, $entityFldName, $entityIdFldName );
+            if ( $customRecordId != 0 ) {
+                $customValueParams[$actionFldName.":".$customRecordId] = "del";
+                $customValueParams[$changeDateFldName.":".$customRecordId] = date('Ymd');
+                $resultSync = civicrm_api( 'CustomValue', 'Create', $customValueParams );
+            }
+    }
+    return;
+}
+/**
+ * function to retrieve the sync table custom table id. This should really
+ * be possible with the API, but probably no time to fix in the core API
+ */
+function _retrieveSyncRecordId( $entityName, $contactId, $entityId, $entityFldName, $entityIdFldName ) {
+    $recordId = 0;
+    if ( empty( $entityName ) || empty( $contactId ) || empty( $entityId ) ) {
+        return $recordId;
+    }
+    $customTableTitle = CRM_Utils_DgwUtils::getDgwConfigValue( 'synchronisatietabel first' );
+    $customTable = CRM_Utils_DgwUtils::getCustomGroupTableName( $customTableTitle );
+    $selRecord =
+"SELECT id FROM $customTable WHERE entity_id = $contactId AND $entityFldName = '$entityName' AND $entityIdFldName = $entityId";
+    $daoRecord = CRM_Core_DAO::executeQuery( $selRecord );
+    if ( $daoRecord->fetch() ) {
+        $recordId = $daoRecord->id;
+    }
+    return $recordId;
 }
