@@ -406,3 +406,4 @@ class CRM_Utils_DgwApiUtils {
             }
             return $results;
         }
+}
