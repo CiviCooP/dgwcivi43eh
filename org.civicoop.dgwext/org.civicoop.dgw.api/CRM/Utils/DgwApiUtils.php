@@ -376,8 +376,8 @@ class CRM_Utils_DgwApiUtils {
 		return $return;
 	}
         /**
-         * static function to return the id of the civicrm_value_xxx table record
-         * for the custom group. You should pass in the result array of an individual
+         * static function to return a structured set of data about a
+         * custom value. You should pass in the result array of an individual
          * custom field as retrieved from the CustomValue API.
          *
          * @author Erik Hommel (erik.hommel@civicoop.org)
@@ -406,4 +406,3 @@ class CRM_Utils_DgwApiUtils {
             }
             return $results;
         }
-}
