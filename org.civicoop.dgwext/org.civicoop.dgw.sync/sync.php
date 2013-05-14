@@ -34,14 +34,8 @@ function sync_civicrm_uninstall() {
 
 /**
  * Implementation of hook_civicrm_enable
- *
- * @author Erik Hommel (erik.hommel@civicoop.org)
  */
 function sync_civicrm_enable() {
-    /*
-     * check if extension org.civicoop.dgw.custom enabled. Is required
-     */
-
     /*
      * check if required MySQL tables exist. If not, create
      */
@@ -126,7 +120,7 @@ function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
 /**
  * Function to check if synchronization is required
  * @author Erik Hommel (erik.hommel@civicoop.org)
- * @params $objectName, $objectId, $objectRef
+ * @param $objectName, $objectId, $objectRef
  * @return $syncRequired (boolean)
  */
 function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
@@ -306,7 +300,7 @@ function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
 /**
  * Function to check if object exists in First Noa
  * @author Erik Hommel (erik.hommel@civicoop.org)
- * @params $objectName, $objectId
+ * @param $objectName, $objectId
  * @return $objectInFirst (boolean)
  */
 function _checkObjectInFirst( $objectName, $objectId ) {
@@ -342,4 +336,30 @@ function _checkObjectInFirst( $objectName, $objectId ) {
         }
     }
     return $objectInFirst;
+}
+/**
+ * Function to add contact to group for synchronization First Noa
+ * @author Erik Hommel (erik.hommel@civicoop.org)
+ * @param $params with contact_id
+ * @return none
+ */
+function _addContactSyncGroup( $contactId ) {
+    if ( !empty( $contactId ) ) {
+        require_once 'CRM/Utils/DgwUtils.php';
+        $groupTitle = CRM_Utils_DgwUtils::getDgwConfigValue( 'groep sync first' );
+        $groupParams = array(
+            'version'   =>  3,
+            'title'     =>  $groupTitle
+        );
+        $groupData = civicrm_api( 'Group', 'Getsingle', $groupParams );
+        if ( !isset( $groupData['is_error'] ) || $groupData['is_error'] == 0 ) {
+            $addParams = array(
+                'version'       =>  3,
+                'contact_id'    =>  $contactId,
+                'group_id'      =>  $groupData['id']
+            );
+            $addResult = civicrm_api( 'GroupContact', 'Create', $addParams );
+        }
+    }
+    return;
 }
