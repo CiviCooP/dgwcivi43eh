@@ -40,6 +40,10 @@ INSERT INTO `dgw_config` SET label = 'default burgerlijke staat', value = 'Onbek
 INSERT INTO `dgw_config` SET label = 'groep sync first', value = 'FirstSync';
 INSERT INTO `dgw_config` SET label = 'synchronisatietabel first', value = 'Synchronisatie First Noa';
 INSERT INTO `dgw_config` SET label = 'sync first entity veld', value = 'entity';
+INSERT INTO `dgw_config` SET label = 'sync first action veld', value = 'action';
+INSERT INTO `dgw_config` SET label = 'sync first entity_id veld', value = 'entity_id';
+INSERT INTO `dgw_config` SET label = 'sync first key first veld', value = 'key_first';
+INSERT INTO `dgw_config` SET label = 'sync first change date veld', value = 'change_date';
 INSERT INTO `dgw_config` SET label = 'relatie hoofdhuurder', value = 'Hoofdhuurder';
 INSERT INTO `dgw_config` SET label = 'relatie medehuurder', value = 'Medehuurder';
 INSERT INTO `dgw_config` SET label = 'default location type', value = 'Thuis';
