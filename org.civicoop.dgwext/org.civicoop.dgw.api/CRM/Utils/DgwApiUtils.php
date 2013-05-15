@@ -385,8 +385,6 @@ class CRM_Utils_DgwApiUtils {
          * @return $result holding entity_id, custom_id, record_id and value
          */
         static function getCustomValueTableElement( $params ) {
-            CRM_Core_Error::debug("params in functie", $params );
-            CRM_Core_Error::debug("elementen", count($params ));
             $results = array( );
             $ignoredKeys = array( "id", "latest", "name", "entity_id" );
             if ( empty( $params ) ) {
