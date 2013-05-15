@@ -525,7 +525,7 @@ class CRM_Utils_DgwUtils {
      * @param $huisHoudenId contact_id of huishouden
      * @return $medeHuurders array contact_id, start date and end date of medehuurder
      */
-    static function getMedeHuurders( $huisHoudenId ) {
+    static function getMedeHuurders( $huisHoudenId, $active = false ) {
         $medeHuurders = array( );
         if ( empty( $huisHoudenId ) ) {
             return $medeHuurders;
@@ -546,17 +546,28 @@ class CRM_Utils_DgwUtils {
             if ( !isset( $rel['is_error'] ) || $rel['is_error'] == 0 ) {
                 foreach ( $rel['values'] as $relValue ) {
                     $medeHuurder = array( );
-                    if ( isset( $relValue['contact_id_a'] ) ) {
-                        $medeHuurder['medehuurder_id'] = $relValue['contact_id_a'];
+                    $processRel = true;
+                    if ( $active ) {
+                        if ( isset( $relValue['end_date'] ) ) {
+                            $endDate = date('Ymd', strtotime( $relValue['end_date'] ) );
+                            if ( $endDate <= date( 'Ymd' ) ) {
+                                $processRel = false;
+                            }
+                        }
                     }
-                    if ( isset( $relValue['start_date'] ) ) {
-                        $medeHuurder['start_date'] = $relValue['start_date'];
-                    }
-                    if ( isset( $relValue['end_date'] ) ) {
-                        $medeHuurder['end_date'] = $relValue['end_date'];
-                    }
-                    if ( !empty( $medeHuurder ) ) {
-                        $medeHuurders[] = $medeHuurder;
+                    if ( $processRel ) {
+                        if ( isset( $relValue['contact_id_b'] ) ) {
+                            $medeHuurder['medehuurder_id'] = $relValue['contact_id_a'];
+                        }
+                        if ( isset( $relValue['start_date'] ) ) {
+                            $medeHuurder['start_date'] = $relValue['start_date'];
+                        }
+                        if ( isset( $relValue['end_date'] ) ) {
+                            $medeHuurder['end_date'] = $relValue['end_date'];
+                        }
+                        if ( !empty( $medeHuurder ) ) {
+                            $medeHuurders[] = $medeHuurder;
+                        }
                     }
                 }
             }
@@ -567,9 +578,10 @@ class CRM_Utils_DgwUtils {
      * static function to retrieve contactId of huishouden for contact
      * @author Erik Hommel (erik.hommel@civicoop.org)
      * @param $hoofdHuurderId contact_id of hoofdhuurder
+     * @param $active holds true if only actives are required
      * @return $huisHoudens array contact_id, start_date, end_date of huishouden
      */
-    static function getHuishoudens( $hoofdHuurderId ) {
+    static function getHuishoudens( $hoofdHuurderId, $active = false ) {
         $huisHoudens = array( );
         if ( empty( $hoofdHuurderId ) ) {
             return $huisHoudens;
@@ -590,21 +602,197 @@ class CRM_Utils_DgwUtils {
             if ( !isset( $rel['is_error'] ) || $rel['is_error'] == 0 ) {
                 foreach ( $rel['values'] as $relValue ) {
                     $huisHouden = array( );
-                    if ( isset( $relValue['contact_id_b'] ) ) {
-                        $huisHouden['huishouden_id'] = $relValue['contact_id_b'];
+                    $processRel = true;
+                    if ( $active ) {
+                        if ( isset( $relValue['end_date'] ) ) {
+                            $endDate = date('Ymd', strtotime( $relValue['end_date'] ) );
+                            if ( $endDate <= date( 'Ymd' ) ) {
+                                $processRel = false;
+                            }
+                        }
                     }
-                    if ( isset( $relValue['start_date'] ) ) {
-                        $huisHouden['start_date'] = $relValue['start_date'];
-                    }
-                    if ( isset( $relValue['end_date'] ) ) {
-                        $huisHouden['end_date'] = $relValue['end_date'];
-                    }
-                    if ( !empty( $huisHouden ) ) {
-                        $huisHoudens[] = $huisHouden;
+                    if ( $processRel ) {
+                        if ( isset( $relValue['contact_id_b'] ) ) {
+                            $huisHouden['huishouden_id'] = $relValue['contact_id_b'];
+                        }
+                        if ( isset( $relValue['start_date'] ) ) {
+                            $huisHouden['start_date'] = $relValue['start_date'];
+                        }
+                        if ( isset( $relValue['end_date'] ) ) {
+                            $huisHouden['end_date'] = $relValue['end_date'];
+                        }
+                        if ( !empty( $huisHouden ) ) {
+                            $huisHoudens[] = $huisHouden;
+                        }
                     }
                 }
             }
         }
         return $huisHoudens;
+    }
+    /**
+     * static function to remove all addresses for huishoudens and medehuurders
+     * related to the passed in hoofdhuurder
+     * @author Erik Hommel (erik.hommel@civicoop.org)
+     * @param $hoofdHuurderId
+     * @return none
+     */
+    static function removeAddressesHoofdHuurder( $hoofdHuurderId ) {
+        if ( empty( $hoofdHuurderId ) ) {
+            return;
+        }
+        /*
+         * retrieve all active huishoudens for hoofdhuurder and
+         * remove their addresses
+         */
+        $huisHoudens = self::getHuishoudens( $hoofdHuurderId, true );
+        foreach ( $huisHoudens as $huisHouden ) {
+            $getParams = array(
+                'version'       =>  3,
+                'contact_id'    =>  $huisHouden['huishouden_id']
+            );
+            $resultAddresses = civicrm_api( 'Address', 'Get', $getParams );
+            if ( $resultAddresses['is_error'] == 0 ) {
+                foreach( $resultAddresses['values'] as $addressId => $address ) {
+                    $deleteParams = array(
+                        'version'   =>  3,
+                        'id'        =>  $addressId
+                    );
+                    civicrm_api( 'Address', 'Delete', $deleteParams );
+                }
+            }
+            /*
+             * retrieve all active medehuurders for huishouden and
+             * remove their addresses
+             */
+            $medeHuurders = self::getMedeHuurders( $huisHouden['huishouden_id'], true );
+            foreach ( $medeHuurders as $medeHuurder ) {
+                $getParams = array(
+                    'version'       =>  3,
+                    'contact_id'    =>  $medeHuurder['medehuurder_id']
+                );
+                $resultAddresses = civicrm_api( 'Address', 'Get', $getParams );
+                if ( $resultAddresses['is_error'] == 0 ) {
+                    foreach( $resultAddresses['values'] as $addressId => $address ) {
+                        $deleteParams = array(
+                            'version'   =>  3,
+                            'id'        =>  $addressId
+                        );
+                        civicrm_api( 'Address', 'Delete', $deleteParams );
+                    }
+                }
+            }
+        }
+        return;
+    }
+    /**
+     * static function to remove all emails for huishoudens and medehuurders
+     * related to the passed in hoofdhuurder
+     * @author Erik Hommel (erik.hommel@civicoop.org)
+     * @param $hoofdHuurderId
+     * @return none
+     */
+    static function removeEmailsHoofdHuurder( $hoofdHuurderId ) {
+        if ( empty( $hoofdHuurderId ) ) {
+            return;
+        }
+        /*
+         * retrieve all active huishoudens for hoofdhuurder and
+         * remove their email addresses
+         */
+        $huisHoudens = self::getHuishoudens( $hoofdHuurderId, true );
+        foreach ( $huisHoudens as $huisHouden ) {
+            $getParams = array(
+                'version'       =>  3,
+                'contact_id'    =>  $huisHouden['huishouden_id']
+            );
+            $resultEmails = civicrm_api( 'Email', 'Get', $getParams );
+            if ( $resultEmails['is_error'] == 0 ) {
+                foreach( $resultEmails['values'] as $emailId => $email ) {
+                    $deleteParams = array(
+                        'version'   =>  3,
+                        'id'        =>  $emailId
+                    );
+                    civicrm_api( 'Email', 'Delete', $deleteParams );
+                }
+            }
+            /*
+             * retrieve all active medehuurders for huishouden and
+             * remove their email addresses
+             */
+            $medeHuurders = self::getMedeHuurders( $huisHouden['huishouden_id'], true );
+            foreach ( $medeHuurders as $medeHuurder ) {
+                $getParams = array(
+                    'version'       =>  3,
+                    'contact_id'    =>  $medeHuurder['medehuurder_id']
+                );
+                $resultEmails = civicrm_api( 'Email', 'Get', $getParams );
+                if ( $resultEmails['is_error'] == 0 ) {
+                    foreach( $resultEmails['values'] as $emailId => $email ) {
+                        $deleteParams = array(
+                            'version'   =>  3,
+                            'id'        =>  $emailId
+                        );
+                        civicrm_api( 'Email', 'Delete', $deleteParams );
+                    }
+                }
+            }
+        }
+        return;
+    }
+    /**
+     * static function to remove all phones for huishoudens and medehuurders
+     * related to the passed in hoofdhuurder
+     * @author Erik Hommel (erik.hommel@civicoop.org)
+     * @param $hoofdHuurderId
+     * @return none
+     */
+    static function removePhonesHoofdHuurder( $hoofdHuurderId ) {
+        if ( empty( $hoofdHuurderId ) ) {
+            return;
+        }
+        /*
+         * retrieve all active huishoudens for hoofdhuurder and
+         * remove their phones
+         */
+        $huisHoudens = self::getHuishoudens( $hoofdHuurderId, true );
+        foreach ( $huisHoudens as $huisHouden ) {
+            $getParams = array(
+                'version'       =>  3,
+                'contact_id'    =>  $huisHouden['huishouden_id']
+            );
+            $resultPhones = civicrm_api( 'Phone', 'Get', $getParams );
+            if ( $resultPhones['is_error'] == 0 ) {
+                foreach( $resultPhones['values'] as $phoneId => $phone ) {
+                    $deleteParams = array(
+                        'version'   =>  3,
+                        'id'        =>  $phoneId
+                    );
+                    civicrm_api( 'Phone', 'Delete', $deleteParams );
+                }
+            }
+            /*
+             * retrieve all active medehuurders for huishouden and
+             * remove their phones
+             */
+            $medeHuurders = self::getMedeHuurders( $huisHouden['huishouden_id'], true );
+            foreach ( $medeHuurders as $medeHuurder ) {
+                $getParams = array(
+                    'version'       =>  3,
+                    'contact_id'    =>  $medeHuurder['medehuurder_id']
+                );
+                $resultPhones = civicrm_api( 'Phone', 'Get', $getParams );
+                if ( $resultPhones['is_error'] == 0 ) {
+                    foreach( $resultPhones['values'] as $phoneId => $phone ) {
+                        $deleteParams = array(
+                            'version'   =>  3,
+                            'id'        =>  $phoneId
+                        );
+                        civicrm_api( 'Phone', 'Delete', $deleteParams );
+                    }
+                }
+            }
+        }
+        return;
     }
 }
