@@ -36,6 +36,85 @@ function sync_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function sync_civicrm_enable() {
+    /*
+     * check if dgw_config table is present, which is required and shows
+     * that general customization is installed
+     */
+    $dgwConfigExists = CRM_Core_DAO::checkTableExists( 'dgw_config' );
+    if ( $dgwConfigExists ) {
+        require_once 'CRM/Utils/DgwUtils.php';
+        $syncTableTitle = CRM_Utils_DgwUtils::getDgwConfigValue( 'synchronisatietabel first' );
+        $syncTable = CRM_Utils_DgwUtils::getCustomGroupTableName( $syncTableTitle );
+        $syncTableExists = CRM_Core_DAO::checkTableExists( $syncTable );
+        /*
+         * if sync table exists, clean up might be required before
+         * module sync is enabled
+         */
+        if ( $syncTableExists ) {
+            _cleanSyncTable( $syncTable );
+        } else {
+            /*
+             * sync table needs to be created
+             */
+            $customGroupParams = array(
+                'version'   =>  3,
+                'title'     =>  $syncTableTitle,
+                'extends'   =>  'Individual',
+                'is_active' =>  0
+                );
+            $resultCustomGroup = civicrm_api( 'CustomGroup', 'Create', $customGroupParams );
+            if ( $resultCustomGroup['is_error'] == 0 ) {
+                $customGroupId = $resultCustomGroup['id'];
+                /*
+                 * create custom fields
+                 */
+                $customFieldParams = array(
+                    'version'           =>  3,
+                    'is_active'         =>  0,
+                    'custom_group_id'   =>  $customGroupId
+                    );
+                $syncFieldLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'sync first action veld' );
+                $customFieldParams['label'] = $syncFieldLabel;
+                $customFieldParams['data_type'] = 'string';
+                civicrm_api( 'CustomField', 'Create', $customFieldParams );
+
+                $syncFieldLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'sync first entity veld' );
+                $customFieldParams['label'] = $syncFieldLabel;
+                $customFieldParams['data_type'] = 'string';
+                civicrm_api( 'CustomField', 'Create', $customFieldParams );
+
+                $syncFieldLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'sync first entity_id veld' );
+                $customFieldParams['label'] = $syncFieldLabel;
+                $customFieldParams['data_type'] = 'int';
+                civicrm_api( 'CustomField', 'Create', $customFieldParams );
+
+                $syncFieldLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'sync first key_first veld' );
+                $customFieldParams['label'] = $syncFieldLabel;
+                $customFieldParams['data_type'] = 'string';
+                civicrm_api( 'CustomField', 'Create', $customFieldParams );
+
+                $syncFieldLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'sync first change_date veld' );
+                $customFieldParams['label'] = $syncFieldLabel;
+                $customFieldParams['data_type'] = 'date';
+                civicrm_api( 'CustomField', 'Create', $customFieldParams );
+            }
+        }
+    } else {
+        /*
+         * send error message required extension custom and abort enable
+         */
+        CRM_Core_Error::createError("Extension General Customization De Goede Woning
+            is required but not installed, enable Synchronization CiviCRM De Goede
+            Woning aborted.", 9001, 'Fatal' );
+    }
+    /*
+     * check sync table when module enabled
+     * (a few errors in version prior to upgrade)
+     */
+
+
+
+
   return _sync_civix_civicrm_enable();
 }
 
@@ -127,9 +206,6 @@ function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
      */
     $objectInFirst = _checkObjectInFirst( $objectName, $objectId );
     if ( $objectInFirst ) {
-        CRM_Core_Error::debug("syncRequired bij aanvang", $syncRequired );
-        CRM_Core_Error::debug( "object", $objectName );
-
         $apiParams = array(
             'version'   => 3,
             'id'        => $objectId
@@ -289,8 +365,6 @@ function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
                 break;
         }
     }
-    CRM_Core_Error::debug( "syncRequired voor return", $syncRequired );
-    exit();
     return $syncRequired;
 }
 /**
@@ -456,4 +530,73 @@ function _retrieveSyncRecordId( $entityName, $contactId, $entityId, $entityFldNa
         $recordId = $daoRecord->id;
     }
     return $recordId;
+}
+/**
+ * function to clean up synchronization table, only called in enable function
+ */
+function _cleanSyncTable( $syncTable ) {
+    /*
+     * first create backup table clean_sync_save and store data
+     */
+    $saveTableExists = CRM_Core_DAO::checkTableExists( 'clean_sync_save' );
+    if ( $saveTableExists ) {
+        CRM_Core_DAO::executeQuery( "DROP TABLE clean_sync_save" );
+    }
+    CRM_Core_DAO::executeQuery( "CREATE TABLE clean_sync_save LIKE $syncTable ");
+    CRM_Core_DAO::executeQuery( "INSERT INTO clean_sync_save SELECT * FROM $syncTable" );
+    /*
+     * noew create temp table for distinct keys
+     */
+    $tempTableExists = CRM_Core_DAO::checkTableExists( 'check_sync' );
+    if ( $tempTableExists ) {
+        CRM_Core_DAO::executeQuery( "DROP TABLE check_sync" );
+    }
+
+    $toBeRemoveds = array();
+    CRM_Core_DAO::executeQuery( "CREATE TABLE check_sync (id int(11) ,  PRIMARY KEY (id))" );
+
+    $selDistinct =
+"INSERT INTO check_sync (SELECT DISTINCT(entity_id) FROM $syncTable)";
+    CRM_Core_DAO::executeQuery( $selDistinct );
+    $daoDistinct = CRM_Core_DAO::executeQuery( "SELECT * FROM check_sync");
+
+    while ( $daoDistinct->fetch() ) {
+
+        $previousCivi = null;
+        $previousEntity = null;
+        $previousFirst = null;
+        $actionFld = CRM_Utils_DgwUtils::getDgwConfigValue( 'sync first action veld' );
+        $entityFld = CRM_Utils_DgwUtils::getDgwConfigValue( 'sync first entity veld' );
+        $entityIdFld = CRM_Utils_DgwUtils::getDgwConfigValue( 'sync first entity_id veld' );
+        $keyFirstFld = CRM_Utils_DgwUtils::getDgwConfigValue( 'sync first key_first veld' );
+        $changeDateFld = CRM_Utils_DgwUtils::getDgwConfigValue( 'sync first change_date veld' );
+
+        $selSync =
+"SELECT * FROM $syncTable WHERE entity_id = {$daoDistinct->id} ORDER BY entity_49, entity_id_50, key_first_51, change_date_52 DESC";
+        $daoSync = CRM_Core_DAO::executeQuery( $selSync);
+        while ( $daoSync->fetch() ) {
+            if ( $daoSync->$entityFld == $previousEntity && $daoSync->$entityIdFld == $previousCivi
+                    && $daoSync->$keyFirstFld == $previousFirst ) {
+                $toBeRemoved['id'] = $daoSync->id;
+                $toBeRemoved['type'] = $daoSync->$entityFld;
+                $toBeRemoved['entity_id'] = $daoDistinct->id;
+                $toBeRemoveds[] = $toBeRemoved;
+            } else {
+                if ( $daoSync->$entityIdFld != $previousCivi ) {
+                    $previousCivi = $daoSync->$entityIdFld;
+                }
+                if ( $daoSync->$keyFirstFld != $previousFirst ) {
+                    $previousFirst = $daoSync->$keyFirstFld;
+                }
+                if ( $daoSync->$entityFld != $previousEntity ) {
+                    $previousEntity = $daoSync->$entityFld;
+                }
+            }
+        }
+    }
+    foreach ( $toBeRemoveds as $removeData ) {
+        $removeQry = "DELETE FROM $syncTable WHERE id = {$removeData['id']}";
+        CRM_Core_DAO::executeQuery( $removeQry );
+    }
+    return;
 }
