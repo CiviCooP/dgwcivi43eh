@@ -489,5 +489,122 @@ class CRM_Utils_DgwUtils {
         }
         return $tableName;
     }
+    /**
+     * static function to check if contact is hoofdhuurder
+     * @author Erik Hommel (erik.hommel@civicoop.org)
+     * @param $contactId
+     * @return $hoofdHuuder boolean
+     */
+    static function checkContactHoofdhuurder( $contactId ) {
+        $hoofdHuurder = false;
+        if ( empty( $contactId ) ) {
+            return $hoofdHuurder;
+        }
+        $relHoofdHuurder = self::getDgwConfigValue( 'relatie hoofdhuurder' );
+        $relTypeParams = array(
+            'version'   =>  3,
+            'label_a_b' =>  $relHoofdHuurder
+        );
+        $relType = civicrm_api( 'RelationshipType', 'Getsingle' , $relTypeParams );
+        if ( !isset( $relType['is_error'] ) || $relType['is_error'] == 0 ) {
+            $relParams = array(
+                'version'               =>  3,
+                'relationship_type_id'  =>  $relType['id'],
+                'contact_id_a'          =>  $contactId
+            );
+            $rel = civicrm_api( 'Relationship', 'Getsingle', $relParams );
+            if ( !isset( $rel['is_error'] ) || $rel['is_error'] == 0 ) {
+                $hoofdHuurder = true;
+            }
+        }
+        return $hoofdHuurder;
+    }
+    /**
+     * static function to retrieve contactId of medehuurder for contact
+     * @author Erik Hommel (erik.hommel@civicoop.org)
+     * @param $huisHoudenId contact_id of huishouden
+     * @return $medeHuurders array contact_id, start date and end date of medehuurder
+     */
+    static function getMedeHuurders( $huisHoudenId ) {
+        $medeHuurders = array( );
+        if ( empty( $huisHoudenId ) ) {
+            return $medeHuurders;
+        }
+        $relMedeHuurder = self::getDgwConfigValue( 'relatie medehuurder' );
+        $relTypeParams = array(
+            'version'   =>  3,
+            'label_a_b' =>  $relMedeHuurder
+        );
+        $relType = civicrm_api( 'RelationshipType', 'Get' , $relTypeParams );
+        if ( !isset( $relType['is_error'] ) || $relType['is_error'] == 0 ) {
+            $relParams = array(
+                'version'               =>  3,
+                'relationship_type_id'  =>  $relType['id'],
+                'contact_id_b'          =>  $huisHoudenId
+            );
+            $rel = civicrm_api( 'Relationship', 'Get', $relParams );
+            if ( !isset( $rel['is_error'] ) || $rel['is_error'] == 0 ) {
+                foreach ( $rel['values'] as $relValue ) {
+                    $medeHuurder = array( );
+                    if ( isset( $relValue['contact_id_a'] ) ) {
+                        $medeHuurder['medehuurder_id'] = $relValue['contact_id_a'];
+                    }
+                    if ( isset( $relValue['start_date'] ) ) {
+                        $medeHuurder['start_date'] = $relValue['start_date'];
+                    }
+                    if ( isset( $relValue['end_date'] ) ) {
+                        $medeHuurder['end_date'] = $relValue['end_date'];
+                    }
+                    if ( !empty( $medeHuurder ) ) {
+                        $medeHuurders[] = $medeHuurder;
+                    }
+                }
+            }
+        }
+        return $medeHuurders;
+    }
+    /**
+     * static function to retrieve contactId of huishouden for contact
+     * @author Erik Hommel (erik.hommel@civicoop.org)
+     * @param $hoofdHuurderId contact_id of hoofdhuurder
+     * @return $huisHoudens array contact_id, start_date, end_date of huishouden
+     */
+    static function getHuishoudens( $hoofdHuurderId ) {
+        $huisHoudens = array( );
+        if ( empty( $hoofdHuurderId ) ) {
+            return $huisHoudens;
+        }
+        $relHoofdHuurder = self::getDgwConfigValue( 'relatie hoofdhuurder' );
+        $relTypeParams = array(
+            'version'   =>  3,
+            'label_a_b' =>  $relHoofdHuurder
+        );
+        $relType = civicrm_api( 'RelationshipType', 'Getsingle' , $relTypeParams );
+        if ( !isset( $relType['is_error'] ) || $relType['is_error'] == 0 ) {
+            $relParams = array(
+                'version'               =>  3,
+                'relationship_type_id'  =>  $relType['id'],
+                'contact_id_a'          =>  $hoofdHuurderId
+            );
+            $rel = civicrm_api( 'Relationship', 'Get', $relParams );
+            if ( !isset( $rel['is_error'] ) || $rel['is_error'] == 0 ) {
+                foreach ( $rel['values'] as $relValue ) {
+                    $huisHouden = array( );
+                    if ( isset( $relValue['contact_id_b'] ) ) {
+                        $huisHouden['huishouden_id'] = $relValue['contact_id_b'];
+                    }
+                    if ( isset( $relValue['start_date'] ) ) {
+                        $huisHouden['start_date'] = $relValue['start_date'];
+                    }
+                    if ( isset( $relValue['end_date'] ) ) {
+                        $huisHouden['end_date'] = $relValue['end_date'];
+                    }
+                    if ( !empty( $huisHouden ) ) {
+                        $huisHoudens[] = $huisHouden;
+                    }
+                }
+            }
+        }
+        return $huisHoudens;
+    }
 }
-
