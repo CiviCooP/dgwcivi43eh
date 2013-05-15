@@ -69,7 +69,7 @@ function custom_civicrm_managed(&$entities) {
 }
 /**
  * Implementation of hook_civicrm_validateForm
- * 
+ *
  * @author Erik Hommel (erik.hommel@civicoop.org)
  */
 function custom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$errors ) {
@@ -108,7 +108,7 @@ function custom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$er
              */
             if ( !empty( $address['street_number'] ) ) {
                 if ( !ctype_digit( $address['street_number'] ) ) {
-                   $errors['address[' . $addressKey . '][street_number]'] = 'Huisnummer mag alleen cijfers bevatten';                    
+                   $errors['address[' . $addressKey . '][street_number]'] = 'Huisnummer mag alleen cijfers bevatten';
                 }
             }
             /*
@@ -130,7 +130,7 @@ function custom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$er
             if ( !empty( $address['supplemental_address_2'] ) ) {
                 if ( empty( $address['supplemental_address_1'] ) || empty( $address['street_name'] ) ) {
                    $errors['address[' . $addressKey . '][supplemental_address_2]'] = 'Adres toevoeging (2) kan alleen gevuld worden als adres toevoeging (1) en straatnaam ook gevuld zijn';
-                }            
+                }
             }
             /*
              * supplemental_address_1 can only be used if street_name is not empty
@@ -146,13 +146,13 @@ function custom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$er
             if ( !empty( $address['postal_code'] ) ) {
                 if ( empty( $address['street_name'] ) ) {
                     $errors['address['. $addressKey . '][postal_code]'] = 'Postcode kan alleen gevuld worden als straatnaam ook gevuld is';
-                    
+
                 }
             }
             if ( !empty( $address['city'] ) ) {
                 if ( empty( $address['street_name'] ) ) {
                     $errors['address['. $addressKey . '][city]'] = 'Plaats kan alleen gevuld worden als straatnaam ook gevuld is';
-                    
+
                 }
             }
             /*
@@ -162,7 +162,7 @@ function custom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$er
                 if ( $address['country_id'] == 1152  || empty( $address['country_id'] ) ) {
                     if ( strlen( $address['postal_code'] ) != 7 ) {
                         $errors['address['. $addressKey . '][postal_code]'] = 'Postcode moet formaat "1234 AA" hebben (incl. spatie). Het is nu te lang of te kort';
-                        
+
                     }
                     $digitPart = substr( $address['postal_code'], 0, 4);
                     $stringPart = substr( $address['postal_code'], -2 );
@@ -170,7 +170,7 @@ function custom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$er
                         $errors['address['. $addressKey . '][postal_code]'] = 'Postcode moet formaat "1234 AA" hebben (incl. spatie). Eerste 4 tekens zijn nu niet alleen cijfers';
                     }
                     if ( !ctype_alpha( $stringPart ) ) {
-                        $errors['address['. $addressKey . '][postal_code]'] = 'Postcode moet formaat "1234 AA" hebben (incl. spatie). Laatste 2 tekens zijn nu niet alleen letters';                   
+                        $errors['address['. $addressKey . '][postal_code]'] = 'Postcode moet formaat "1234 AA" hebben (incl. spatie). Laatste 2 tekens zijn nu niet alleen letters';
                     }
                     if ( substr( $address['postal_code'] , 4, 1 ) != " " ) {
                         $errors['address['. $addressKey . '][postal_code]'] = 'Postcode moet formaat "1234 AA" hebben (incl. spatie). Er staat nu geen spatie tussen cijfers en letters';
@@ -183,25 +183,32 @@ function custom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$er
 }
 /**
  * Implementation of hook_civicrm_post
- * 
+ *
  * @author Erik Hommel (erik.hommel@civicoop.org)
- * 
+ *
  * - change sequence of address fields for street parsing in Dutch format
- *   
+ *
  */
 function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
 }
 /**
  * Implementation of hook_civicrm_pre
- * 
+ *
  * @author Erik Hommel (erik.hommel@civicoop.org)
  *
- * Object Address: 
+ * Object Address:
  * - change sequence of address fields for street parsing in Dutch format
- *   
+ *
+ * Object Adress, Email or Phone
+ * - if contact is hoofdhuurder, remove complete set of objects from
+ *   huishouden and medehuurder and copy latest set
  */
 function custom_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
+
     if ( $objectName == "Address" ) {
+        /*
+         * change sequence of address fields for street parsing in Dutch format
+         */
         if ( isset( $objectRef['street_address'] ) ) {
             if ( !empty( $objectRef['street_address'] ) ) {
                 require_once 'CRM/Utils/DgwUtils.php';
@@ -210,10 +217,10 @@ function custom_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
                     $objectRef['street_name'] = $splitAddress['street_name'];
                     $objectRef['street_number'] = $splitAddress['street_number'];
                     $objectRef['street_unit'] = $splitAddress['street_unit'];
-                } 
+                }
             }
         }
-        
+
         $parsedStreetAddress = "";
         if ( isset( $objectRef['street_name'] ) && !empty( $objectRef['street_name'] ) ) {
             $parsedStreetAddress = $objectRef['street_name'];
@@ -226,15 +233,45 @@ function custom_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
         }
         $objectRef['street_address'] = $parsedStreetAddress;
     }
-    return;   
+    if ( $objectName == "Address" || $objectName == "Email" || $objectName == "Phone" ) {
+        /*
+         * remove and then copy new set to huishouden and medehuurder if
+         * contact hoofdhuurder
+         */
+        if ( isset( $objectRef['contact_id'] ) ) {
+            $contactId = $objectRef['contact_id'];
+            require_once 'CRM/Utils/DgwUtils.php';
+            $contactHoofdHuurder = CRM_Utils_DgwUtils::checkContactHoofdhuurder( $contactId );
+            if ( $contactHoofdHuurder ) {
+                /*
+                 *
+                 */
+                switch( $objectName ) {
+                    case "Address":
+                        CRM_Utils_DgwUtils::removeAddressesHoofdHuurder( $contactId );
+                        CRM_Utils_DgwUtils::copyAddressesHoofdHuurder( $contactId );
+                        break;
+                    case "Email":
+                        CRM_Utils_DgwUtils::removeEmailsHoofdHuurder( $contactId );
+                        CRM_Utils_DgwUtils::copyEmailsHoofdHuurder( $contactId );
+                        break;
+                    case "Phone":
+                        CRM_Utils_DgwUtils::removePhonesHoofdHuurder( $contactId );
+                        CRM_Utils_DgwUtils::copyPhonesHoofdHuuder( $contactId );
+                        break;
+                }
+            }
+        }
+    }
+    return;
 }
 /**
  * Implementation of hook_civicrm_buildForm
  * @author Erik Hommel (erik.hommel@civicoop.org)
  *
- * Contact_Form_Contact: 
+ * Contact_Form_Contact:
  * - change sequence of address fields to show Dutch format
- *   
+ *
  */
 function custom_civicrm_buildForm( $formName, &$form ) {
     if ( $formName == "CRM_Contact_Form_Contact" ) {
