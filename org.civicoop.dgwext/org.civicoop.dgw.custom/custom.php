@@ -1,4 +1,5 @@
 <?php
+ini_set( 'display_errors', '1');
 require_once 'custom.civix.php';
 
 /**
@@ -35,6 +36,14 @@ function custom_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function custom_civicrm_enable() {
+    /*
+     * change all existing street_number_suffix to street_unit as the
+     * street parsing rules have changed in the upgrade to 4.3.x
+     */
+    $changeAddressQry =
+"UPDATE civicrm_address SET street_unit = street_number_suffix, street_number_suffix = null where street_number suffix IS NOT NULL";
+    CRM_Core_DAO::executeQuery( $changeAddressQry );
+
   return _custom_civix_civicrm_enable();
 }
 
@@ -186,10 +195,35 @@ function custom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$er
  *
  * @author Erik Hommel (erik.hommel@civicoop.org)
  *
- * - change sequence of address fields for street parsing in Dutch format
- *
+ * Object Adress, Email or Phone
+ * - if contact is hoofdhuurder, remove complete set of objects from
+ *   huishouden and medehuurder and copy latest set
  */
 function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
+    if ( $objectName == "Address" || $objectName == "Email" || $objectName == "Phone" ) {
+        /*
+         * remove and then copy new set to huishouden and medehuurder if
+         * contact hoofdhuurder
+         */
+        if ( isset( $objectRef->contact_id ) ) {
+            $contactId = $objectRef->contact_id;
+            require_once 'CRM/Utils/DgwUtils.php';
+            $contactHoofdHuurder = CRM_Utils_DgwUtils::checkContactHoofdhuurder( $contactId );
+            if ( $contactHoofdHuurder ) {
+                switch( $objectName ) {
+                    case "Address":
+                        //CRM_Utils_DgwUtils::processAddressesHoofdHuurder( $contactId );
+                        break;
+                    case "Email":
+                        //CRM_Utils_DgwUtils::processEmailsHoofdHuurder( $contactId );
+                        break;
+                    case "Phone":
+                        CRM_Utils_DgwUtils::processPhonesHoofdHuurder( $contactId );
+                        break;
+                }
+            }
+        }
+    }
 }
 /**
  * Implementation of hook_civicrm_pre
@@ -198,10 +232,6 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
  *
  * Object Address:
  * - change sequence of address fields for street parsing in Dutch format
- *
- * Object Adress, Email or Phone
- * - if contact is hoofdhuurder, remove complete set of objects from
- *   huishouden and medehuurder and copy latest set
  */
 function custom_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
 
@@ -233,37 +263,6 @@ function custom_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
         }
         $objectRef['street_address'] = $parsedStreetAddress;
     }
-    if ( $objectName == "Address" || $objectName == "Email" || $objectName == "Phone" ) {
-        /*
-         * remove and then copy new set to huishouden and medehuurder if
-         * contact hoofdhuurder
-         */
-        if ( isset( $objectRef['contact_id'] ) ) {
-            $contactId = $objectRef['contact_id'];
-            require_once 'CRM/Utils/DgwUtils.php';
-            $contactHoofdHuurder = CRM_Utils_DgwUtils::checkContactHoofdhuurder( $contactId );
-            if ( $contactHoofdHuurder ) {
-                /*
-                 *
-                 */
-                switch( $objectName ) {
-                    case "Address":
-                        CRM_Utils_DgwUtils::removeAddressesHoofdHuurder( $contactId );
-                        CRM_Utils_DgwUtils::copyAddressesHoofdHuurder( $contactId );
-                        break;
-                    case "Email":
-                        CRM_Utils_DgwUtils::removeEmailsHoofdHuurder( $contactId );
-                        CRM_Utils_DgwUtils::copyEmailsHoofdHuurder( $contactId );
-                        break;
-                    case "Phone":
-                        CRM_Utils_DgwUtils::removePhonesHoofdHuurder( $contactId );
-                        CRM_Utils_DgwUtils::copyPhonesHoofdHuuder( $contactId );
-                        break;
-                }
-            }
-        }
-    }
-    return;
 }
 /**
  * Implementation of hook_civicrm_buildForm
