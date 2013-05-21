@@ -631,14 +631,37 @@ class CRM_Utils_DgwUtils {
         return $huisHoudens;
     }
     /**
-     * static function to remove all addresses for huishoudens and medehuurders
-     * related to the passed in hoofdhuurder
+     * static function to remove all eisting addresses for huishoudens related
+     * to the passed in hoofdhuurder, and then copy the new ones. Medehuurder
+     * is not required as they will be updated through the synchronization with First Noa
+     *
+     * Specifically done directly in database to avoid conflicts with post hook.
+     * Should be solved in core at a later stage and then fixed here
+     *
      * @author Erik Hommel (erik.hommel@civicoop.org)
      * @param $hoofdHuurderId
      * @return none
      */
-    static function removeAddressesHoofdHuurder( $hoofdHuurderId ) {
+    static function processAddressesHoofdHuurder( $hoofdHuurderId ) {
         if ( empty( $hoofdHuurderId ) ) {
+            return;
+        }
+        $hoofdAddresses = array( );
+        /*
+         * retrieve all addresses from hoofdhuurder
+         */
+        $addressParams = array(
+            'version'       =>  3,
+            'contact_id'    =>  $hoofdHuurderId
+        );
+        $resultAddresses = civicrm_api( 'Address', 'Get', $addressParams );
+        if ( $resultAddresses['is_error'] == 0 ) {
+            if ( $resultAddresses['count'] == 0 ) {
+                return;
+            } else {
+                $hoofdAddresses = $resultAddresses['values'];
+            }
+        } else {
             return;
         }
         /*
@@ -647,108 +670,125 @@ class CRM_Utils_DgwUtils {
          */
         $huisHoudens = self::getHuishoudens( $hoofdHuurderId, true );
         foreach ( $huisHoudens as $huisHouden ) {
-            $getParams = array(
-                'version'       =>  3,
-                'contact_id'    =>  $huisHouden['huishouden_id']
-            );
-            $resultAddresses = civicrm_api( 'Address', 'Get', $getParams );
-            if ( $resultAddresses['is_error'] == 0 ) {
-                foreach( $resultAddresses['values'] as $addressId => $address ) {
-                    $deleteParams = array(
-                        'version'   =>  3,
-                        'id'        =>  $addressId
-                    );
-                    civicrm_api( 'Address', 'Delete', $deleteParams );
-                }
-            }
+            $delAddressQry =
+"DELETE FROM civicrm_address WHERE contact_id = {$huisHouden['huishouden_id']}";
+            CRM_Core_DAO::executeQuery( $delAddressQry );
             /*
-             * retrieve all active medehuurders for huishouden and
-             * remove their addresses
+             * now add the new situation if there is any data
              */
-            $medeHuurders = self::getMedeHuurders( $huisHouden['huishouden_id'], true );
-            foreach ( $medeHuurders as $medeHuurder ) {
-                $getParams = array(
-                    'version'       =>  3,
-                    'contact_id'    =>  $medeHuurder['medehuurder_id']
-                );
-                $resultAddresses = civicrm_api( 'Address', 'Get', $getParams );
-                if ( $resultAddresses['is_error'] == 0 ) {
-                    foreach( $resultAddresses['values'] as $addressId => $address ) {
-                        $deleteParams = array(
-                            'version'   =>  3,
-                            'id'        =>  $addressId
-                        );
-                        civicrm_api( 'Address', 'Delete', $deleteParams );
-                    }
+            foreach( $hoofdAddresses as $hoofdAddress ) {
+                $insArray = array( );
+                $executeInsert = false;
+                if ( isset( $hoofdAddress['location_type_id'] ) ) {
+                    $insArray[]= " location_type_id = {$hoofdAddress['location_type_id']}";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdAddress['is_primary'] ) ) {
+                    $insArray[] = " is_primary = {$hoofdAddress['is_primary']}";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdAddress['is_billing'] ) ) {
+                    $insArray[] = " is_billing = {$hoofdAddress['is_billing']}";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdAddress['street_address'] ) ) {
+                    $insArray[] = "street_address = '{$hoofdAddress['street_address']}'";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdAddress['street_name'] ) ) {
+                    $insArray[] = "street_name = '{$hoofdAddress['street_name']}'";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdAddress['street_number'] ) ) {
+                    $insArray[] = "street_number = {$hoofdAddress['street_number']}";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdAddress['street_unit'] ) ) {
+                    $insArray[] = "street_unit = '{$hoofdAddress['street_unit']}'";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdAddress['supplemental_address_1'] ) ) {
+                    $insArray[] = "supplemental_address_1 = '{$hoofdAddress['supplemental_address_1']}'";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdAddress['supplemental_address_2'] ) ) {
+                    $insArray[] = "supplemental_address_2 = '{$hoofdAddress['supplemental_address_2']}'";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdAddress['supplemental_address_3'] ) ) {
+                    $insArray[] = "supplemental_address_3 = '{$hoofdAddress['supplemental_address_3']}'";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdAddress['city'] ) ) {
+                    $insArray[] = "city = '{$hoofdAddress['city']}'";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdAddress['postal_code'] ) ) {
+                    $insArray[] = "postal_code = '{$hoofdAddress['postal_code']}'";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdAddress['country_id'] ) ) {
+                    $insArray[] = "country_id = {$hoofdAddress['country_id']}";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdAddress['geo_code_1'] ) ) {
+                    $insArray[] = "geo_code_1 = {$hoofdAddress['geo_code_1']}";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdAddress['geo_code_2'] ) ) {
+                    $insArray[] = "geo_code_2 = {$hoofdAddress['geo_code_2']}";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdAddress['master_id'] ) ) {
+                    $insArray[] = "master_id = {$hoofdAddress['master_id']}";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdAddress['manual_geo_code'] ) ) {
+                    $insArray[] = "manual_geo_code = {$hoofdAddress['manual_geo_code']}";
+                    $executeInsert = true;
+                }
+                if ( $executeInsert ) {
+                    $insAddress =
+"INSERT INTO civicrm_address SET contact_id = {$huisHouden['huishouden_id']}, ";
+                    $insAddress .= implode( ", ", $insArray );
+                    CRM_Core_DAO::executeQuery( $insAddress );
                 }
             }
         }
         return;
     }
     /**
-     * static function to remove all emails for huishoudens and medehuurders
-     * related to the passed in hoofdhuurder
+     * static function to remove all eisting phones for huishoudens related
+     * to the passed in hoofdhuurder, and then copy the new ones. Medehuurder
+     * is not required as they will be updated through the synchronization with First Noa
+     *
+     * Specifically done directly in database to avoid conflicts with post hook.
+     * Should be solved in core at a later stage and then fixed here
+     *
      * @author Erik Hommel (erik.hommel@civicoop.org)
      * @param $hoofdHuurderId
      * @return none
      */
-    static function removeEmailsHoofdHuurder( $hoofdHuurderId ) {
+    static function processPhonesHoofdHuurder( $hoofdHuurderId ) {
         if ( empty( $hoofdHuurderId ) ) {
             return;
         }
+        $hoofdPhones = array( );
         /*
-         * retrieve all active huishoudens for hoofdhuurder and
-         * remove their email addresses
+         * retrieve all phones from hoofdhuurder
          */
-        $huisHoudens = self::getHuishoudens( $hoofdHuurderId, true );
-        foreach ( $huisHoudens as $huisHouden ) {
-            $getParams = array(
-                'version'       =>  3,
-                'contact_id'    =>  $huisHouden['huishouden_id']
-            );
-            $resultEmails = civicrm_api( 'Email', 'Get', $getParams );
-            if ( $resultEmails['is_error'] == 0 ) {
-                foreach( $resultEmails['values'] as $emailId => $email ) {
-                    $deleteParams = array(
-                        'version'   =>  3,
-                        'id'        =>  $emailId
-                    );
-                    civicrm_api( 'Email', 'Delete', $deleteParams );
-                }
+        $phoneParams = array(
+            'version'       =>  3,
+            'contact_id'    =>  $hoofdHuurderId
+        );
+        $resultPhones = civicrm_api( 'Phone', 'Get', $phoneParams );
+        if ( $resultPhones['is_error'] == 0 ) {
+            if ( $resultPhones['count'] == 0 ) {
+                return;
+            } else {
+                $hoofdPhones = $resultPhones['values'];
             }
-            /*
-             * retrieve all active medehuurders for huishouden and
-             * remove their email addresses
-             */
-            $medeHuurders = self::getMedeHuurders( $huisHouden['huishouden_id'], true );
-            foreach ( $medeHuurders as $medeHuurder ) {
-                $getParams = array(
-                    'version'       =>  3,
-                    'contact_id'    =>  $medeHuurder['medehuurder_id']
-                );
-                $resultEmails = civicrm_api( 'Email', 'Get', $getParams );
-                if ( $resultEmails['is_error'] == 0 ) {
-                    foreach( $resultEmails['values'] as $emailId => $email ) {
-                        $deleteParams = array(
-                            'version'   =>  3,
-                            'id'        =>  $emailId
-                        );
-                        civicrm_api( 'Email', 'Delete', $deleteParams );
-                    }
-                }
-            }
-        }
-        return;
-    }
-    /**
-     * static function to remove all phones for huishoudens and medehuurders
-     * related to the passed in hoofdhuurder
-     * @author Erik Hommel (erik.hommel@civicoop.org)
-     * @param $hoofdHuurderId
-     * @return none
-     */
-    static function removePhonesHoofdHuurder( $hoofdHuurderId ) {
-        if ( empty( $hoofdHuurderId ) ) {
+        } else {
             return;
         }
         /*
@@ -757,42 +797,145 @@ class CRM_Utils_DgwUtils {
          */
         $huisHoudens = self::getHuishoudens( $hoofdHuurderId, true );
         foreach ( $huisHoudens as $huisHouden ) {
-            $getParams = array(
-                'version'       =>  3,
-                'contact_id'    =>  $huisHouden['huishouden_id']
-            );
-            $resultPhones = civicrm_api( 'Phone', 'Get', $getParams );
-            if ( $resultPhones['is_error'] == 0 ) {
-                foreach( $resultPhones['values'] as $phoneId => $phone ) {
-                    $deleteParams = array(
-                        'version'   =>  3,
-                        'id'        =>  $phoneId
-                    );
-                    civicrm_api( 'Phone', 'Delete', $deleteParams );
-                }
-            }
+            $delPhonesQry =
+"DELETE FROM civicrm_phone WHERE contact_id = {$huisHouden['huishouden_id']}";
+            CRM_Core_DAO::executeQuery( $delPhonesQry );
             /*
-             * retrieve all active medehuurders for huishouden and
-             * remove their phones
+             * now add the new situation if there is any data
              */
-            $medeHuurders = self::getMedeHuurders( $huisHouden['huishouden_id'], true );
-            foreach ( $medeHuurders as $medeHuurder ) {
-                $getParams = array(
-                    'version'       =>  3,
-                    'contact_id'    =>  $medeHuurder['medehuurder_id']
-                );
-                $resultPhones = civicrm_api( 'Phone', 'Get', $getParams );
-                if ( $resultPhones['is_error'] == 0 ) {
-                    foreach( $resultPhones['values'] as $phoneId => $phone ) {
-                        $deleteParams = array(
-                            'version'   =>  3,
-                            'id'        =>  $phoneId
-                        );
-                        civicrm_api( 'Phone', 'Delete', $deleteParams );
-                    }
+            foreach( $hoofdPhones as $hoofdPhone ) {
+                $insArray = array( );
+                $executeInsert = false;
+                if ( isset( $hoofdPhone['location_type_id'] ) ) {
+                    $insArray[]= " location_type_id = {$hoofdPhone['location_type_id']}";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdPhone['is_primary'] ) ) {
+                    $insArray[] = " is_primary = {$hoofdPhone['is_primary']}";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdPhone['is_billing'] ) ) {
+                    $insArray[] = " is_billing = {$hoofdPhone['is_billing']}";
+                   $executeInsert = true;
+                }
+                if ( isset( $hoofdPhone['phone_type_id'] ) ) {
+                    $insArray[] = "phone_type_id = {$hoofdPhone['phone_type_id']}";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdPhone['phone'] ) ) {
+                    $insArray[] = "phone = '{$hoofdPhone['phone']}'";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdPhone['phone_ext'] ) ) {
+                    $insArray[] = "phone_ext = '{$hoofdPhone['phone_ext']}'";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdPhone['phone_numeric'] ) ) {
+                    $insArray[] = "phone_numeric = '{$hoofdPhone['phone_numeric']}'";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdPhone['mobile_provider_id'] ) ) {
+                    $insArray[] = "mobile_provider_id = {$hoofdPhone['mobile_provider_id']}";
+                    $executeInsert = true;
+                }
+                if ( $executeInsert ) {
+                    $insPhone =
+"INSERT INTO civicrm_phone SET contact_id = {$huisHouden['huishouden_id']}, ";
+                    $insPhone .= implode( ", ", $insArray );
+                    CRM_Core_DAO::executeQuery( $insPhone );
                 }
             }
         }
         return;
     }
-}
+   /**
+     * static function to remove all eisting emailaddresses for huishoudens related
+     * to the passed in hoofdhuurder, and then copy the new ones. Medehuurder
+     * is not required as they will be updated through the synchronization with First Noa
+     *
+     * Specifically done directly in database to avoid conflicts with post hook.
+     * Should be solved in core at a later stage and then fixed here
+     *
+     * @author Erik Hommel (erik.hommel@civicoop.org)
+     * @param $hoofdHuurderId
+     * @return none
+     */
+    static function processEmailsHoofdHuurder( $hoofdHuurderId ) {
+        if ( empty( $hoofdHuurderId ) ) {
+            return;
+        }
+        $hoofdEmails = array( );
+        /*
+         * retrieve all emailaddresses from hoofdhuurder
+         */
+        $emailParams = array(
+            'version'       =>  3,
+            'contact_id'    =>  $hoofdHuurderId
+        );
+        $resultPhones = civicrm_api( 'Phone', 'Get', $emailParams );
+        if ( $resultPhones['is_error'] == 0 ) {
+            if ( $resultPhones['count'] == 0 ) {
+                return;
+            } else {
+                $hoofdPhones = $resultPhones['values'];
+            }
+        } else {
+            return;
+        }
+        /*
+         * retrieve all active huishoudens for hoofdhuurder and
+         * remove their phones
+         */
+        $huisHoudens = self::getHuishoudens( $hoofdHuurderId, true );
+        foreach ( $huisHoudens as $huisHouden ) {
+            $delPhonesQry =
+"DELETE FROM civicrm_phone WHERE contact_id = {$huisHouden['huishouden_id']}";
+            CRM_Core_DAO::executeQuery( $delPhoneQry );
+            /*
+             * now add the new situation if there is any data
+             */
+            foreach( $hoofdPhones as $hoofdPhone ) {
+                $insArray = array( );
+                $executeInsert = false;
+                if ( isset( $hoofdPhone['location_type_id'] ) ) {
+                    $insArray[]= " location_type_id = {$hoofdPhone['location_type_id']}";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdPhone['is_primary'] ) ) {
+                    $insArray[] = " is_primary = {$hoofdPhone['is_primary']}";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdPhone['is_billing'] ) ) {
+                    $insArray[] = " is_billing = {$hoofdPhone['is_billing']}";
+                   $executeInsert = true;
+                }
+                if ( isset( $hoofdPhone['phone_type_id'] ) ) {
+                    $insArray[] = "phone_type_id = {$hoofdPhone['phone_type_id']}";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdPhone['phone'] ) ) {
+                    $insArray[] = "phone = '{$hoofdPhone['phone']}'";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdPhone['phone_ext'] ) ) {
+                    $insArray[] = "phone_ext = '{$hoofdPhone['phone_ext']}'";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdPhone['phone_numeric'] ) ) {
+                    $insArray[] = "phone_numeric = '{$hoofdPhone['phone_numeric']}'";
+                    $executeInsert = true;
+                }
+                if ( isset( $hoofdPhone['mobile_provider_id'] ) ) {
+                    $insArray[] = "mobile_provider_id = {$hoofdPhone['mobile_provider_id']}";
+                    $executeInsert = true;
+                }
+                if ( $executeInsert ) {
+                    $insPhone =
+"INSERT INTO civicrm_phone SET contact_id = {$huisHouden['huishouden_id']}, ";
+                    $insPhone .= implode( ", ", $insArray );
+                    CRM_Core_DAO::executeQuery( $insPhone );
+                }
+            }
+        }
+        return;
+    }}
