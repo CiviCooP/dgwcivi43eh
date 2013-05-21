@@ -203,24 +203,51 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
     if ( $objectName == "Address" || $objectName == "Email" || $objectName == "Phone" ) {
         /*
          * remove and then copy new set to huishouden and medehuurder if
-         * contact hoofdhuurder
+         * contact hoofdhuurder for create and edit
          */
-        if ( isset( $objectRef->contact_id ) ) {
-            $contactId = $objectRef->contact_id;
-            require_once 'CRM/Utils/DgwUtils.php';
-            $contactHoofdHuurder = CRM_Utils_DgwUtils::checkContactHoofdhuurder( $contactId );
-            if ( $contactHoofdHuurder ) {
-                switch( $objectName ) {
-                    case "Address":
-                        //CRM_Utils_DgwUtils::processAddressesHoofdHuurder( $contactId );
-                        break;
-                    case "Email":
-                        //CRM_Utils_DgwUtils::processEmailsHoofdHuurder( $contactId );
-                        break;
-                    case "Phone":
-                        CRM_Utils_DgwUtils::processPhonesHoofdHuurder( $contactId );
-                        break;
+        if ( $op == "delete" ) {
+            if ( $objectName == "Phone" ) {
+                if ( defined( 'DELCONTACTID' ) ) {
+                    $delContactId = DELCONTACTID;
                 }
+            }
+        }
+        if ( $op == "create" || $op == "edit" ) {
+            $contactId = 0;
+            /*
+             * check if objectRef is array or object
+             */
+            if ( is_object( $objectRef ) ) {
+                if ( isset( $objectRef->contact_id ) ) {
+                    $contactId = $objectRef->contact_id;
+                }
+            }
+            if ( is_array( $objectRef ) ) {
+                if ( isset( $objectRef['contact_id'] ) ) {
+                    $contactId = $objectRef['contact_id'];
+                }
+            }
+        }
+        if ( $op == "delete" ) {
+            if ( defined( 'DELCONTACTID' ) ) {
+                $contactId = DELCONTACTID;
+            } else {
+                $contactId = 0;
+            }
+        }
+        require_once 'CRM/Utils/DgwUtils.php';
+        $contactHoofdHuurder = CRM_Utils_DgwUtils::checkContactHoofdhuurder( $contactId );
+        if ( $contactHoofdHuurder ) {
+            switch( $objectName ) {
+                case "Address":
+                    CRM_Utils_DgwUtils::processAddressesHoofdHuurder( $contactId );
+                    break;
+                case "Email":
+                    CRM_Utils_DgwUtils::processEmailsHoofdHuurder( $contactId );
+                    break;
+                case "Phone":
+                    CRM_Utils_DgwUtils::processPhonesHoofdHuurder( $contactId );
+                    break;
             }
         }
     }
@@ -262,6 +289,22 @@ function custom_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
             $parsedStreetAddress .= " ".$objectRef['street_unit'];
         }
         $objectRef['street_address'] = $parsedStreetAddress;
+    }
+    if ( $op == "delete" ) {
+        if ( $objectName == "Phone" || $objectName == "Email" || $objectName == "Address" ) {
+            /*
+             * retrieve contact_id from record
+             */
+            if ( isset( $objectId ) ) {
+                $objectTable = "civicrm_".strtolower( $objectName );
+                $selObject =
+"SELECT contact_id FROM $objectTable WHERE id = $objectId ";
+                $daoObject = CRM_Core_DAO::executeQuery( $selObject );
+                if ( $daoObject->fetch () ) {
+                    define("DELCONTACTID", $daoObject->contact_id);
+                }
+            }
+        }
     }
 }
 /**
