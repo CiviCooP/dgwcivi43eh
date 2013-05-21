@@ -37,8 +37,42 @@ function sync_civicrm_uninstall() {
  */
 function sync_civicrm_enable() {
     /*
-     * check if dgw_config table is present, which is required and shows
-     * that general customization is installed
+     * Check if required extensions org.civicoop.dgw.custom and
+     * org.civicoop.dgw.api are installed and enabled
+     */
+    $reqExtApi = false;
+    $reqExtCustom = false;
+    $daoExtension = CRM_Core_DAO::executeQuery( "SELECT * FROM civicrm_extension");
+    while ( $daoExtension->fetch() ) {
+        if ( isset( $daoExtension->full_name ) ) {
+            if ( $daoExtension->full_name == "org.civioop.dgw.custom" ) {
+                if ( isset( $daoExtension->is_active ) ) {
+                    if ( $daoExtension->is_active == 1 ) {
+                        $reqExtCustom = true;
+                    }
+                }
+            }
+            if ( $daoExtension->full_name == "org.civioop.dgw.api" ) {
+                if ( isset( $daoExtension->is_active ) ) {
+                    if ( $daoExtension->is_active == 1 ) {
+                        $reqExtApi = true;
+                    }
+                }
+            }
+        }
+    }
+    if ( !$reqExtApi ) {
+        CRM_Core_Session::setStatus("Can not enable extension org.civicoop.dgw.sync
+            because required extension org.civicoop.dgw.api is not enabled", 'Extension not enabled', 'alert' );
+        return;
+    }
+    if ( !$reqExtCustom ) {
+        CRM_Core_Session::setStatus("Can not enable extension org.civicoop.dgw.sync
+            because required extension org.civicoop.dgw.custom is not enabled", 'Extension not enabled', 'alert' );
+        return;
+    }
+    /*
+     * check if dgw_config table is present, which is required
      */
     $dgwConfigExists = CRM_Core_DAO::checkTableExists( 'dgw_config' );
     if ( $dgwConfigExists ) {
@@ -101,20 +135,12 @@ function sync_civicrm_enable() {
         }
     } else {
         /*
-         * send error message required extension custom and abort enable
+         * send status message required table and abort enable
          */
-        CRM_Core_Error::createError("Extension General Customization De Goede Woning
-            is required but not installed, enable Synchronization CiviCRM De Goede
-            Woning aborted.", 9001, 'Fatal' );
+        CRM_Core_Session::setStatus("Can not enable extension org.civicoop.dgw.sync
+            because dgw_config table does not exit", 'Extension not enabled', 'alert' );
+        return;
     }
-    /*
-     * check sync table when module enabled
-     * (a few errors in version prior to upgrade)
-     */
-
-
-
-
   return _sync_civix_civicrm_enable();
 }
 
