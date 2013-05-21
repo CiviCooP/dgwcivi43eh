@@ -157,7 +157,7 @@ function civicrm_api3_dgw_address_update($inparms) {
 		}
 		$params['country_id'] = $country_id;
 	}
-	 
+
 	/*
 	 * if street_number passed and not numeric, error
 	*/
@@ -169,7 +169,7 @@ function civicrm_api3_dgw_address_update($inparms) {
 			$params['street_number'] = $street_number;
 		}
 	}
-	
+
 	$thuisID = CRM_Utils_DgwApiUtils::getLocationIdByName("Thuis");
 	$oudID =  CRM_Utils_DgwApiUtils::getLocationIdByName("Oud");
 	if ($thuisID == "" || $oudID == "") {
@@ -255,7 +255,13 @@ function civicrm_api3_dgw_address_update($inparms) {
 	}
 	if (isset($end_date) && !empty($end_date)) {
 		$params['end_date'] = $end_date;
-	} 
+	}
+
+        if ( isset( $inparms['hook_context'] ) ) {
+            $params['hook_context'] = $inparms['hook_context'];
+        } else {
+            $params['hook_context'] = "dgwapi.no_sync";
+        }
 	$res_update = civicrm_api('Address', 'Create', $params);
 	if (civicrm_error($res_update)) {
 		return civicrm_api3_create_error('Onbekende fout: '.$res_update['error_msg']);
@@ -279,11 +285,11 @@ function civicrm_api3_dgw_address_update($inparms) {
 				$hh_check = reset($hh_check['values']);
 				$params['address_id'] = $hh_check['address_id'];
 			} else {
-				//insert address 
+				//insert address
 				unset($params['address_id']);
 			}
 		}
-		civicrm_api('Address', 'create', $params);	
+		civicrm_api('Address', 'create', $params);
 	}
 	/*
 	* set new adr_refno in synctable if passed
@@ -300,13 +306,13 @@ function civicrm_api3_dgw_address_update($inparms) {
 				break;
 			}
 		}
-			
+
 		$civiparms2 = array (
 				'version' => 3,
 				'entity_id' => $res_check['contact_id'],
 				'custom_'.$key_first_field['id'].$fid => $inparms['cde_refno'],
 		);
-			
+
 		$civicres2 = civicrm_api('CustomValue', 'Create', $civiparms2);
 	}
 	/*
@@ -363,7 +369,16 @@ function civicrm_api3_dgw_address_delete($inparms) {
 	/*
 	 * all validation passed, delete address from table
 	*/
-	$res = civicrm_api('Address', 'delete', array('version' => 3, 'id' => $address_id));
+        $address = array(
+            'version'   =>  3,
+            'id'        =>  $address_id
+            );
+        if ( isset( $inparms['hook_context'] ) ) {
+            $address['hook_context'] = $inparms['hook_context'];
+        } else {
+            $address['hook_context'] = "dgwapi.no_sync";
+        }
+	$res = civicrm_api( 'Address', 'delete', $address );
 	$outparms['is_error'] = "0";
 	return $outparms;
 }
@@ -530,7 +545,7 @@ function civicrm_api3_dgw_address_create($inparms) {
 	}
 	/*
 	 * all validation passed
-	*/
+	 */
 	$thuisID = CRM_Utils_DgwApiUtils::getLocationIdByName("Thuis");
 	$oudID =  CRM_Utils_DgwApiUtils::getLocationIdByName("Oud");
 	if ($thuisID == "" || $oudID == "") {
@@ -551,8 +566,8 @@ function civicrm_api3_dgw_address_create($inparms) {
 			$is_primary = 1;
 		}
 	}
-			
-			
+
+
 	/*
 	 *  Add address to contact with standard civicrm function civicrm_location_add
 	*/
@@ -608,6 +623,11 @@ function civicrm_api3_dgw_address_create($inparms) {
 	 		}
 	 	}
 	 }
+         if ( isset( $inparms['hook_context'] ) ) {
+             $address['hook_context'] = $inparms['hook_context'];
+         } else {
+             $address['hook_context'] = "dgwapi.no_sync";
+         }
 
 	 $res_adr = civicrm_api('Address', 'create', $address);
 	 if (civicrm_error($res_adr)) {
@@ -617,7 +637,7 @@ function civicrm_api3_dgw_address_create($inparms) {
 	 	 * retrieve address_id from result array
 	 	*/
 	 	$address_id = $res_adr['id'];
-	 	 
+
 	 	/*
 	 	 * for synchronization with First Noa, add record to table for
 	 	* synchronization if adr_refno passed as parameter
@@ -676,7 +696,7 @@ function civicrm_api3_dgw_address_get($inparms) {
 	$civiparms = array (
 			'version' => 3,
 	);
-	
+
 	/*
 	 * if contact_id empty and address_id empty, error
 	*/
@@ -684,12 +704,12 @@ function civicrm_api3_dgw_address_get($inparms) {
 		return civicrm_api3_create_error("Geen contact_id of address_id doorgegeven
             in dgwcontact_addressget.");
 	}
-	
+
 	if (empty($inparms['contact_id']) && empty($inparms['address_id'])) {
 		return civicrm_api3_create_error("Contact_id en address_id allebei leeg in
             dgwcontact_addressget.");
 	}
-	
+
 	/*
 	 * if contact_id not numeric, error
 	*/
@@ -701,7 +721,7 @@ function civicrm_api3_dgw_address_get($inparms) {
 		}
 	}
 	$civiparms['contact_id'] = $contact_id;
-	
+
 	if (isset($inparms['address_id']) && !empty($inparms['address_id'])) {
 		$civiparms['id'] = $inparms['address_id'];
 	}
@@ -726,12 +746,12 @@ function civicrm_api3_dgw_address_get($inparms) {
 		if (!civicrm_error($civires3)) {
 			$addressType = $civires3['label'];
 		}
-		
+
 		$data = $result;
-		 
+
 		$data['contact_id'] = $data['id'];
 		unset($data['id']);
-		
+
 		$data['street_suffix'] = '';
 		if (isset($data['street_unit'])) {
 			$data['street_suffix'] = $data['street_unit'];
@@ -748,12 +768,12 @@ function civicrm_api3_dgw_address_get($inparms) {
 				$data['country'] = "";
 			}
 		}
-		
+
 		$data['location_type'] = $locationType;
-		
+
 		$data['start_date'] = date("Y-m-d");
 		$data['end_date'] = "";
-		 
+
 		$outparms[$i] = $data;
 		$i++;
 	}
@@ -769,12 +789,12 @@ function _replaceCurrentAddress($contact_id, $thuisID, $oudID) {
 	);
 	$civires2 = civicrm_api('Address', 'get', $civiparms2);
 	if (isset($civires2['values']) && is_array($civires2['values'])) {
-			
+
 		/*
 		 * remove all existing addresses with type Oud
 		*/
 		_removeAllOudAddresses($contact_id, $oudID);
-			
+
 		/*
 		 * update current thuis address to location type oud
 		*/

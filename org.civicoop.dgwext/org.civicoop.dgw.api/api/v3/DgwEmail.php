@@ -53,8 +53,17 @@ function civicrm_api3_dgw_email_delete($inparms) {
 	}
 	/*
 	 * all validation passed, delete email from table
-	*/
-	$res = civicrm_api('Email', 'delete', array('version' => 3, 'id' => $email_id));
+	 */
+        $emailParams = array(
+            'version'   =>  3,
+            'id'        =>  $email_id
+        );
+        if ( isset( $inparms['hook_context'] ) ) {
+            $emailParams['hook_context'] = $inparms['hook_context'];
+        } else {
+            $emailParams['hook_context'] = "dgwapi.no_sync";
+        }
+	$res = civicrm_api('Email', 'delete', $emailParams );
 	$outparms['is_error'] = "0";
 	return $outparms;
 }
@@ -200,6 +209,11 @@ function civicrm_api3_dgw_email_update($inparms) {
 			$params['is_primary'] = $inparms['is_primary'];
 		}
 		$params['email_id'] = $email_id;
+                if ( isset( $inparms['hook_context'] ) ) {
+                    $params['hook_context'] = $inparms['hook_context'];
+                } else {
+                    $params['hook_context'] = "dgwapi.no_sync";
+                }
 		$res_update = civicrm_api('Email', 'Create', $params);
 		if (civicrm_error($res_update)) {
 			return civicrm_api3_create_error('Onbekende fout: '.$res_update['error_msg']);
@@ -221,7 +235,7 @@ function civicrm_api3_dgw_email_update($inparms) {
 		 * retrieve email_id from result array
 		*/
 		$email_id = $res_update['id'];
-		
+
 		/*
 		 * set new cde_refno in synctable if passed
 		 */
@@ -237,13 +251,13 @@ function civicrm_api3_dgw_email_update($inparms) {
 					break;
 				}
 			}
-			
+
 			$civiparms2 = array (
 					'version' => 3,
 					'entity_id' => $res_check['contact_id'],
 					'custom_'.$key_first_field['id'].$fid => $inparms['cde_refno'],
 			);
-			
+
 			$civicres2 = civicrm_api('CustomValue', 'Create', $civiparms2);
 		}
 	}
@@ -322,7 +336,7 @@ function civicrm_api3_dgw_email_create($inparms) {
 	}
 
 	$persoonsnummer_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('persoonsnummer_first');
-	
+
 	/*
 	 * if contact not in civicrm, error
 	*/
@@ -339,7 +353,7 @@ function civicrm_api3_dgw_email_create($inparms) {
 		$check_contact = reset($check_contact['values']);
 		$contact_id = $check_contact['contact_id'];
 	}
-	
+
 	/*
 	 * if location_type is invalid, error
 	*/
@@ -416,7 +430,12 @@ function civicrm_api3_dgw_email_create($inparms) {
 			"is_primary"        =>  $is_primary,
 			"email"             =>  $email,
 			"version"			=>  3);
-	
+         if ( isset( $inparms['hook_context'] ) ) {
+             $civiparms['hook_context'] = $inparms['hook_context'];
+         } else {
+             $civiparms['hook_context'] = "dgwapi.no_sync";
+         }
+
 	$res_email = civicrm_api('Email', 'create', $civiparms);
 	if (civicrm_error($res_email)) {
 		return civicrm_api3_create_error("Onverwachte fout van CiviCRM, email kon niet gemaakt worden, melding : ".$res_email['error_message']);
@@ -434,7 +453,7 @@ function civicrm_api3_dgw_email_create($inparms) {
 			$entity_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity');
 			$entity_id_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity_id');
 			$key_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first');
-				
+
 			$civiparms2 = array (
 					'version' => 3,
 					'entity_id' => $contact_id,
@@ -443,7 +462,7 @@ function civicrm_api3_dgw_email_create($inparms) {
 					'custom_'.$entity_id_field['id'] => $email_id,
 					'custom_'.$key_first_field['id'] => $inparms['cde_refno'],
 			);
-				
+
 			$civicres2 = civicrm_api('CustomValue', 'Create', $civiparms2);
 		}
 		/*
@@ -535,17 +554,17 @@ function civicrm_api3_dgw_email_get($inparms) {
 	foreach ($civires1['values'] as $result) {
 		/* Get location type name */
 		$locationType = CRM_Utils_DgwApiUtils::getLocationByid($result['location_type_id']);
-		
+
 		$data = $result;
-		 
+
 		$data['email_id'] = $data['id'];
 		unset($data['id']);
-		
+
 		$data['location_type'] = $locationType;
-		
+
 		$data['start_date'] = date("Y-m-d");
 		$data['end_date'] = "";
-		 
+
 		$outparms[$i] = $data;
 		$i++;
 	}

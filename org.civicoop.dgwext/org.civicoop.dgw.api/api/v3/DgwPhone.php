@@ -60,14 +60,14 @@ function civicrm_api3_dgw_phone_update($inparms) {
 	if (!empty($cde_refno)) {
 		$phone_id = CRM_Utils_DgwApiUtils::getEntityIdFromSyncTable($cde_refno, 'phone');
 	}
-	
+
 	/*
 	 * if $phone_id is still empty, error
 	*/
 	if (empty($phone_id)) {
 		return civicrm_api3_create_error("Phone niet gevonden");
 	}
-	
+
 	/*
 	 * check if phone exists in CiviCRM
 	*/
@@ -76,7 +76,7 @@ function civicrm_api3_dgw_phone_update($inparms) {
 	if (civicrm_error($res_check)) {
 		return civicrm_api3_create_error("Phone niet gevonden");
 	}
-	
+
 	/*
 	 * issue 185: if not Toekomst or Oud and phone type = Werktel then
 	* location should be work. If not Toekomst or Oud and phone type is
@@ -85,7 +85,7 @@ function civicrm_api3_dgw_phone_update($inparms) {
 	if (isset($inparms['phone_type']) && strtolower($inparms['phone_type']) == "werktel") {
 		if (isset($location_type)) {
 			if ($location_type != "toekomst" && $location_type != "oud") {
-				$location_type = "werk";	
+				$location_type = "werk";
 			}
 		} else {
 			$location_type = "werk";
@@ -100,7 +100,7 @@ function civicrm_api3_dgw_phone_update($inparms) {
 			$location_type = "werk";
 		}
 	}
-	
+
 	/*
 	 * if location_type is invalid, error
 	*/
@@ -110,10 +110,10 @@ function civicrm_api3_dgw_phone_update($inparms) {
 			return civicrm_api3_create_error("Location_type is ongeldig");
 		}
 	}
-	
+
 	/*
 	 * if phone_type is invalid, error
-	*/	
+	*/
 	if (isset($inparms['phone_type'])) {
 		$phone_type_id = false;
 		$phone_types = CRM_Core_PseudoConstant::phoneType();
@@ -166,7 +166,7 @@ function civicrm_api3_dgw_phone_update($inparms) {
 			}
 		}
 	}
-		
+
 	/*
 	 * issue 177 en 180: delete of phone is passed as update from First, where
 	* phone is empty. Check this, and if phone is empty delete phone
@@ -191,7 +191,7 @@ function civicrm_api3_dgw_phone_update($inparms) {
 				}
 			}
 		}
-		
+
 		$params['version'] = 3;
 		$params['phone_id'] = $phone_id;
 		if (isset($location_type_id)) {
@@ -206,11 +206,16 @@ function civicrm_api3_dgw_phone_update($inparms) {
 		if (isset($inparms['is_primary'])) {
 			$params['is_primary'] = $inparms['is_primary'];
 		}
+            if ( isset( $inparms['hook_context'] ) ) {
+                $params['hook_context'] = $inparms['hook_context'];
+            } else {
+                $params['hook_context'] = "dgwapi.no_sync";
+            }
 		$res_update = civicrm_api('Phone', 'Create', $params);
 		if (civicrm_error($res_update)) {
 			return civicrm_api3_create_error('Onbekende fout: '.$res_update['error_msg']);
 		}
-		
+
 		/*
 		* issue 158: if the phone belongs to a hoofdhuurder, update the household
 		 * phone too
@@ -224,7 +229,7 @@ function civicrm_api3_dgw_phone_update($inparms) {
 			$params['contact_id'] = $huishoudenID;
 			$res_update_hh = civicrm('Phone', 'Create', $params);
 		}
-		
+
 		/*
 		 * retrieve phone_id from result array
 		*/
@@ -235,7 +240,7 @@ function civicrm_api3_dgw_phone_update($inparms) {
 		*/
 		if (isset($inparms['cde_refno'])) {
 			$refno = trim($inparms['cde_refno']);
-			$key_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first');			
+			$key_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first');
 			$group = CRM_Utils_DgwApiUtils::retrieveCustomGroupByName('Synchronisatie_First_Noa');
 			$fields = CRM_Utils_DgwApiUtils::retrieveCustomValuesForContactAndCustomGroupSorted($res_check['contact_id'], $group['id']);
 			$fid = "";
@@ -245,13 +250,13 @@ function civicrm_api3_dgw_phone_update($inparms) {
 					break;
 				}
 			}
-				
+
 			$civiparms2 = array (
 					'version' => 3,
 					'entity_id' => $res_check['contact_id'],
 					'custom_'.$key_first_field['id'].$fid => $inparms['cde_refno'],
 			);
-				
+
 			$civicres2 = civicrm_api('CustomValue', 'Create', $civiparms2);
 		}
 	}
@@ -305,7 +310,16 @@ function civicrm_api3_dgw_phone_delete($inparms) {
 	/*
 	 * all validation passed, delete phone from table
 	*/
-	$res = civicrm_api('Phone', 'delete', array('version' => 3, 'id' => $phone_id));
+        $civiparms = array(
+            'version'   =>  3,
+            'id'        =>  $phone_id
+        );
+        if ( isset( $inparms['hook_context'] ) ) {
+            $civiparms['hook_context'] = $inparms['hook_context'];
+        } else {
+            $civiparms['hook_context'] = "dgwapi.no_sync";
+        }
+	$res = civicrm_api('Phone', 'delete', $civiparms);
 	$outparms['is_error'] = "0";
 	return $outparms;
 }
@@ -384,9 +398,9 @@ function civicrm_api3_dgw_phone_create($inparms) {
 			$end_date = $inparms['end_date'];
 		}
 	}
-	
+
 	$persoonsnummer_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('persoonsnummer_first');
-	
+
 	/*
 	 * if contact not in civicrm, error
 	*/
@@ -412,7 +426,7 @@ function civicrm_api3_dgw_phone_create($inparms) {
 	}
 	/*
 	 * if phone_type is invalid, error
-	*/	
+	*/
 	$phone_type_id = false;
 	$phone_types = CRM_Core_PseudoConstant::phoneType();
 	foreach($phone_types as $key => $type) {
@@ -423,7 +437,7 @@ function civicrm_api3_dgw_phone_create($inparms) {
 	if ($phone_type_id===false) {
 		return civicrm_api3_create_error("Invalid phone type");
 	}
-	
+
 	/*
 	 * if is_primary is not 0 or 1, error
 	*/
@@ -462,7 +476,7 @@ function civicrm_api3_dgw_phone_create($inparms) {
 			}
 		}
 	}
-	
+
 	/*
 	 * if location type toekomst or oud, add start and end date after phone
 	*/
@@ -488,8 +502,13 @@ function civicrm_api3_dgw_phone_create($inparms) {
 			"phone_type_id"     =>  $phone_type_id,
 			"phone"             =>  $phone,
 			"version"			=>  3);
+        if ( isset( $inparms['hook_context'] ) ) {
+            $civiparms['hook_context'] = $inparms['hook_context'];
+        } else {
+            $civiparms['hook_context'] = "dgwapi.no_sync";
+        }
 	$res_phone = civicrm_api('Phone', 'Create', $civiparms);
-	
+
 	if (civicrm_error($res_phone)) {
 		return civicrm_api3_create_error("Onverwachte fout van CiviCRM, phone kon niet gemaakt worden, melding : ".$res_phone['error_message']);
 	} else {
@@ -506,7 +525,7 @@ function civicrm_api3_dgw_phone_create($inparms) {
 			$entity_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity');
 			$entity_id_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity_id');
 			$key_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first');
-			
+
 			$civiparms2 = array (
 				'version' => 3,
 				'entity_id' => $contact_id,
@@ -515,7 +534,7 @@ function civicrm_api3_dgw_phone_create($inparms) {
 				'custom_'.$entity_id_field['id'] => $phone_id,
 				'custom_'.$key_first_field['id'] => $inparms['cde_refno'],
 			);
-			
+
 			$civicres2 = civicrm_api('CustomValue', 'Create', $civiparms2);
 		}
 	}
@@ -615,18 +634,18 @@ function civicrm_api3_dgw_phone_get($inparms) {
 		if (!civicrm_error($civires3)) {
 			$phoneType = $civires3['label'];
 		}
-		
+
 		$data = $result;
-		 
+
 		$data['phone_id'] = $data['id'];
 		unset($data['id']);
-		
+
 		$data['location_type'] = $locationType;
 		$data['phone_type'] = $phoneType;
-		
+
 		$data['start_date'] = date("Y-m-d");
 		$data['end_date'] = "";
-		 
+
 		$outparms[$i] = $data;
 		$i++;
 	}
