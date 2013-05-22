@@ -205,8 +205,12 @@ abstract class CRM_Utils_Hook {
    * @return null the return value is ignored
    * @access public
    */
-  static function pre($op, $objectName, $id, &$params, $hookContext = "core" ) {
-    return self::singleton()->invoke(4, $op, $objectName, $id, $params, $op, 'civicrm_pre');
+  static function pre($op, $objectName, $id, &$params, $hookContext ) {
+      if ( $objectName == "Phone" ) {
+        return self::singleton()->invoke(5, $op, $objectName, $id, $params, $hookContext, 'civicrm_pre');
+      } else {
+          return self::singleton()->invoke(4, $op, $objectName, $id, $params, $op, 'civicrm_pre' );
+      }
   }
 
   /**
