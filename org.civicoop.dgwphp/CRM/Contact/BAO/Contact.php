@@ -23,6 +23,9 @@
  | GNU Affero General Public License or the licensing of CiviCRM,     |
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
+ | @author Erik Hommel (erik.hommel@civicoop.org :                    |
+ | add hook_context to calls to civicrm_pre and civicrm_post hook     |
+ +--------------------------------------------------------------------+
 */
 
 /**
@@ -280,11 +283,17 @@ class CRM_Contact_BAO_Contact extends CRM_Contact_DAO_Contact {
 
       $isEdit = TRUE;
       if ($invokeHooks) {
+        if ( $params['hook_context'] ) {
+            $hookContext = $params['hook_context'];
+            unset( $params['hook_context'] );
+        } else {
+            $hookContext = "core";
+        }
         if (!empty($params['contact_id'])) {
-          CRM_Utils_Hook::pre('edit', $params['contact_type'], $params['contact_id'], $params);
+          CRM_Utils_Hook::pre('edit', $params['contact_type'], $params['contact_id'], $params, $hookContext);
         }
         else {
-          CRM_Utils_Hook::pre('create', $params['contact_type'], NULL, $params);
+          CRM_Utils_Hook::pre('create', $params['contact_type'], NULL, $params, $hookContext);
           $isEdit = FALSE;
         }
       }
@@ -445,10 +454,10 @@ class CRM_Contact_BAO_Contact extends CRM_Contact_DAO_Contact {
 
       if ($invokeHooks) {
         if ($isEdit) {
-          CRM_Utils_Hook::post('edit', $params['contact_type'], $contact->id, $contact);
+          CRM_Utils_Hook::post('edit', $params['contact_type'], $contact->id, $contact, $hookContext);
         }
         else {
-          CRM_Utils_Hook::post('create', $params['contact_type'], $contact->id, $contact);
+          CRM_Utils_Hook::post('create', $params['contact_type'], $contact->id, $contact, $hookContext);
         }
       }
 
@@ -744,11 +753,17 @@ WHERE     civicrm_contact.id = " . CRM_Utils_Type::escape($id, 'Integer');
     $contactType = $contact->contact_type;
     $action = ($restore) ? 'restore' : 'delete';
 
-    CRM_Utils_Hook::pre($action, $contactType, $id, CRM_Core_DAO::$_nullArray);
+    if ( $params['hook_context'] ) {
+        $hookContext = $params['hook_context'];
+        unset( $params['hook_context'] );
+    } else {
+        $hookContext = "core";
+    }
+    CRM_Utils_Hook::pre($action, $contactType, $id, CRM_Core_DAO::$_nullArray, $hookContext);
 
     if ($restore) {
       self::contactTrashRestore($contact, TRUE);
-      CRM_Utils_Hook::post($action, $contactType, $contact->id, $contact);
+      CRM_Utils_Hook::post($action, $contactType, $contact->id, $contact, $hookContext);
       return TRUE;
     }
 
@@ -772,13 +787,13 @@ WHERE     civicrm_contact.id = " . CRM_Utils_Type::escape($id, 'Integer');
       $logDAO->entity_table = 'civicrm_contact';
       $logDAO->entity_id = $id;
       $logDAO->delete();
-      
+
       // delete contact participants CRM-12155
       CRM_Event_BAO_Participant::deleteContactParticipant($id);
 
       // delete contact contributions CRM-12155
       CRM_Contribute_BAO_Contribution::deleteContactContribution($id);
-      
+
       // do activity cleanup, CRM-5604
       CRM_Activity_BAO_Activity::cleanupActivity($id);
 
@@ -802,7 +817,7 @@ WHERE     civicrm_contact.id = " . CRM_Utils_Type::escape($id, 'Integer');
 
     $transaction->commit();
 
-    CRM_Utils_Hook::post('delete', $contactType, $contact->id, $contact);
+    CRM_Utils_Hook::post('delete', $contactType, $contact->id, $contact, $hookContext);
 
     // also reset the DB_DO global array so we can reuse the memory
     // http://issues.civicrm.org/jira/browse/CRM-4387
@@ -974,8 +989,13 @@ WHERE id={$id}; ";
    */
   static function contactTrashRestore($contact, $restore = FALSE) {
     $op = ($restore ? 'restore' : 'trash');
-
-    CRM_Utils_Hook::pre($op, $contact->contact_type, $contact->id, CRM_Core_DAO::$_nullArray);
+    if ( $params['hook_context'] ) {
+        $hookContext = $params['hook_context'];
+        unset( $params['hook_context'] );
+    } else {
+        $hookContext = "core";
+    }
+    CRM_Utils_Hook::pre($op, $contact->contact_type, $contact->id, CRM_Core_DAO::$_nullArray, $hookContext);
 
     $params = array(1 => array($contact->id, 'Integer'));
     $isDelete = ' is_deleted = 1 ';
@@ -990,7 +1010,7 @@ WHERE id={$id}; ";
     $query = "UPDATE civicrm_contact SET {$isDelete} WHERE id = %1";
     CRM_Core_DAO::executeQuery($query, $params);
 
-    CRM_Utils_Hook::post($op, $contact->contact_type, $contact->id, $contact);
+    CRM_Utils_Hook::post($op, $contact->contact_type, $contact->id, $contact, $hookContext);
   }
 
   /**
@@ -1650,12 +1670,18 @@ ORDER BY civicrm_email.is_primary DESC";
     }
 
     if ($contactID) {
+        if ( $params['hook_context'] ) {
+            $hookContext = $params['hook_context'];
+            unset( $params['hook_context'] );
+        } else {
+            $hookContext = "core";
+        }
       $editHook = TRUE;
-      CRM_Utils_Hook::pre('edit', 'Profile', $contactID, $params);
+      CRM_Utils_Hook::pre('edit', 'Profile', $contactID, $params, $hookContext);
     }
     else {
       $editHook = FALSE;
-      CRM_Utils_Hook::pre('create', 'Profile', NULL, $params);
+      CRM_Utils_Hook::pre('create', 'Profile', NULL, $params, $hookContext);
     }
 
     list($data, $contactDetails) = self::formatProfileContactParams($params, $fields, $contactID, $ufGroupId, $ctype);
@@ -1720,10 +1746,10 @@ ORDER BY civicrm_email.is_primary DESC";
     CRM_Contact_BAO_GroupContactCache::remove();
 
     if ($editHook) {
-      CRM_Utils_Hook::post('edit', 'Profile', $contactID, $params);
+      CRM_Utils_Hook::post('edit', 'Profile', $contactID, $params, $hookContext);
     }
     else {
-      CRM_Utils_Hook::post('create', 'Profile', $contactID, $params);
+      CRM_Utils_Hook::post('create', 'Profile', $contactID, $params, $hookContext);
     }
     return $contactID;
   }
@@ -2975,7 +3001,7 @@ LEFT JOIN civicrm_address add2 ON ( add1.master_id = add2.id )
     }
   }
 
-  
+
   /**
    * Delete a contact-related object that has an 'is_primary' field
    * Ensures that is_primary gets assigned to another object if available
@@ -2993,7 +3019,13 @@ LEFT JOIN civicrm_address add2 ON ( add1.master_id = add2.id )
     $obj->id = $id;
     $obj->find();
     if ($obj->fetch()) {
-      CRM_Utils_Hook::pre('delete', $type, $id, CRM_Core_DAO::$_nullArray);
+        if ( $params['hook_context'] ) {
+            $hookContext = $params['hook_context'];
+            unset( $params['hook_context'] );
+        } else {
+            $hookContext = "core";
+        }
+      CRM_Utils_Hook::pre('delete', $type, $id, CRM_Core_DAO::$_nullArray, $hookContext);
       $contactId = $obj->contact_id;
       $obj->delete();
     }
@@ -3016,7 +3048,7 @@ LEFT JOIN civicrm_address add2 ON ( add1.master_id = add2.id )
       }
       $dao->free();
     }
-    CRM_Utils_Hook::post('delete', $type, $id, $obj);
+    CRM_Utils_Hook::post('delete', $type, $id, $obj, $hookContext);
     $obj->free();
     return TRUE;
   }
