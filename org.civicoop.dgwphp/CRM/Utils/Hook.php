@@ -202,11 +202,19 @@ abstract class CRM_Utils_Hook {
    * @param object $id         the object id if available
    * @param array  $params     the parameters used for object creation / editing
    *
+   * @author Erik Hommel (erik.hommel@civicoop.org)
+   * forum post http://forum.civicrm.org/index.php/topic,28776.0.html
+   * introduced the $hookContext param as a temp fix for De Goede Woning
+   *
    * @return null the return value is ignored
    * @access public
    */
-  static function pre($op, $objectName, $id, &$params, $hookContext ) {
-      if ( $objectName == "Phone" ) {
+  static function pre($op, $objectName, $id, &$params, $hookContext) {
+      /*
+       *
+       */
+      $hookContextObjects = array( "Phone", "Email", "Address". "Individual", "Organization" );
+      if ( in_array( $objectName, $hookContextObjects ) ) {
         return self::singleton()->invoke(5, $op, $objectName, $id, $params, $hookContext, 'civicrm_pre');
       } else {
           return self::singleton()->invoke(4, $op, $objectName, $id, $params, $op, 'civicrm_pre' );
@@ -221,12 +229,21 @@ abstract class CRM_Utils_Hook {
    * @param int    $objectId   the unique identifier for the object
    * @param object $objectRef  the reference to the object if available
    *
+   * @author Erik Hommel (erik.hommel@civicoop.org)
+   * forum post http://forum.civicrm.org/index.php/topic,28776.0.html
+   * introduced the $hookContext param as a temp fix for De Goede Woning
+   *
    * @return mixed             based on op. pre-hooks return a boolean or
    *                           an error message which aborts the operation
    * @access public
    */
-  static function post($op, $objectName, $objectId, &$objectRef, $hookContext = "core" ) {
-    return self::singleton()->invoke(4, $op, $objectName, $objectId, $objectRef, $op, 'civicrm_post');
+  static function post($op, $objectName, $objectId, &$objectRef) {
+      $hookContextObjects = array( "Phone", "Email", "Address". "Individual", "Organization" );
+      if ( in_array( $objectName, $hookContextObjects ) ) {
+          return self::singleton()->invoke(5, $op, $objectName, $objectId, $objectRef, $hookContext, 'civicrm_post');
+      } else {
+          return self::singleton()->invoke(4, $op, $objectName, $objectId, $objectRef, $op, 'civicrm_post');
+      }
   }
 
   /**
