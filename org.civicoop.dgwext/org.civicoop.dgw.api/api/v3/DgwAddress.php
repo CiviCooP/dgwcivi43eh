@@ -267,31 +267,6 @@ function civicrm_api3_dgw_address_update($inparms) {
 		return civicrm_api3_create_error('Onbekende fout: '.$res_update['error_msg']);
 	}
 	/*
-	 * issue 158: if the address belongs to a hoofdhuurder, update the household
-	* address too
-	*/
-	$huishoudenID = CRM_Utils_DgwApiUtils::is_hoofdhuurder($contactID);
-	if ($huishoudenID != 0) {
-		/*
-		* update huishouden address if there is one, if not create
-		*/
-		$hh_parms['version'] = '3';
-		$hh_parms['contact_id'] = $huishoudenID;
-		$hh_check = civicrm_api('Address', 'get', $hh_parms);
-		if (!civicrm_error($hh_check)) {
-			//update existing addresses
-			if (is_array($hh_check['values']) && count($hh_check['values'])) {
-				//update first address of house hold
-				$hh_check = reset($hh_check['values']);
-				$params['address_id'] = $hh_check['address_id'];
-			} else {
-				//insert address
-				unset($params['address_id']);
-			}
-		}
-		civicrm_api('Address', 'create', $params);
-	}
-	/*
 	* set new adr_refno in synctable if passed
 	*/
 	if (isset($inparms['adr_refno']) && !empty($inparms['adr_refno'])) {
@@ -657,23 +632,6 @@ function civicrm_api3_dgw_address_create($inparms) {
 	 				'custom_'.$key_first_field['id'] => $inparms['adr_refno'],
 	 		);
 	 		$civicres5 = civicrm_api('CustomValue', 'Create', $civiparms2);
-	 	}
-	 	/*
-	 	 * issue 158: if the address belongs to a hoofdhuurder, add address to
-	 	* the household too
-	 	*/
-	 	$huishouden_id = CRM_Utils_DgwApiUtils::is_hoofdhuurder($contact_id);
-	 	if ($huishouden_id != 0) {
-	 		/*
-	 		 * issue 132 : if new address has type Thuis, check if there is
-			 * already an address Thuis. If so, move the current Thuis to
-			 * location type Oud first
-			 */
-	 		if ($location_type_id == $thuisID) {
-	 			_replaceCurrentAddress($huishouden_id, $thuisID, $oudID);
-	 		}
-	 		$address['contact_id'] = $huishouden_id;
-	 		$res_adr = civicrm_api('Address', 'create', $address);
 	 	}
 	 	/*
 	 	 * return array

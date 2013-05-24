@@ -217,20 +217,6 @@ function civicrm_api3_dgw_phone_update($inparms) {
 		}
 
 		/*
-		* issue 158: if the phone belongs to a hoofdhuurder, update the household
-		 * phone too
-		*/
-		$huishoudenID = CRM_Utils_DgwApiUtils::is_hoofdhuurder($res_check['contact_id']);
-		if ($huishoudenID != 0) {
-			/*
-			 * update huishouden phone if there is one, if not create
-			*/
-			unset($params['phone_id']);
-			$params['contact_id'] = $huishoudenID;
-			$res_update_hh = civicrm('Phone', 'Create', $params);
-		}
-
-		/*
 		 * retrieve phone_id from result array
 		*/
 		$phone_id = $res_update['id'];
@@ -537,24 +523,6 @@ function civicrm_api3_dgw_phone_create($inparms) {
 
 			$civicres2 = civicrm_api('CustomValue', 'Create', $civiparms2);
 		}
-	}
-	/*
-	 * issue 158: if the phone belongs to a hoofdhuurder, add a phone to the
-	* household too
-	*/
-	$huishouden_id = CRM_Utils_DgwApiUtils::is_hoofdhuurder($contact_id);
-	if ($huishouden_id != 0) {
-		/*
-		 * add phone to huishouden
-		*/
-		$civiparms = array(
-			"contact_id"        =>  $huishouden_id,
-			"location_type_id"  =>  $location_type_id,
-			"is_primary"        =>  $is_primary,
-			"phone_type_id"     =>  $phone_type_id,
-			"phone"             =>  $phone,
-			"version"			=>  3);
-		$res_phone = civicrm_api('Phone', 'Create', $civiparms);
 	}
 	/*
 	 * return array
