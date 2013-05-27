@@ -219,19 +219,6 @@ function civicrm_api3_dgw_email_update($inparms) {
 			return civicrm_api3_create_error('Onbekende fout: '.$res_update['error_msg']);
 		}
 		/*
-		 * issue 158: if the email belongs to a hoofdhuurder, update the household
-		* email too
-		*/
-		$huishoudenID = CRM_Utils_DgwApiUtils::is_hoofdhuurder($res_check['contact_id']);
-		if ($huishoudenID != 0) {
-			/*
-			 * update huishouden email if there is one, if not create
-			*/
-			unset($params['email_id']);
-			$params['contact_id'] = $huishoudenID;
-			$res_update_hh = civicrm('Email', 'Create', $params);
-		}
-		/*
 		 * retrieve email_id from result array
 		*/
 		$email_id = $res_update['id'];
@@ -464,23 +451,6 @@ function civicrm_api3_dgw_email_create($inparms) {
 			);
 
 			$civicres2 = civicrm_api('CustomValue', 'Create', $civiparms2);
-		}
-		/*
-		 * issue 158: if the email belongs to a hoofdhuurder, add an email to
-		* the household too
-		*/
-		$huishouden_id = CRM_Utils_DgwApiUtils::is_hoofdhuurder($contact_id);
-		if ($huishouden_id != 0) {
-			/*
-			 * add email to huishouden
-			*/
-			$civiparms4 = array(
-					"contact_id"        =>  $huishouden_id,
-					"location_type_id"  =>  $location_type_id,
-					"is_primary"        =>  $is_primary,
-					"email"             =>  $email,
-					"version"			=>  3);
-			$res_hh_email = civicrm_api('Email', 'Create', $civiparms4);
 		}
 		/*
 		 * return array
