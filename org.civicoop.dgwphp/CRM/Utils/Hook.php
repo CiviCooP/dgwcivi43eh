@@ -237,7 +237,7 @@ abstract class CRM_Utils_Hook {
    *                           an error message which aborts the operation
    * @access public
    */
-  static function post($op, $objectName, $objectId, &$objectRef, $hookContact = "core" ) {
+  static function post($op, $objectName, $objectId, &$objectRef, $hookContext = "core" ) {
       $hookContextObjects = array( "Phone", "Email", "Address". "Individual", "Organization" );
       if ( in_array( $objectName, $hookContextObjects ) ) {
           return self::singleton()->invoke(5, $op, $objectName, $objectId, $objectRef, $hookContext, 'civicrm_post');

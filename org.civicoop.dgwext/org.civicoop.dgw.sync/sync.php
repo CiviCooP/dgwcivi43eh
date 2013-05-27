@@ -182,7 +182,7 @@ function sync_civicrm_managed(&$entities) {
  *   synchronization work.
  *
  */
-function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef, $hookContext ) {
+function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef, $hookContext = "dgw.sync" ) {
     /*
      * only for some objects
      */
@@ -265,7 +265,7 @@ function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef, $hookContex
  * - synchronization for crate operation
  *
  */
-function sync_civicrm_post( $op, $objectName, $objectId, &$objectRef, $hookContext ) {
+function sync_civicrm_post( $op, $objectName, $objectId, &$objectRef, $hookContext = "dgw.sync" ) {
     /*
      * only for some objects
      */
@@ -279,9 +279,6 @@ function sync_civicrm_post( $op, $objectName, $objectId, &$objectRef, $hookConte
          */
         if ( $hookContext != "dgwapi.no_sync" ) {
             if (in_array( $objectName, $syncedObjects ) ) {
-                /*
-                 * if $op = delete $objectRef will be empty. In that case, retrieve contactId from API
-                 */
                 if ( is_object( $objectRef ) ) {
                     if ( isset( $objectRef->contact_id ) ) {
                         $contactId = $objectRef->contact_id;
@@ -629,19 +626,23 @@ function _checkObjectInFirst( $objectName, $objectId ) {
     } else {
         $syncObject = $lowerObject;
     }
-    require_once "CRM/Utils/DgwUtils.php";
+    $retrieveSyncField = _retrieveSyncField( 'sync first entity veld' );
+    if ( $retrieveSyncField['is_error'] == 0 ) {
+        $entityFldName = $retrieveSyncField['sync_field'];
+    }
+    $retrieveSyncField = _retrieveSyncField( 'sync first entity_id veld');
+    if ( $retrieveSyncField['is_error'] == 0 ) {
+        $entityIdFldName = $retrieveSyncField['sync_field'];
+    }
+    require_once 'CRM/Utils/DgwUtils.php';
     $customTableTitle = CRM_Utils_DgwUtils::getDgwConfigValue( 'synchronisatietabel first' );
     $customTable = CRM_Utils_DgwUtils::getCustomGroupTableName( $customTableTitle );
-    $customField = CRM_Utils_DgwUtils::getCustomField( array('label' => 'sync first entity veld' ) );
-    if ( isset( $customField['column_name'] ) ) {
-        $customEntityColumn = $customField['column_name'];
-        $selSync =
-"SELECT COUNT(*) AS aantal FROM $customTable WHERE entity_id = $objectId and $customEntityColumn = '$syncObject'";
-        $daoSync = CRM_Core_DAO::executeQuery( $selSync );
-        if ( $daoSync->fetch() ) {
-            if ( $daoSync->aantal > 0 ) {
-                $objectInFirst = true;
-            }
+    $selSync =
+"SELECT COUNT(*) AS aantal FROM $customTable WHERE $entityIdFldName = $objectId and $entityFldName = '$syncObject'";
+    $daoSync = CRM_Core_DAO::executeQuery( $selSync );
+    if ( $daoSync->fetch() ) {
+        if ( $daoSync->aantal > 0 ) {
+            $objectInFirst = true;
         }
     }
     return $objectInFirst;
@@ -695,40 +696,45 @@ function _setSyncRecord( $action, $contactId, $entityId, $entityName, $keyFirst 
      * retrieve custom_id's of the required fields
      */
     require_once 'CRM/Utils/DgwUtils.php';
-    $retrieveSyncField = _retrieveSyncFieldName( 'sync first action veld' );
+    $retrieveSyncField = _retrieveSyncField( 'sync first action veld' );
     if ( $retrieveSyncField['is_error'] == 0 ) {
+        $actionFldId = "custom_".$retrieveSyncField['sync_field_id'];
         $actionFldName = $retrieveSyncField['sync_field'];
     } else {
         $result['is_error'] = 1;
         $result['error_message'] = "Could not retrieve field name for sync first action veld: {$retrieveSyncField['error_message']}";
         return $result;
     }
-    $retrieveSyncField = _retrieveSyncFieldName( 'sync first entity veld' );
+    $retrieveSyncField = _retrieveSyncField( 'sync first entity veld' );
     if ( $retrieveSyncField['is_error'] == 0 ) {
+        $entityFldId = "custom_".$retrieveSyncField['sync_field_id'];
         $entityFldName = $retrieveSyncField['sync_field'];
     } else {
         $result['is_error'] = 1;
         $result['error_message'] = "Could not retrieve field name for sync first entity veld: {$retrieveSyncField['error_message']}";
         return $result;
     }
-    $retrieveSyncField = _retrieveSyncFieldName( 'sync first entity_id veld' );
+    $retrieveSyncField = _retrieveSyncField( 'sync first entity_id veld' );
     if ( $retrieveSyncField['is_error'] == 0 ) {
+        $entityIdFldId = "custom_".$retrieveSyncField['sync_field_id'];
         $entityIdFldName = $retrieveSyncField['sync_field'];
     } else {
         $result['is_error'] = 1;
         $result['error_message'] = "Could not retrieve field name for sync first entity_id veld: {$retrieveSyncField['error_message']}";
         return $result;
     }
-    $retrieveSyncField = _retrieveSyncFieldName( 'sync first key_first veld' );
+    $retrieveSyncField = _retrieveSyncField( 'sync first key_first veld' );
     if ( $retrieveSyncField['is_error'] == 0 ) {
+        $keyFirstFldId = "custom_".$retrieveSyncField['sync_field_id'];
         $keyFirstFldName = $retrieveSyncField['sync_field'];
     } else {
         $result['is_error'] = 1;
         $result['error_message'] = "Could not retrieve field name for sync first key_first veld: {$retrieveSyncField['error_message']}";
         return $result;
     }
-    $retrieveSyncField = _retrieveSyncFieldName( 'sync first change_date veld' );
+    $retrieveSyncField = _retrieveSyncField( 'sync first change_date veld' );
     if ( $retrieveSyncField['is_error'] == 0 ) {
+        $changeDateFldId = "custom_".$retrieveSyncField['sync_field_id'];
         $changeDateFldName = $retrieveSyncField['sync_field'];
     } else {
         $result['is_error'] = 1;
@@ -744,31 +750,31 @@ function _setSyncRecord( $action, $contactId, $entityId, $entityName, $keyFirst 
     );
     switch( $action ) {
         case "create":
-            $customValueParams[$actionFldName] = "ins";
-            $customValueParams[$entityFldName] = $entityName;
-            $customValueParams[$entityIdFldName] = $entityId;
-            $customValueParams[$changeDateFldName] = date('Ymd');
+            $customValueParams[$actionFldId] = "ins";
+            $customValueParams[$entityFldId] = strtolower( $entityName );
+            $customValueParams[$entityIdFldId] = $entityId;
+            $customValueParams[$changeDateFldId] = date('Ymd');
             $resultSync = civicrm_api( 'CustomValue', 'Create', $customValueParams );
             break;
-        case "update":
+        case "edit":
             /*
              * retrieve record id of the relevant custom group record
              */
             $customRecordId = _retrieveSyncRecordId ( $entityName, $contactId, $entityId, $entityFldName, $entityIdFldName );
             if ( $customRecordId != 0 ) {
-                $customValueParams[$actionFldName.":".$customRecordId] = "upd";
+                $customValueParams[$actionFldId.":".$customRecordId] = "upd";
                 if ( isset( $keyFirst ) ) {
-                    $customValueParams[$keyFirstFldName.":".$customRecordId] = $keyFirst;
+                    $customValueParams[$keyFirstFldId.":".$customRecordId] = $keyFirst;
                 }
-                $customValueParams[$changeDateFldName.":".$customRecordId] = date('Ymd');
+                $customValueParams[$changeDateFldId.":".$customRecordId] = date('Ymd');
                 $resultSync = civicrm_api( 'CustomValue', 'Create', $customValueParams );
             }
             break;
         case "delete":
             $customRecordId = _retrieveSyncRecordId ( $entityName, $contactId, $entityId, $entityFldName, $entityIdFldName );
             if ( $customRecordId != 0 ) {
-                $customValueParams[$actionFldName.":".$customRecordId] = "del";
-                $customValueParams[$changeDateFldName.":".$customRecordId] = date('Ymd');
+                $customValueParams[$actionFldId.":".$customRecordId] = "del";
+                $customValueParams[$changeDateFldId.":".$customRecordId] = date('Ymd');
                 $resultSync = civicrm_api( 'CustomValue', 'Create', $customValueParams );
             }
     }
@@ -779,11 +785,6 @@ function _setSyncRecord( $action, $contactId, $entityId, $entityName, $keyFirst 
  * be possible with the API, but probably no time to fix in the core API
  */
 function _retrieveSyncRecordId( $entityName, $contactId, $entityId, $entityFldName, $entityIdFldName ) {
-    CRM_Core_Error::debug("eerste entity", $entityName );
-    CRM_Core_Error::debug("contactId", $contactId);
-    CRM_Core_Error::debug("entityId", $entityId);
-    CRM_Core_Error::debug("entityFldName", $entityFldName);
-    CRM_Core_Error::debug("entityIdFldName", $entityIdFldName);
     $recordId = 0;
     if ( empty( $entityName ) || empty( $contactId ) || empty( $entityId ) ) {
         return $recordId;
@@ -792,7 +793,6 @@ function _retrieveSyncRecordId( $entityName, $contactId, $entityId, $entityFldNa
     $customTable = CRM_Utils_DgwUtils::getCustomGroupTableName( $customTableTitle );
     $selRecord =
 "SELECT id FROM $customTable WHERE entity_id = $contactId AND $entityFldName = '$entityName' AND $entityIdFldName = $entityId";
-    CRM_Core_Error::debug("selRecord", $selRecord);
     $daoRecord = CRM_Core_DAO::executeQuery( $selRecord );
     if ( $daoRecord->fetch() ) {
         $recordId = $daoRecord->id;
@@ -904,13 +904,14 @@ function _syncPhone( $op, $objectId, $contactId ) {
  * @param $label label of a dgw_config value for a field name
  * @params $result array
  */
-function _retrieveSyncFieldName( $fldLabel ) {
+function _retrieveSyncField( $fldLabel ) {
     $result = array( );
     if ( empty( $fldLabel ) ) {
         $result['is_error'] = 1;
         $result['error_message'] = "fldLabel is empty, no field name associated";
         return $result;
     }
+    require_once 'CRM/Utils/DgwUtils.php';
     $customLabel = CRM_Utils_DgwUtils::getDgwConfigValue( $fldLabel );
     if ( empty( $customLabel ) ) {
         $result['is_error'] = 1;
@@ -931,6 +932,7 @@ function _retrieveSyncFieldName( $fldLabel ) {
         if ( $customFields['count'] == 1 ) {
             foreach( $customFields['values'] as $customFieldId => $customField ) {
                 $result['sync_field'] = $customField['column_name'];
+                $result['sync_field_id'] = $customFieldId;
                 return $result;
             }
         } else {
@@ -969,6 +971,7 @@ function _retrieveSyncFieldName( $fldLabel ) {
                         if ( $customFields['count'] == 1 ) {
                             foreach( $customFields['values'] as $customFieldId => $customField ) {
                                 $result['sync_field'] = $customField['column_name'];
+                                $result['sync_field_id'] = $customFieldId;
                             }
                         } else {
                             $result['is_error'] = 1;
