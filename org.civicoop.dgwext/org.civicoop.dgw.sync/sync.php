@@ -188,33 +188,124 @@ function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef, $hookContex
      */
     $syncedObjects = array( "Individual", "Organization", "Address", "Email", "Phone" );
     /*
-     * skip execution if hook originates from API De Goede Woning
+     * only if op is not create (handled in sync_civicrm_post)
      */
-    if ( $hookContext != "dgwapi.no_sync" ) {
-        if (in_array( $objectName, $syncedObjects ) ) {
-            /*
-             * check if sync action is required
-             */
-            $syncRequired = _checkSyncRequired ( $objectName, $objectId, $objectRef );
-            /*
-             * if syncAction is required, process sync
-             */
-            if ( $syncRequired ) {
+    if ( $op != "create" ) {
+        /*
+         * skip execution if hook originates from API De Goede Woning
+         */
+        if ( $hookContext != "dgwapi.no_sync" ) {
+            if (in_array( $objectName, $syncedObjects ) ) {
+                /*
+                 * check if sync action is required when op = edit
+                 */
+                if ( $op == "edit" ) {
+                    $syncRequired = _checkSyncRequired ( $objectName, $objectId, $objectRef );
+                } else {
+                    $syncRequired = true;
+                }
+                /*
+                 * if syncAction is required, process sync
+                 */
+                if ( $syncRequired ) {
+                    /*
+                     * if $op = delete $objectRef will be empty. In that case, retrieve contactId from API
+                     */
+                    $contactId = 0;
+                    if ( $op == "delete" ) {
+                        $delObjectParams = array(
+                            'version'   =>  3,
+                            'id'        =>  $objectId
+                        );
+                        $delObject = civicrm_api( $objectName, 'Getsingle', $delObjectParams );
+                        if ( !isset( $delObject['is_error'] ) || $delObject['is_error'] = 0 ) {
+                            if ( isset( $delObject['contact_id'] ) ) {
+                                $contactId = $delObject['contact_id'];
+                            }
+                        }
+                    } else {
+                        if ( is_object( $objectRef ) ) {
+                            if ( isset( $objectRef->contact_id ) ) {
+                                $contactId = $objectRef->contact_id;
+                            }
+                        } else {
+                            if ( isset( $objectRef['contact_id'] ) ) {
+                                $contactId = $objectRef['contact_id'];
+                            }
+                        }
+                    }
+                    switch ( $objectName ) {
+                        case "Individual":
+                            //$syncResult = _syncIndividual( $op, $objectId, $contactId );
+                            break;
+                        case "Organization":
+                            //$syncResult = _syncOrganization( $op, $objectId, $contactId );
+                            break;
+                        case "Address":
+                            //$syncResult = _syncAddress( $op, $objectId, $contactId );
+                            break;
+                        case "Email":
+                            //$syncResult = _syncEmail( $op, $objectId, $contactId );
+                            break;
+                        case "Phone":
+                            $syncResult = _syncPhone( $op, $objectId, $contactId );
+                            break;
+                    }
+                }
+            }
+        }
+    }
+    return;
+}
+/**
+ * Implementation of hook_civicrm_post
+ *
+ * @author Erik Hommel (erik.hommel@civicoop.org)
+ *
+ * - synchronization for crate operation
+ *
+ */
+function sync_civicrm_post( $op, $objectName, $objectId, &$objectRef, $hookContext ) {
+    /*
+     * only for some objects
+     */
+    $syncedObjects = array( "Individual", "Organization", "Address", "Email", "Phone" );
+    /*
+     * only if op is create (other op handled in sync_civicrm_pre)
+     */
+    if ( $op == "create" ) {
+        /*
+         * skip execution if hook originates from API De Goede Woning
+         */
+        if ( $hookContext != "dgwapi.no_sync" ) {
+            if (in_array( $objectName, $syncedObjects ) ) {
+                /*
+                 * if $op = delete $objectRef will be empty. In that case, retrieve contactId from API
+                 */
+                if ( is_object( $objectRef ) ) {
+                    if ( isset( $objectRef->contact_id ) ) {
+                        $contactId = $objectRef->contact_id;
+                    }
+                } else {
+                    if ( isset( $objectRef['contact_id'] ) ) {
+                        $contactId = $objectRef['contact_id'];
+                    }
+                }
                 switch ( $objectName ) {
                     case "Individual":
-                        $syncResult = _syncIndividual( $objectId, $objectRef );
+                        //$syncResult = _syncIndividual( $op, $objectId, $contactId );
                         break;
                     case "Organization":
-                        $syncResult = _syncOrganization( $objectId, $objectRef );
+                        //$syncResult = _syncOrganization( $op, $objectId, $contactId );
                         break;
                     case "Address":
-                        $syncResult = _syncAddress( $objectId, $objectRef );
+                        //$syncResult = _syncAddress( $op, $objectId, $contactId );
                         break;
                     case "Email":
-                        $syncResult = _syncEmail( $objectId, $objectRef );
+                        //$syncResult = _syncEmail( $op, $objectId, $contactId );
                         break;
                     case "Phone":
-                        $syncResult = _syncPhone( $objectId, $objectRef );
+                        $syncResult = _syncPhone( $op, $objectId, $contactId );
                         break;
                 }
             }
@@ -232,7 +323,6 @@ function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
     $syncRequired = false;
     /*
      * sync is only required if contact also exists in NCCW First.
-     * This is checked against the synchronization table
      */
     $objectInFirst = _checkObjectInFirst( $objectName, $objectId );
     if ( $objectInFirst ) {
@@ -589,39 +679,62 @@ function _addContactSyncGroup( $contactId ) {
  * @param $contactId = id of the contact the sync record
  * @param $entityId = CiviCRM id of the entity affected
  * @param $entityName = name of the entity
- * @return none
+ * @return $result array
  */
 function _setSyncRecord( $action, $contactId, $entityId, $entityName, $keyFirst = null ) {
+    $result = array( );
     /*
      * return without further processing if one of the params is empty
      */
-    if ( empty( $action ) || empty( $contactId ) || empty( $entityId ) || empty( $entityName ) ) {
-        return;
+    if ( empty( $action ) || empty( $entityId ) || empty( $entityName ) ) {
+        $result['is_error'] = 1;
+        $result['error_message'] = "action, entityId and entityName are mandatory params and can not be empty";
+        return $result;
     }
     /*
      * retrieve custom_id's of the required fields
      */
     require_once 'CRM/Utils/DgwUtils.php';
-    $customLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'first sync action veld' );
-    $customId = CRM_Utils_DgwUtils::getCustomFieldId( array( 'label' => $customLabel ) );
-    $actionFldName = "custom_".$customId;
-
-    $customLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'first sync entity veld' );
-    $customId = CRM_Utils_DgwUtils::getCustomFieldId( array( 'label' => $customLabel ) );
-    $entityFldName = "custom_".$customId;
-
-    $customLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'first sync entity_id veld' );
-    $customId = CRM_Utils_DgwUtils::getCustomFieldId( array( 'label' => $customLabel ) );
-    $entityIdFldName = "custom_".$customId;
-
-    $customLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'first sync key_first veld' );
-    $customId = CRM_Utils_DgwUtils::getCustomFieldId( array( 'label' => $customLabel ) );
-    $keyFirstFldName = "custom_".$customId;
-
-    $customLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'first sync change_date veld' );
-    $customId = CRM_Utils_DgwUtils::getCustomFieldId( array( 'label' => $customLabel ) );
-    $changeDateFldName = "custom_".$customId;
-
+    $retrieveSyncField = _retrieveSyncFieldName( 'sync first action veld' );
+    if ( $retrieveSyncField['is_error'] == 0 ) {
+        $actionFldName = $retrieveSyncField['sync_field'];
+    } else {
+        $result['is_error'] = 1;
+        $result['error_message'] = "Could not retrieve field name for sync first action veld: {$retrieveSyncField['error_message']}";
+        return $result;
+    }
+    $retrieveSyncField = _retrieveSyncFieldName( 'sync first entity veld' );
+    if ( $retrieveSyncField['is_error'] == 0 ) {
+        $entityFldName = $retrieveSyncField['sync_field'];
+    } else {
+        $result['is_error'] = 1;
+        $result['error_message'] = "Could not retrieve field name for sync first entity veld: {$retrieveSyncField['error_message']}";
+        return $result;
+    }
+    $retrieveSyncField = _retrieveSyncFieldName( 'sync first entity_id veld' );
+    if ( $retrieveSyncField['is_error'] == 0 ) {
+        $entityIdFldName = $retrieveSyncField['sync_field'];
+    } else {
+        $result['is_error'] = 1;
+        $result['error_message'] = "Could not retrieve field name for sync first entity_id veld: {$retrieveSyncField['error_message']}";
+        return $result;
+    }
+    $retrieveSyncField = _retrieveSyncFieldName( 'sync first key_first veld' );
+    if ( $retrieveSyncField['is_error'] == 0 ) {
+        $keyFirstFldName = $retrieveSyncField['sync_field'];
+    } else {
+        $result['is_error'] = 1;
+        $result['error_message'] = "Could not retrieve field name for sync first key_first veld: {$retrieveSyncField['error_message']}";
+        return $result;
+    }
+    $retrieveSyncField = _retrieveSyncFieldName( 'sync first change_date veld' );
+    if ( $retrieveSyncField['is_error'] == 0 ) {
+        $changeDateFldName = $retrieveSyncField['sync_field'];
+    } else {
+        $result['is_error'] = 1;
+        $result['error_message'] = "Could not retrieve field name for sync first change_date veld: {$retrieveSyncField['error_message']}";
+        return $result;
+    }
     /*
      * process based on action
      */
@@ -666,6 +779,11 @@ function _setSyncRecord( $action, $contactId, $entityId, $entityName, $keyFirst 
  * be possible with the API, but probably no time to fix in the core API
  */
 function _retrieveSyncRecordId( $entityName, $contactId, $entityId, $entityFldName, $entityIdFldName ) {
+    CRM_Core_Error::debug("eerste entity", $entityName );
+    CRM_Core_Error::debug("contactId", $contactId);
+    CRM_Core_Error::debug("entityId", $entityId);
+    CRM_Core_Error::debug("entityFldName", $entityFldName);
+    CRM_Core_Error::debug("entityIdFldName", $entityIdFldName);
     $recordId = 0;
     if ( empty( $entityName ) || empty( $contactId ) || empty( $entityId ) ) {
         return $recordId;
@@ -674,6 +792,7 @@ function _retrieveSyncRecordId( $entityName, $contactId, $entityId, $entityFldNa
     $customTable = CRM_Utils_DgwUtils::getCustomGroupTableName( $customTableTitle );
     $selRecord =
 "SELECT id FROM $customTable WHERE entity_id = $contactId AND $entityFldName = '$entityName' AND $entityIdFldName = $entityId";
+    CRM_Core_Error::debug("selRecord", $selRecord);
     $daoRecord = CRM_Core_DAO::executeQuery( $selRecord );
     if ( $daoRecord->fetch() ) {
         $recordId = $daoRecord->id;
@@ -748,4 +867,117 @@ function _cleanSyncTable( $syncTable ) {
         CRM_Core_DAO::executeQuery( $removeQry );
     }
     return;
+}
+/**
+ * function to synchronize phone with First Noa which means:
+ * - update record in synchronization table
+ * - add contact to synchronization group
+ *
+ * @author Erik Hommel (erik.hommel@civicoop.org)
+ * @param $op, $objectId (id of the phone), $objectRef (array or object with values)
+ * @return $result array
+ */
+function _syncPhone( $op, $objectId, $contactId ) {
+    $result = array( );
+    /*
+     * objectId and contactId can not be empty
+     */
+    if ( empty( $objectId ) || empty( $contactId ) ) {
+        $result['is_error'] = 1;
+        $result['error_message'] = "objectId and contactId can not be empty";
+        return $result;
+    }
+    /*
+     * create or update synchronization table record
+     */
+    _setSyncRecord( $op, $contactId, $objectId, "Phone" );
+    /*
+     * add contact to synchronization group
+     */
+    _addContactSyncGroup( $contactId );
+    $result['is_error'] = 0;
+    return $result;
+}
+/**
+ * function to retrieve the custom_xx of a sync first field
+ * @author Erik Hommel (erik.hommel@civicoop.org)
+ * @param $label label of a dgw_config value for a field name
+ * @params $result array
+ */
+function _retrieveSyncFieldName( $fldLabel ) {
+    $result = array( );
+    if ( empty( $fldLabel ) ) {
+        $result['is_error'] = 1;
+        $result['error_message'] = "fldLabel is empty, no field name associated";
+        return $result;
+    }
+    $customLabel = CRM_Utils_DgwUtils::getDgwConfigValue( $fldLabel );
+    if ( empty( $customLabel ) ) {
+        $result['is_error'] = 1;
+        $result['error_message'] = "customLabel is empty, no field name associated";
+        return $result;
+    }
+    $customParams = array(
+        'version'   =>  3,
+        'label'     =>  $customLabel
+    );
+    $result['is_error'] = 0;
+    $customFields = civicrm_api( 'CustomField', 'Get', $customParams );
+    if ( isset( $customFields['is_error'] ) && $customFields['is_error'] == 1 ) {
+        $result['is_error'] = 1;
+        $result['error_message'] = "Error in CustomField Get API : {$customFields['error_message']}";
+        return $result;
+    } else {
+        if ( $customFields['count'] == 1 ) {
+            foreach( $customFields['values'] as $customFieldId => $customField ) {
+                $result['sync_field'] = $customField['column_name'];
+                return $result;
+            }
+        } else {
+            /*
+             * retrieve FirstSync group to select correct field
+             */
+            $customGroupLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'synchronisatietabel first' );
+            $customGroupParams = array(
+                'version'   =>  3,
+                'title'     =>  $customGroupLabel
+            );
+            $customGroups = civicrm_api( 'CustomGroup', 'Get', $customGroupParams );
+            if ( isset( $customGroups['is_error'] ) && $customGroups['is_error'] == 1 ) {
+                $result['is_error'] = 1;
+                $result['error_message'] = "Error in CustomGroup Get API : {$customGroups['error_message']}";
+                return $result;
+            } else {
+                if ( $customGroups['count'] > 1 ) {
+                    $result['is_error'] = 1;
+                    $result['error_message'] = "There are more than one custom groups with the title $customGroupLabel";
+                    return $result;
+                } else {
+                    foreach( $customGroups as $customGroupKey => $customGroup ) {
+                        $customGroupId = $customGroupKey;
+                    }
+                    $customParams = array(
+                        'version'   =>  3,
+                        'label'     =>  $customLabel,
+                        'group'     =>  $customGroupId
+                    );
+                    $customFields = civicrm_api( 'CustomField', 'Get', $customParams );
+                    if ( isset( $customFields['is_error'] ) && $customFields['is_error'] == 1 ) {
+                        $result['is_error'] = 1;
+                        $result['error_message'] = "Error in CustomField Get API : {$customFields['error_message']}";
+                    } else {
+                        if ( $customFields['count'] == 1 ) {
+                            foreach( $customFields['values'] as $customFieldId => $customField ) {
+                                $result['sync_field'] = $customField['column_name'];
+                            }
+                        } else {
+                            $result['is_error'] = 1;
+                            $result['error_message'] = "Er zijn meer velden met label $customLabel in de synchronisatietabel $customGroupLabel";
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $result;
 }
