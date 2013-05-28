@@ -216,7 +216,7 @@
         {foreach from=$target_contact key=id item=name}
           	{* DGW18 Toevoegen naw en telefoon na target contact *}
             {* ophalen naw gegevens contact met API *}
-            {crmAPI var='naw' entity='Contact' action='get' sequential=1 contact_id=636}
+            {crmAPI var='naw' entity='Contact' action='get' sequential=1 contact_id=$id}
             <a href="{crmURL p='civicrm/contact/view' q="reset=1&cid=$id"}">{$name}</a>&nbsp;(
             {if isset($naw.$id.street_address) and $naw.$id.street_address ne ""}
                 {$naw.$id.street_address}
