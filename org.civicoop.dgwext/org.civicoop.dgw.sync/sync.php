@@ -196,7 +196,6 @@ function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef, $hookContex
          */
         if ( $hookContext != "dgwapi.no_sync" ) {
             if (in_array( $objectName, $syncedObjects ) ) {
-                CRM_Core_Error("objectRef in pre", $objectRef);
                 /*
                  * check if sync action is required when op = edit
                  */

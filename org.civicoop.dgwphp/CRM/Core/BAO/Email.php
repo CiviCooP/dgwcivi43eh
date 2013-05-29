@@ -69,7 +69,7 @@ class CRM_Core_BAO_Email extends CRM_Core_DAO_Email {
    */
   static function add(&$params) {
     $hook = empty($params['id']) ? 'create' : 'edit';
-    if ( $params['hook_context'] ) {
+    if ( isset( $params['hook_context'] ) ) {
         $hookContext = $params['hook_context'];
         unset( $params['hook_context'] );
     } else {
