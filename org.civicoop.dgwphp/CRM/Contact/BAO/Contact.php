@@ -720,7 +720,7 @@ WHERE     civicrm_contact.id = " . CRM_Utils_Type::escape($id, 'Integer');
    * @access public
    * @static
    */
-  static function deleteContact($id, $restore = FALSE, $skipUndelete = FALSE) {
+  static function deleteContact($id, $restore = FALSE, $skipUndelete = FALSE, $hookContext = 'core') {
 
     if (!$id) {
       return FALSE;
@@ -753,12 +753,6 @@ WHERE     civicrm_contact.id = " . CRM_Utils_Type::escape($id, 'Integer');
     $contactType = $contact->contact_type;
     $action = ($restore) ? 'restore' : 'delete';
 
-    if ( $params['hook_context'] ) {
-        $hookContext = $params['hook_context'];
-        unset( $params['hook_context'] );
-    } else {
-        $hookContext = "core";
-    }
     CRM_Utils_Hook::pre($action, $contactType, $id, CRM_Core_DAO::$_nullArray, $hookContext);
 
     if ($restore) {
