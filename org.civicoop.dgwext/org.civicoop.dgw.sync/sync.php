@@ -196,6 +196,7 @@ function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef, $hookContex
          */
         if ( $hookContext != "dgwapi.no_sync" ) {
             if (in_array( $objectName, $syncedObjects ) ) {
+                CRM_Core_Error("objectRef in pre", $objectRef);
                 /*
                  * check if sync action is required when op = edit
                  */
@@ -234,23 +235,7 @@ function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef, $hookContex
                             }
                         }
                     }
-                    switch ( $objectName ) {
-                        case "Individual":
-                            //$syncResult = _syncIndividual( $op, $objectId, $contactId );
-                            break;
-                        case "Organization":
-                            //$syncResult = _syncOrganization( $op, $objectId, $contactId );
-                            break;
-                        case "Address":
-                            //$syncResult = _syncAddress( $op, $objectId, $contactId );
-                            break;
-                        case "Email":
-                            //$syncResult = _syncEmail( $op, $objectId, $contactId );
-                            break;
-                        case "Phone":
-                            $syncResult = _syncPhone( $op, $objectId, $contactId );
-                            break;
-                    }
+                    $syncResult = _syncFirstObject( $op, $objectId, $contactId, $objectName );
                 }
             }
         }
@@ -279,32 +264,22 @@ function sync_civicrm_post( $op, $objectName, $objectId, &$objectRef, $hookConte
          */
         if ( $hookContext != "dgwapi.no_sync" ) {
             if (in_array( $objectName, $syncedObjects ) ) {
-                if ( is_object( $objectRef ) ) {
-                    if ( isset( $objectRef->contact_id ) ) {
-                        $contactId = $objectRef->contact_id;
-                    }
+                if ( $objectName == "Individual" || $objectName == "Organization" ) {
+                    $contactId = $objectId;
                 } else {
-                    if ( isset( $objectRef['contact_id'] ) ) {
-                        $contactId = $objectRef['contact_id'];
+                    if ( is_object( $objectRef ) ) {
+                        if ( isset( $objectRef->contact_id ) ) {
+                            $contactId = $objectRef->contact_id;
+                        }
+                    } else {
+                        if ( isset( $objectRef['contact_id'] ) ) {
+                            $contactId = $objectRef['contact_id'];
+                        } else {
+                            $contactId = 0;
+                        }
                     }
                 }
-                switch ( $objectName ) {
-                    case "Individual":
-                        //$syncResult = _syncIndividual( $op, $objectId, $contactId );
-                        break;
-                    case "Organization":
-                        //$syncResult = _syncOrganization( $op, $objectId, $contactId );
-                        break;
-                    case "Address":
-                        //$syncResult = _syncAddress( $op, $objectId, $contactId );
-                        break;
-                    case "Email":
-                        //$syncResult = _syncEmail( $op, $objectId, $contactId );
-                        break;
-                    case "Phone":
-                        $syncResult = _syncPhone( $op, $objectId, $contactId );
-                        break;
-                }
+                $syncResult = _syncFirstObject( $op, $objectId, $contactId, $objectName );
             }
         }
     }
@@ -869,16 +844,17 @@ function _cleanSyncTable( $syncTable ) {
     return;
 }
 /**
- * function to synchronize phone with First Noa which means:
+ * function to synchronize object with First Noa which means:
  * - update record in synchronization table
  * - add contact to synchronization group
  *
  * @author Erik Hommel (erik.hommel@civicoop.org)
- * @param $op, $objectId (id of the phone), $objectRef (array or object with values)
+ * @param $op, $objectId, $objectRef (array or object with values)
  * @return $result array
  */
-function _syncPhone( $op, $objectId, $contactId ) {
+function _syncFirstObject( $op, $objectId, $contactId, $objectName ) {
     $result = array( );
+
     /*
      * objectId and contactId can not be empty
      */
@@ -888,9 +864,13 @@ function _syncPhone( $op, $objectId, $contactId ) {
         return $result;
     }
     /*
-     * create or update synchronization table record
+     * create or update synchronization table record for organization
      */
-    _setSyncRecord( $op, $contactId, $objectId, "Phone" );
+    if ( $objectName == "Individual" || $objectName == "Organization" ) {
+        $resultSync = _setSyncRecord( $op, $contactId, $objectId, 'contact' );
+    } else {
+        $resultSync = _setSyncRecord(  $op, $contactId, $objectId, $objectName );
+    }
     /*
      * add contact to synchronization group
      */
