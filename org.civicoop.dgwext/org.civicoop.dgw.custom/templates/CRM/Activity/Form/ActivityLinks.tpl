@@ -56,11 +56,11 @@
     {assign var='typeWijk' value=109}
     {assign var='groupWijk' value=18}
     {assign var='userAdmin' value=0}
-    {crmAPI var="userGroups" entity="group_contact" action="get" contact_id=$session->get('userID')}
+    {crmAPI var="userGroups" entity="GroupContact" action="get" contact_id=$session->get('userID')}
     {* als één van de groepen groep Wijk, dan userWijk=1 (tonen) *}
     {* als één van de groepen groep DirBest dan userDirBest=1 (tonen) *}
     {* als één van de groepen groep 1 dan userAdmin=1 (tonen) *}
-    {foreach from=$userGroups item=userGroup}
+    {foreach from=$userGroups.values item=userGroup}
         {if $userGroup.group_id eq 1}
             {assign var='userAdmin' value=1}
         {/if}    

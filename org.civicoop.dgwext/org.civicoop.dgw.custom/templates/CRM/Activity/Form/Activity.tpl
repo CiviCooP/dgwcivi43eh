@@ -72,8 +72,8 @@
         {assign var='txtShow' value="Neem contact op met de directeur/bestuurder voor meer informatie"}
     {/if}
     {if $typeID eq $typeWijk or $typeID eq $typeDirBest}
-        {crmAPI var="userGroups" entity="group_contact" action="get" contact_id=$session->get('userID')}
-        {foreach from=$userGroups item=userGroup}
+        {crmAPI var="userGroups" entity="groupcontact" action="get" contact_id=$session->get('userID')}
+        {foreach from=$userGroups.values item=userGroup}
             {if $userGroup.group_id eq 1}
                 {assign var='userAdmin' value=1}
             {/if}
