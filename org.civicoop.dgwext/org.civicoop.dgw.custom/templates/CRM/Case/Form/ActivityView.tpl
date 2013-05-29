@@ -44,8 +44,8 @@
 {foreach from=$actDetails item=actDetail}
     {if $actDetail.activity_type_id eq $typeActWijk or $actDetail.activity_type_id eq $typeCaseWijk}
         {assign var='txtShow' value="Gevoelige informatie, neem contact op met Consulent Wijk en Ontwikkeling voor meer details!"}
-        {crmAPI var="userGroups" entity="group_contact" action="get" contact_id=$session->get('userID')}
-        {foreach from=$userGroups item=userGroup}
+        {crmAPI var="userGroups" entity="GroupContact" action="get" contact_id=$session->get('userID')}
+        {foreach from=$userGroups.values item=userGroup}
             {if $userGroup.group_id eq 1}
                 {assign var='userAdmin' value=1}
             {/if}
