@@ -47,8 +47,36 @@
  | Date			:	6 Nov 2011                                        |
  | Description	:	Aanpassing naar D:/ voor eWorX Active X 		  |
  |                                                                    |
+ | Marker       :   CoreCorp6                                         |
+ | Description  :   Remove nick name                                  |
+ | Date         :   21 Jan 2011 (V3.3.0)                              |
+ | Marker       :   CoreCorp7                                         |
+ | Description  :   Remove legal name and nick name                   |
+ | Marker       :   CoreCorp8                                         |
+ | Description  :   Label for sic code is KvK nummer                  |
+ | Date         :   12 Jan 2011 (v3.3.0)                              |
+ | Marker       :   CoreCorp4                                         |
+ | Description  :   Remove nick name for household                    |
  +--------------------------------------------------------------------+
 *}
+{* CoreCorp7 *}
+{assign var="showNickname" value="1"}
+{assign var="showLegalName" value="1"}
+{if $contact_type eq 'Organization'}
+	{assign var="showNickname" value="0"}
+	{assign var="showLegalName" value="0"}
+{/if}
+{* end CoreCorp7 *}
+{* CoreCorp6 *}
+{if $contact_type eq 'Individual'}
+	{assign var="showNickname" value="0"}
+{/if}
+{* end CoreCorp6 *}
+{* CoreCorp4 *}
+{if $contact_type eq 'Household'}
+	{assign var="showNickname" value="0"}
+{/if}
+{* end CoreCorp4 *}
 <div id="crm-contactinfo-content" {if $permission EQ 'edit'} class="crm-inline-edit" data-edit-params='{ldelim}"cid": "{$contactId}", "class_name": "CRM_Contact_Form_Inline_ContactInfo"{rdelim}'{/if}>
   <div class="crm-clear crm-inline-block-content" {if $permission EQ 'edit'}title="{ts}Edit info{/ts}"{/if}>
     {if $permission EQ 'edit'}
@@ -71,16 +99,22 @@
         <div class="crm-content crm-contact-job_title">{$job_title}</div>
       </div>
       {/if}
+      
+      {* CoreCorp7 *}
+      {if $showNickname}
       <div class="crm-summary-row">
         <div class="crm-label">{ts}Nickname{/ts}</div>
         <div class="crm-content crm-contact-nick_name">{$nick_name}</div>
       </div>
-
+	  {/if}
+	  
       {if $contact_type eq 'Organization'}
+      {if $showLegalName}
       <div class="crm-summary-row">
         <div class="crm-label">{ts}Legal Name{/ts}</div>
         <div class="crm-content crm-contact-legal_name">{$legal_name}</div>
       </div>
+      {/if}
       <div class="crm-summary-row">
       	{* Customization CoreCorp8 sic code as KvK *}
         {* <div class="crm-label">{ts}SIC Code{/ts}</div> *}
