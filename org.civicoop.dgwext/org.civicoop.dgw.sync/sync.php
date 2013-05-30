@@ -196,6 +196,15 @@ function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef, $hookContex
          */
         if ( $hookContext != "dgwapi.no_sync" ) {
             if (in_array( $objectName, $syncedObjects ) ) {
+
+                $txt = "we doen in pre iets met op $op, object $objectName, objectId $objectId";
+                if ( is_object( $objectRef ) ) {
+                    $txt .= " en objectRef is een object.";
+                } else {
+                    $txt .= " en objectRef is een array.";
+                }
+                CRM_Core_DAO::executeQuery( "INSERT INTO ehtest SET tekst = '$txt'");
+
                 /*
                  * check if sync action is required when op = edit
                  */
@@ -204,6 +213,12 @@ function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef, $hookContex
                 } else {
                     $syncRequired = true;
                 }
+                if ( $syncRequired == false ) {
+                    $txt = "syncRequired staat false voor op $op, objectName $objectName met id $objectId";
+                } else {
+                    $txt = "syncRequired staat true voor op $op, objectName $objectName met id $objectId";
+                }
+                CRM_Core_DAO::executeQuery( "INSERT INTO ehtest SET tekst = '$txt'");
                 /*
                  * if syncAction is required, process sync
                  */
@@ -263,6 +278,13 @@ function sync_civicrm_post( $op, $objectName, $objectId, &$objectRef, $hookConte
          */
         if ( $hookContext != "dgwapi.no_sync" ) {
             if (in_array( $objectName, $syncedObjects ) ) {
+                $txt = "we doen in post iets met op $op, object $objectName, objectId $objectId";
+                if ( is_object( $objectRef ) ) {
+                    $txt .= " en objectRef is een object.";
+                } else {
+                    $txt .= " en objectRef is een array.";
+                }
+                CRM_Core_DAO::executeQuery( "INSERT INTO ehtest SET tekst = '$txt'");
                 if ( $objectName == "Individual" || $objectName == "Organization" ) {
                     $contactId = $objectId;
                 } else {
@@ -295,6 +317,7 @@ function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
     /*
      * sync is only required if contact also exists in NCCW First.
      */
+
     $objectInFirst = _checkObjectInFirst( $objectName, $objectId );
     if ( $objectInFirst ) {
         $apiParams = array(
@@ -321,62 +344,88 @@ function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
             case "Individual":
                 if ( isset( $resultCheck['gender_id'] ) ) {
                     if ( is_object ( $objectRef ) ) {
-                        if ( $resultCheck['gender_id'] != $objectRef->gender_id ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef->gender_id ) ) {
+                            if ( $resultCheck['gender_id'] != $objectRef->gender_id ) {
+                                $syncRequired = true;
+                            }
                         }
                     } else {
-                        if ( $resultCheck['gender_id'] != $objectRef['gender_id'] ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef['gender_id'] ) ) {
+                            if ( $resultCheck['gender_id'] != $objectRef['gender_id'] ) {
+                                $syncRequired = true;
+                            }
                         }
                     }
                 }
+
+
                 if ( isset( $resultCheck['first_name'] ) ) {
                     if ( is_object( $objectRef ) ) {
-                        if ( $resultCheck['first_name'] != $objectRef->first_name ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef->first_name ) ) {
+                            if ( $resultCheck['first_name'] != $objectRef->first_name ) {
+                                $syncRequired = true;
+                            }
                         }
                     } else {
-                        if ( $resultCheck['first_name'] != $objectRef['first_name'] ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef['first_name'] ) ) {
+                            if ( $resultCheck['first_name'] != $objectRef['first_name'] ) {
+                                $syncRequired = true;
+                            }
                         }
                     }
                 }
+
                 if ( isset( $resultCheck['middle_name'] ) ) {
                     if ( is_object( $objectRef ) ) {
-                        if ( $resultCheck['middle_name'] != $objectRef->middle_name ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef->middle_name ) ) {
+                            if ( $resultCheck['middle_name'] != $objectRef->middle_name ) {
+                                $syncRequired = true;
+                            }
                         }
                     } else {
-                        if ( $resultCheck['middle_name'] != $objectRef['middle_name'] ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef['middle_name'] ) ) {
+                            if ( $resultCheck['middle_name'] != $objectRef['middle_name'] ) {
+                                $syncRequired = true;
+                            }
                         }
                     }
                 }
+
                 if ( isset( $resultCheck['last_name'] ) ) {
                     if (is_object( $objectRef ) ) {
-                        if ( $resultCheck['last_name'] != $objectRef->last_name ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef->last_name ) ) {
+                            if ( $resultCheck['last_name'] != $objectRef->last_name ) {
+                                $syncRequired = true;
+                            }
                         }
                     } else {
-                        if ( $resultCheck['last_name'] != $objectRef['last_name'] ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef['last_name'] ) ) {
+                            if ( $resultCheck['last_name'] != $objectRef['last_name'] ) {
+                                $syncRequired = true;
+                            }
                         }
                     }
                 }
+
                 /*
                  * reformat birth date because API and object use diffent formats
                  */
                 if ( isset( $resultCheck['birth_date'] ) ) {
                     if ( is_object( $objectRef ) ) {
-                        if ( strtotime( $resultCheck['birth_date'] ) != strtotime( $objectRef->birth_date ) ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef->birth_date ) ) {
+                            if ( strtotime( $resultCheck['birth_date'] ) != strtotime( $objectRef->birth_date ) ) {
+                                $syncRequired = true;
+                            }
                         }
                     } else {
-                        if ( strtotime( $resultCheck['birth_date'] ) != strtotime( $objectRef['birth_date'] ) ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef['birth_date'] ) ) {
+                            if ( strtotime( $resultCheck['birth_date'] ) != strtotime( $objectRef['birth_date'] ) ) {
+                                $syncRequired = true;
+                            }
                         }
                     }
                 }
+
                 /*
                  * if still no sync required, also check custom field for
                  * burgerlijke staat
@@ -403,12 +452,16 @@ function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
                                         // safe to use array element 0 because it is not a repeating group
                                         $customCompare = "custom_".$customElement[0]['custom_id']."_".$customElement[0]['record_id'];
                                         if ( is_object( $objectRef ) ) {
-                                            if ( $customElement[0]['value'] != $objectRef->$customCompare ) {
-                                                $syncRequired = true;
+                                            if ( isset( $objectRef->$customCompare ) ) {
+                                                if ( $customElement[0]['value'] != $objectRef->$customCompare ) {
+                                                    $syncRequired = true;
+                                                }
                                             }
                                         } else {
-                                            if ( $customElement[0]['value'] != $objectRef[$customCompare] ) {
-                                                $syncRequired = true;
+                                            if ( isset( $objectRef[$customCompare] ) ) {
+                                                if ( $customElement[0]['value'] != $objectRef[$customCompare] ) {
+                                                    $syncRequired = true;
+                                                }
                                             }
                                         }
                                     }
@@ -422,12 +475,16 @@ function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
             case "Organization":
                 if ( isset( $resultCheck['organization_name'] ) ) {
                     if ( is_object( $objectRef ) ) {
-                        if ( $resultCheck['organization_name'] != $objectRef->organization_name ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef->organization_name ) ) {
+                            if ( $resultCheck['organization_name'] != $objectRef->organization_name ) {
+                                $syncRequired = true;
+                            }
                         }
                     } else {
-                        if ( $resultCheck['organization_name'] != $objectRef['organization_name'] ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef['organization_name'] ) ) {
+                            if ( $resultCheck['organization_name'] != $objectRef['organization_name'] ) {
+                                $syncRequired = true;
+                            }
                         }
                     }
                 }
@@ -436,78 +493,106 @@ function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
             case "Address":
                 if ( isset( $resultCheck['street_address'] ) ) {
                     if ( is_object( $objectRef ) ) {
-                        if ( $resultCheck['street_address'] != $objectRef->street_address ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef->street_address ) ) {
+                            if ( $resultCheck['street_address'] != $objectRef->street_address ) {
+                                $syncRequired = true;
+                            }
                         }
                     } else {
-                        if ( $resultCheck['street_address'] != $objectRef['street_address'] ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef['street_address'] ) ) {
+                            if ( $resultCheck['street_address'] != $objectRef['street_address'] ) {
+                                $syncRequired = true;
+                            }
                         }
                     }
                 }
                 if ( isset( $resultCheck['street_name'] ) ) {
                     if ( is_object( $objectRef ) ) {
-                        if ( $resultCheck['street_name'] != $objectRef->street_name ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef->street_name ) ) {
+                            if ( $resultCheck['street_name'] != $objectRef->street_name ) {
+                                $syncRequired = true;
+                            }
                         }
                     } else {
-                        if ( $resultCheck['street_name'] != $objectRef['street_name'] ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef['street_name'] ) ) {
+                            if ( $resultCheck['street_name'] != $objectRef['street_name'] ) {
+                                $syncRequired = true;
+                            }
                         }
                     }
                 }
                 if ( isset( $resultCheck['street_number'] ) ) {
                     if ( is_object( $objectRef ) ) {
-                        if ( $resultCheck['street_number'] != $objectRef->street_number ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef->street_number ) ) {
+                            if ( $resultCheck['street_number'] != $objectRef->street_number ) {
+                                $syncRequired = true;
+                            }
                         }
                     } else {
-                        if ( $resultCheck['street_number'] != $objectRef['street_number'] ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef['street_number'] ) ) {
+                            if ( $resultCheck['street_number'] != $objectRef['street_number'] ) {
+                                $syncRequired = true;
+                            }
                         }
                     }
                 }
                 if ( isset( $resultCheck['street_unit'] ) ) {
                     if ( is_object( $objectRef ) ) {
-                        if ( $resultCheck['street_unit'] != $objectRef->street_unit ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef->street_unit ) ) {
+                            if ( $resultCheck['street_unit'] != $objectRef->street_unit ) {
+                                $syncRequired = true;
+                            }
                         }
                     } else {
-                        if ( $resultCheck['street_unit'] != $objectRef['street_unit'] ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef['street_unit'] ) ) {
+                            if ( $resultCheck['street_unit'] != $objectRef['street_unit'] ) {
+                                $syncRequired = true;
+                            }
                         }
                     }
                 }
                 if ( isset( $resultCheck['postal_code'] ) ) {
                     if ( is_object( $objectRef ) ) {
-                        if ( $resultCheck['postal_code'] != $objectRef->postal_code ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef->postal_code ) ) {
+                            if ( $resultCheck['postal_code'] != $objectRef->postal_code ) {
+                                $syncRequired = true;
+                            }
                         }
                     } else {
-                        if ( $resultCheck['postal_code'] != $objectRef['postal_code'] ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef['postal_code'] ) ) {
+                            if ( $resultCheck['postal_code'] != $objectRef['postal_code'] ) {
+                                $syncRequired = true;
+                            }
                         }
                     }
                 }
                 if ( isset( $resultCheck['city'] ) ) {
                     if ( is_object( $objectRef ) ) {
-                        if ( $resultCheck['city'] != $objectRef->city ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef->city ) ) {
+                            if ( $resultCheck['city'] != $objectRef->city ) {
+                                $syncRequired = true;
+                            }
                         }
                     } else {
-                        if ( $resultCheck['city'] != $objectRef['city'] ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef['city'] ) ) {
+                            if ( $resultCheck['city'] != $objectRef['city'] ) {
+                                $syncRequired = true;
+                            }
                         }
                     }
                 }
                 if ( isset( $resultCheck['country_id'] ) ) {
                     if ( is_object( $objectRef ) ) {
-                        if ( $resultCheck['country_id'] != $objectRef->country_id ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef->country_id ) ) {
+                            if ( $resultCheck['country_id'] != $objectRef->country_id ) {
+                                $syncRequired = true;
+                            }
                         }
                     } else {
-                        if ( $resultCheck['country_id'] != $objectRef['country_id'] ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef['country_id'] ) ) {
+                            if ( $resultCheck['country_id'] != $objectRef['country_id'] ) {
+                                $syncRequired = true;
+                            }
                         }
                     }
                 }
@@ -516,34 +601,46 @@ function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
             case "Phone":
                 if ( isset( $resultCheck['location_type_id'] ) ) {
                     if ( is_object( $objectRef ) ) {
-                        if ( $resultCheck['location_type_id'] != $objectRef->location_type_id ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef->location_type_id ) ) {
+                            if ( $resultCheck['location_type_id'] != $objectRef->location_type_id ) {
+                                $syncRequired = true;
+                            }
                         }
                     } else {
-                        if ( $resultCheck['location_type_id'] != $objectRef['location_type_id'] ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef['location_type_id'] ) ) {
+                            if ( $resultCheck['location_type_id'] != $objectRef['location_type_id'] ) {
+                                $syncRequired = true;
+                            }
                         }
                     }
                 }
                 if ( isset( $resultCheck['phone_type_id'] ) ) {
                     if ( is_object( $objectRef ) ) {
-                        if ( $resultCheck['phone_type_id'] != $objectRef->phone_type_id ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef->phone_type_id ) ) {
+                            if ( $resultCheck['phone_type_id'] != $objectRef->phone_type_id ) {
+                                $syncRequired = true;
+                            }
                         }
                     } else {
-                        if ( $resultCheck['phone_type_id'] != $objectRef['phone_type_id'] ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef['phone_type_id'] ) ) {
+                            if ( $resultCheck['phone_type_id'] != $objectRef['phone_type_id'] ) {
+                                $syncRequired = true;
+                            }
                         }
                     }
                 }
                 if ( isset( $resultCheck['phone'] ) ) {
                     if ( is_object( $objectRef ) ) {
-                        if ( $resultCheck['phone'] != $objectRef->phone ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef->phone ) ) {
+                            if ( $resultCheck['phone'] != $objectRef->phone ) {
+                                $syncRequired = true;
+                            }
                         }
                     } else {
-                        if ( $resultCheck['phone'] != $objectRef['phone'] ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef['phone'] ) ) {
+                            if ( $resultCheck['phone'] != $objectRef['phone'] ) {
+                                $syncRequired = true;
+                            }
                         }
                     }
                 }
@@ -552,23 +649,31 @@ function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
             case "Email":
                 if ( isset( $resultCheck['location_type_id'] ) ) {
                     if ( is_object( $objectRef ) ) {
-                        if ( $resultCheck['location_type_id'] != $objectRef->location_type_id ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef->location_type_id ) ) {
+                            if ( $resultCheck['location_type_id'] != $objectRef->location_type_id ) {
+                                $syncRequired = true;
+                            }
                         }
                     } else {
-                        if ( $resultCheck['location_type_id'] != $objectRef['location_type_id'] ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef['location_type_id'] ) ) {
+                            if ( $resultCheck['location_type_id'] != $objectRef['location_type_id'] ) {
+                                $syncRequired = true;
+                            }
                         }
                     }
                 }
                 if ( isset( $resultCheck['email'] ) ) {
                     if ( is_object( $objectRef ) ) {
-                        if ( $resultCheck['email'] != $objectRef->email ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef->email ) ) {
+                            if ( $resultCheck['email'] != $objectRef->email ) {
+                                $syncRequired = true;
+                            }
                         }
                     } else {
-                        if ( $resultCheck['email'] != $objectRef['email'] ) {
-                            $syncRequired = true;
+                        if ( isset( $objectRef['email'] ) ) {
+                            if ( $resultCheck['email'] != $objectRef['email'] ) {
+                                $syncRequired = true;
+                            }
                         }
                     }
                 }
