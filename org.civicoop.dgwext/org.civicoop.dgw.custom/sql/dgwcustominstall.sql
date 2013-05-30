@@ -45,7 +45,7 @@ INSERT INTO `dgw_config` SET label = 'sync first entity_id veld', value = 'entit
 INSERT INTO `dgw_config` SET label = 'sync first key_first veld', value = 'key_first';
 INSERT INTO `dgw_config` SET label = 'sync first change_date veld', value = 'change_date';
 INSERT INTO `dgw_config` SET label = 'sync first error tabel', value = 'Fouten synchronisatie First';
-INSERT INTO `dgw_config` SET label = 'sync first error action veld', value = 'action err';
+INSERT INTO `dgw_config` SET label = 'sync first error action veld', value = 'action_err';
 INSERT INTO `dgw_config` SET label = 'sync first error entity veld', value = 'Entiteit fout';
 INSERT INTO `dgw_config` SET label = 'sync first error entity_id veld', value = 'entity_id_err';
 INSERT INTO `dgw_config` SET label = 'sync first error key_first veld', value = 'key_first_err';
