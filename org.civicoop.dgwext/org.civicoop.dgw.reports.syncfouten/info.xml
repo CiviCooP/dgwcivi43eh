@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <extension key="org.civicoop.dgw.reports.syncfouten" type="module">
-  <file>Syncfouten</file>
+  <file>syncfouten</file>
   <name>Rapporten: syncfouten voor de Goede Woning</name>
   <description>Module met custom reports voor de Goede Woning</description>
   <license>Academic Free License v3.0</license>

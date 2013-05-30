@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <extension key="org.civicoop.dgw.search" type="module">
-  <file>Search</file>
+  <file>search</file>
   <name>Zoekfuncties voor de Goede Woning</name>
   <description>Module met custom searches voor de Goede Woning</description>
   <license>Academic Free License v3.0</license>
