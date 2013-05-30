@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<extension key="org.civicoop.dgw.reports.vastgoedstrategie" type="module">
+  <file>vastgoedstratiegie</file>
+  <name>Rapporten: vastgoed strategie voor de Goede Woning</name>
+  <description>Module met custom reports voor de Goede Woning</description>
+  <license>Academic Free License v3.0</license>
+  <maintainer>
+    <author>CiviCooP</author>
+    <email>helpdesk@civicoop.org</email>
+  </maintainer>
+  <releaseDate>2013-04-18</releaseDate>
+  <version>1.0</version>
+  <develStage>alpha</develStage>
+  <compatibility>
+    <ver>4.2</ver>
+  </compatibility>
+  <comments>This module is being developed and tested</comments>
+  <civix>
+  </civix>
+</extension>
