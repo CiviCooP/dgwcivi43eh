@@ -417,8 +417,17 @@ SELECT * FROM vst_complex";
         }      
     }
 
-    function getTemplateFileName(){
+    /*function getTemplateFileName(){
     	return 'CRM/Report/VastStrat.tpl';
+    }*/
+    
+    function getTemplateFileName(){
+    	$defaultTpl = parent::getTemplateFileName();
+    	$template   = CRM_Core_Smarty::singleton();
+    	if (!$template->template_exists($defaultTpl)) {
+    		$defaultTpl = 'CRM/Report/VastStrat.tpl';
+    	}
+    	return $defaultTpl;
     }
    
 }
