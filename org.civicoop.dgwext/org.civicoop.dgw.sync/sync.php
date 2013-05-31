@@ -196,15 +196,6 @@ function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef, $hookContex
          */
         if ( $hookContext != "dgwapi.no_sync" ) {
             if (in_array( $objectName, $syncedObjects ) ) {
-
-                $txt = "we doen in pre iets met op $op, object $objectName, objectId $objectId";
-                if ( is_object( $objectRef ) ) {
-                    $txt .= " en objectRef is een object.";
-                } else {
-                    $txt .= " en objectRef is een array.";
-                }
-                CRM_Core_DAO::executeQuery( "INSERT INTO ehtest SET tekst = '$txt'");
-
                 /*
                  * check if sync action is required when op = edit
                  */
@@ -213,12 +204,6 @@ function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef, $hookContex
                 } else {
                     $syncRequired = true;
                 }
-                if ( $syncRequired == false ) {
-                    $txt = "syncRequired staat false voor op $op, objectName $objectName met id $objectId";
-                } else {
-                    $txt = "syncRequired staat true voor op $op, objectName $objectName met id $objectId";
-                }
-                CRM_Core_DAO::executeQuery( "INSERT INTO ehtest SET tekst = '$txt'");
                 /*
                  * if syncAction is required, process sync
                  */
@@ -278,13 +263,6 @@ function sync_civicrm_post( $op, $objectName, $objectId, &$objectRef, $hookConte
          */
         if ( $hookContext != "dgwapi.no_sync" ) {
             if (in_array( $objectName, $syncedObjects ) ) {
-                $txt = "we doen in post iets met op $op, object $objectName, objectId $objectId";
-                if ( is_object( $objectRef ) ) {
-                    $txt .= " en objectRef is een object.";
-                } else {
-                    $txt .= " en objectRef is een array.";
-                }
-                CRM_Core_DAO::executeQuery( "INSERT INTO ehtest SET tekst = '$txt'");
                 if ( $objectName == "Individual" || $objectName == "Organization" ) {
                     $contactId = $objectId;
                 } else {
@@ -471,7 +449,6 @@ function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
                     }
                 }
                 break;
-
             case "Organization":
                 if ( isset( $resultCheck['organization_name'] ) ) {
                     if ( is_object( $objectRef ) ) {
@@ -958,7 +935,6 @@ function _cleanSyncTable( $syncTable ) {
  */
 function _syncFirstObject( $op, $objectId, $contactId, $objectName ) {
     $result = array( );
-
     /*
      * objectId and contactId can not be empty
      */
@@ -991,4 +967,32 @@ function _syncFirstObject( $op, $objectId, $contactId, $objectName ) {
 function _retrieveSyncField( $fldLabel ) {
     require_once 'CRM/Utils/SyncUtils.php';
     return CRM_Utils_SyncUtils::retrieveSyncField($fldLabel, CRM_Utils_DgwUtils::getDgwConfigValue( 'synchronisatietabel first' ));
+}
+/**
+ * implementation of hook postProcess specifically to synchronize burgerlijke staat
+ * if edited in Inline form. In this case, not pre or post hook is triggered by core.
+ *
+ *
+ * @param string $formName
+ * @param object $form
+ */
+function sync_civicrm_postProcess( $formName, &$form ) {
+    if ( $formName == "CRM_Contact_Form_Inline_CustomData" ) {
+        $groupId = $form->getvar('_groupID');
+        if ( $groupId == 1 ) {
+            $contactId = $form->getvar( '_contactId' );
+            $element = $form->getElement('custom_3_252201');
+            $values = $element->_values;
+            foreach ( $values as $waarde ) {
+                $burgStaat = $waarde;
+            }
+            /*
+             * There is no way to check the original value as the inline update of a custom field
+             * does not trigger the hook post or pre. The only option would be to store the
+             * original burgerlijke staat in a constant during the buildForm. Elected instead
+             * to always send change when burgerlijke staat is edited, which will not be often
+             */
+            $resultSync = _syncFirstObject( "edit", $contactId, $contactId, "Individual" );
+        }
+    }
 }
