@@ -196,19 +196,11 @@ function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef, $hookContex
          */
         if ( $hookContext != "dgwapi.no_sync" ) {
             if (in_array( $objectName, $syncedObjects ) ) {
-                if ( $op == "trash" ) {
-                    if ( $objectName == "Individual" || $objectName == "Organization" ) {
-                        CRM_Core_Error::debug("objectId", $objectId );
-                        CRM_Core_Error::debug("obectName", $objectName );
-                        CRM_Core_Error::debug("objectRef", $objectRef );
-                        exit();
-                    }
-                }
                 /*
                  * check if sync action is required when op = edit
                  */
                 if ( $op == "edit" ) {
-                    $syncRequired = _checkSyncRequired ( $objectName, $objectId, $objectRef );
+                    $syncRequired = _checkSyncRequired ( $op, $objectName, $objectId, $objectRef );
                 } else {
                     $syncRequired = true;
                 }
@@ -298,12 +290,20 @@ function sync_civicrm_post( $op, $objectName, $objectId, &$objectRef, $hookConte
  * @param $objectName, $objectId, $objectRef
  * @return $syncRequired (boolean)
  */
-function _checkSyncRequired( $objectName, $objectId, $objectRef ) {
+function _checkSyncRequired( $op, $objectName, $objectId, $objectRef ) {
     $syncRequired = false;
+    if ( $op == "delete" ) {
+        if ( $objectName == "Individual" || $objectName == "Organization" ) {
+            return $syncRequired;
+        }
+    }
+    /*
+     * no sync required for delete with Individual or Organization
+     */
+
     /*
      * sync is only required if contact also exists in NCCW First.
      */
-
     $objectInFirst = _checkObjectInFirst( $objectName, $objectId );
     if ( $objectInFirst ) {
         $apiParams = array(
