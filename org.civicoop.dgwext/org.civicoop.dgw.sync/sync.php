@@ -196,6 +196,14 @@ function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef, $hookContex
          */
         if ( $hookContext != "dgwapi.no_sync" ) {
             if (in_array( $objectName, $syncedObjects ) ) {
+                if ( $op == "trash" ) {
+                    if ( $objectName == "Individual" || $objectName == "Organization" ) {
+                        CRM_Core_Error::debug("objectId", $objectId );
+                        CRM_Core_Error::debug("obectName", $objectName );
+                        CRM_Core_Error::debug("objectRef", $objectRef );
+                        exit();
+                    }
+                }
                 /*
                  * check if sync action is required when op = edit
                  */
