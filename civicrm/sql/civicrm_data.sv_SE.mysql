@@ -4453,7 +4453,7 @@ SELECT @domainID := id FROM civicrm_domain where name = 'Default Domain Name';
 -- we have not yet finished modifying all places where the 'name' is shown.
 INSERT INTO civicrm_location_type( name, display_name, vcard_name, description, is_reserved, is_active, is_default ) VALUES( 'Hem', 'Hem', 'HOME', 'Place of residence', 0, 1, 1 );
 INSERT INTO civicrm_location_type( name, display_name, vcard_name, description, is_reserved, is_active ) VALUES( 'Arbete', 'Arbete', 'WORK', 'Arbetsplats', 0, 1 );
-INSERT INTO civicrm_location_type( name, display_name, vcard_name, description, is_reserved, is_active ) VALUES( 'Main', 'Main', NULL, 'Main office location', 0, 1 );
+INSERT INTO civicrm_location_type( name, display_name, vcard_name, description, is_reserved, is_active ) VALUES( 'Main', 'Main', NULL, 'Huvudkontorets ort', 0, 1 );
 INSERT INTO civicrm_location_type( name, display_name, vcard_name, description, is_reserved, is_active ) VALUES( 'Annan', 'Annan', NULL, 'Annan plats', 0, 1 );
 -- the following location must stay with the untranslated Billing name, CRM-2064
 INSERT INTO civicrm_location_type( name, display_name, vcard_name, description, is_reserved, is_active ) VALUES( 'Billing',  'Billing', NULL, 'Plats för fakturaadress', 1, 1 );
@@ -4464,7 +4464,7 @@ INSERT INTO civicrm_relationship_type( name_a_b,label_a_b, name_b_a,label_b_a, d
           ( 'Spouse of', 'Partner till', 'Spouse of', 'Partner till', 'Spousal relationship.', 'Individual', 'Individual', 0 ),
           ( 'Partner of', 'Partner of', 'Partner of', 'Partner of', 'Partner relationship.', 'Individual', 'Individual', 0 ),
           ( 'Sibling of', 'Syskon till', 'Sibling of', 'Syskon till', 'syskonförhållande', 'Individual','Individual', 0 ),
-          ( 'Employee of', 'Anställd av', 'Employer of', 'Employer of', 'Employment relationship.','Individual','Organization', 1 ),
+          ( 'Employee of', 'Anställd av', 'Employer of', 'Arbetsgivare till', 'Anställningsförhållande.','Individual','Organization', 1 ),
           ( 'Volunteer for', 'Volunteer for', 'Volunteer is', 'Volunteer is', 'Volunteer relationship.','Individual','Organization', 0 ),
           ( 'Head of Household for', 'Head of Household for', 'Head of Household is', 'Head of Household is', 'Head of household.','Individual','Household', 1 ),
           ( 'Household Member of', 'Household Member of', 'Household Member is', 'Household Member is', 'Household membership.','Individual','Household', 1 );
@@ -4492,7 +4492,7 @@ INSERT INTO civicrm_mailing_component
 VALUES
     ('Utskickshuvud','Header','Beskrivande namn på detta sidhuvud','Sample Header for HTML formatted content.','Sample Header for TEXT formatted content.',1,1),
     ('Utskicksfot','Footer','Beskrivande namn på denna sidfot.','Sample Footer for HTML formatted content<br/><a href=\"{action.optOutUrl}\">Unsubscribe</a>  <br/> {domain.address}','to unsubscribe: {action.optOutUrl}\n{domain.address}',1,1),
-    ('Subscribe Message','Subscribe','Begär prenumerationsbekräftelse','You have a pending subscription to the {subscribe.group} mailing list. To confirm this subscription, reply to this email or click <a href=\"{subscribe.url}\">here</a>.','You have a pending subscription to the {subscribe.group} mailing list. To confirm this subscription, reply to this email or click on this link: {subscribe.url}',1,1),
+    ('Prenumerationsmeddelande','Subscribe','Begär prenumerationsbekräftelse','You have a pending subscription to the {subscribe.group} mailing list. To confirm this subscription, reply to this email or click <a href=\"{subscribe.url}\">here</a>.','You have a pending subscription to the {subscribe.group} mailing list. To confirm this subscription, reply to this email or click on this link: {subscribe.url}',1,1),
     ('Välkommen-meddelande','Welcome','Din prenumeration har aktiverats','Welcome. Your subscription to the {welcome.group} mailing list has been activated.','Welcome. Your subscription to the {welcome.group} mailing list has been activated.',1,1),
     ('Meddelande vid avslutande av prenumeration','Unsubscribe','Bekräfta avsagd prenumeration','Du har avsagt prenumerationen från följande grupper: {unsubscribe.group}. Du kan återuppta prenumerationen genom att skicka epost till {action.resubscribe} eller klicka <a href=\"{action.resubscribeUrl}\">här</a>.','You have been un-subscribed from the following groups: {unsubscribe.group}. You can re-subscribe by mailing {action.resubscribe} or clicking %3',1,1),
     ('Meddelande vid återupptagande av prenumeration','Resubscribe','Bekräfta återupptagen prenumeration','You have been re-subscribed to the following groups: {resubscribe.group}. You can un-subscribe by mailing {action.unsubscribe} or clicking <a href=\"{action.unsubscribeUrl}\">here</a>.','You have been re-subscribed to the following groups: {resubscribe.group}. You can un-subscribe by mailing {action.unsubscribe} or clicking {action.unsubscribeUrl}',1,1),
@@ -4571,8 +4571,8 @@ VALUES
    ('engagement_index'              , 'Engagement Index'                   , 1, 1),
    ('cg_extend_objects'             , 'Objects a custom group extends to'  , 1, 1),
    ('paper_size'                    , 'Sidstorlek'                         , 1, 1),
-   ('pdf_format'                    , 'PDF Page Format'                    , 1, 1),
-   ('label_format'                  , 'Mailing Label Format'               , 1, 1),
+   ('pdf_format'                    , 'Sidformat för PDF'                    , 1, 1),
+   ('label_format'                  , 'Format för brevetikett'               , 1, 1),
    ('activity_contacts'             , 'Activity Contacts'                  , 1, 1),
    ('account_relationship'          , 'Account Relationship'               , 1, 1),
    ('event_contacts'                , 'Event Recipients'                   , 1, 1),
@@ -4717,7 +4717,7 @@ VALUES
    (@option_group_id_act, 'PhoneBank',                          30, 'PhoneBank', NULL,0, 0, 29, '', 0, 1, 1, @campaignCompId, NULL),
    (@option_group_id_act, 'WalkList',                           31, 'WalkList', NULL,0, 0, 30, '', 0, 1, 1, @campaignCompId, NULL),
    (@option_group_id_act, 'Petition Signature',                           32, 'Petition', NULL,0, 0, 31, '', 0, 1, 1, @campaignCompId, NULL),
-   (@option_group_id_act, 'Mass SMS',                           34, 'Mass SMS',         NULL, 1, NULL, 34, 'Mass SMS',                                                    0, 1, 1, NULL, NULL),
+   (@option_group_id_act, 'Mass-SMS',                           34, 'Mass SMS',         NULL, 1, NULL, 34, 'Mass-SMS',                                                    0, 1, 1, NULL, NULL),
 
 -- Activity Types for CiviCampaign CiviCase
    (@option_group_id_act, 'Change Custom Data',                 33, 'Change Custom Data', NULL,0, 0, 33, '', 0, 1, 1, @caseCompId, NULL),
@@ -4900,14 +4900,14 @@ VALUES
 
   (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_Sample'               , 1, 'CRM_Contact_Form_Search_Custom_Sample'      , NULL, 0, NULL, 1, 'Household Name and State', 0, 0, 1, NULL, NULL),
   (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_ContributionAggregate', 2, 'CRM_Contact_Form_Search_Custom_ContributionAggregate', NULL, 0, NULL, 2, 'Contribution Aggregate', 0, 0, 1, NULL, NULL),
-  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_Basic'                , 3, 'CRM_Contact_Form_Search_Custom_Basic'       , NULL, 0, NULL, 3, 'Basic Search', 0, 0, 1, NULL, NULL),
+  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_Basic'                , 3, 'CRM_Contact_Form_Search_Custom_Basic'       , NULL, 0, NULL, 3, 'Enkel sökning', 0, 0, 1, NULL, NULL),
   (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_Group'                , 4, 'CRM_Contact_Form_Search_Custom_Group'       , NULL, 0, NULL, 4, 'Include / Exclude Search', 0, 0, 1, NULL, NULL),
-  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_PostalMailing'        , 5, 'CRM_Contact_Form_Search_Custom_PostalMailing', NULL, 0, NULL, 5, 'Postal Mailing', 0, 0, 1, NULL, NULL),
-  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_Proximity'            , 6, 'CRM_Contact_Form_Search_Custom_Proximity', NULL, 0, NULL, 6, 'Proximity Search', 0, 0, 1, NULL, NULL),
+  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_PostalMailing'        , 5, 'CRM_Contact_Form_Search_Custom_PostalMailing', NULL, 0, NULL, 5, 'Postutskick', 0, 0, 1, NULL, NULL),
+  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_Proximity'            , 6, 'CRM_Contact_Form_Search_Custom_Proximity', NULL, 0, NULL, 6, 'Geografisk sökning', 0, 0, 1, NULL, NULL),
   (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_EventAggregate'       , 7, 'CRM_Contact_Form_Search_Custom_EventAggregate', NULL, 0, NULL, 7, 'Event Aggregate', 0, 0, 1, NULL, NULL),
   (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_ActivitySearch'       , 8, 'CRM_Contact_Form_Search_Custom_ActivitySearch', NULL, 0, NULL, 8, 'Activity Search', 0, 0, 1, NULL, NULL),
   (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_PriceSet'             , 9, 'CRM_Contact_Form_Search_Custom_PriceSet', NULL, 0, NULL, 9, 'Price Set Details for Event Participants', 0, 0, 1, NULL, NULL),
-  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_ZipCodeRange'         ,10, 'CRM_Contact_Form_Search_Custom_ZipCodeRange', NULL, 0, NULL, 10, 'Zip Code Range', 0, 0, 1, NULL, NULL),
+  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_ZipCodeRange'         ,10, 'CRM_Contact_Form_Search_Custom_ZipCodeRange', NULL, 0, NULL, 10, 'Postnummerspann', 0, 0, 1, NULL, NULL),
   (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_DateAdded'            ,11, 'CRM_Contact_Form_Search_Custom_DateAdded', NULL, 0, NULL, 11, 'Datum tillagt till CiviCRM', 0, 0, 1, NULL, NULL),
   (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_MultipleValues'       ,12, 'CRM_Contact_Form_Search_Custom_MultipleValues', NULL, 0, NULL, 12, 'Custom Group Multiple Values Listing', 0, 0, 1, NULL, NULL),
   (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_ContribSYBNT'         ,13, 'CRM_Contact_Form_Search_Custom_ContribSYBNT', NULL, 0, NULL, 13, 'Contributions made in Year X and not Year Y', 0, 0, 1, NULL, NULL),
@@ -4934,10 +4934,10 @@ VALUES
   (@option_group_id_report , 'Medlemskapsrapport (utlöpna)',              'member/lapse',                   'CRM_Report_Form_Member_Lapse',                   NULL, 0, NULL, 17, 'Provides a list of memberships that lapsed or will lapse before the date you specify.', 0, 0, 1, @memberCompId, NULL),
   (@option_group_id_report , 'Arrangemangsdeltagarrapport (Lista)',         'event/participantListing',       'CRM_Report_Form_Event_ParticipantListing',       NULL, 0, NULL, 18, 'Tillhandhåller lista på deltagare på ett arrangemang.', 0, 0, 1, @eventCompId, NULL),
   (@option_group_id_report , 'Event Income Report (Summary)',           'event/summary',                  'CRM_Report_Form_Event_Summary',                  NULL, 0, NULL, 19, 'Provides an overview of event income. You can include key information such as event ID, registration, attendance, and income generated to help you determine the success of an event.', 0, 0, 1, @eventCompId, NULL),
-  (@option_group_id_report , 'Event Income Report (Detail)',            'event/income',                   'CRM_Report_Form_Event_Income',                   NULL, 0, NULL, 20, 'Helps you to analyze the income generated by an event. The report can include details by participant type, status and payment method.', 0, 0, 1, @eventCompId, NULL),
-  (@option_group_id_report , 'Pledge Report',                           'pledge/detail',                 'CRM_Report_Form_Pledge_Detail',                 NULL, 0, NULL, 21,   'Pledge Report', 0, 0, 1, @pledgeCompId, NULL),
-  (@option_group_id_report , 'Pledged But not Paid Report',             'pledge/pbnp',                    'CRM_Report_Form_Pledge_Pbnp',                    NULL, 0, NULL, 22, 'Pledged but not Paid Report', 0, 0, 1, @pledgeCompId, NULL),
-  (@option_group_id_report , 'Relationship Report',                     'contact/relationship',           'CRM_Report_Form_Contact_Relationship',           NULL, 0, NULL, 23, 'Relationship Report', 0, 0, 1, NULL, NULL),
+  (@option_group_id_report , 'Rapport över arrangemangsintäkter (detaljerad)',            'event/income',                   'CRM_Report_Form_Event_Income',                   NULL, 0, NULL, 20, 'Helps you to analyze the income generated by an event. The report can include details by participant type, status and payment method.', 0, 0, 1, @eventCompId, NULL),
+  (@option_group_id_report , 'Utfästelserapport',                           'pledge/detail',                 'CRM_Report_Form_Pledge_Detail',                 NULL, 0, NULL, 21,   'Utfästelserapport', 0, 0, 1, @pledgeCompId, NULL),
+  (@option_group_id_report , 'Rapport över utfästelser som inte betalats',             'pledge/pbnp',                    'CRM_Report_Form_Pledge_Pbnp',                    NULL, 0, NULL, 22, 'Rapport över utfästelser som inte betalats', 0, 0, 1, @pledgeCompId, NULL),
+  (@option_group_id_report , 'Relationsrapport',                     'contact/relationship',           'CRM_Report_Form_Contact_Relationship',           NULL, 0, NULL, 23, 'Relationsrapport', 0, 0, 1, NULL, NULL),
   (@option_group_id_report , 'Case Summary Report',                     'case/summary',                   'CRM_Report_Form_Case_Summary',                   NULL, 0, NULL, 24, 'Provides a summary of cases and their duration by date range, status, staff member and / or case role.', 0, 0, 1, @caseCompId, NULL),
   (@option_group_id_report , 'Case Time Spent Report',                  'case/timespent',                 'CRM_Report_Form_Case_TimeSpent',                 NULL, 0, NULL, 25, 'Aggregates time spent on case and / or or non-case activities by activity type and contact.', 0, 0, 1, @caseCompId, NULL),
   (@option_group_id_report , 'Contact Demographics Report',             'case/demographics',              'CRM_Report_Form_Case_Demographics',              NULL, 0, NULL, 26, 'Demographic breakdown for case clients (and or non-case contacts) in your database. Includes custom contact fields.', 0, 0, 1, @caseCompId, NULL),
@@ -4948,7 +4948,7 @@ VALUES
   (@option_group_id_report, 'Deltagarantalsrapport', 'event/participantlist', 'CRM_Report_Form_Event_ParticipantListCount', NULL, 0, 0, 31, 'Visar deltagarlista med deltagarantal.', 0, 0, 1, @eventCompId, NULL),
   (@option_group_id_report, 'Income Count Summary Report', 'event/incomesummary', 'CRM_Report_Form_Event_IncomeCountSummary', NULL, 0, 0, 32, 'Shows the Income Summary of events with Count.', 0, 0, 1, @eventCompId, NULL),
   (@option_group_id_report, 'Case Detail Report', 'case/detail', 'CRM_Report_Form_Case_Detail', NULL, 0, 0, 33, 'Case Details', 0, 0, 1, @caseCompId, NULL),
-  (@option_group_id_report, 'Mail Bounce Report', 'Mailing/bounce', 'CRM_Report_Form_Mailing_Bounce', NULL, 0, NULL, 34, 'Bounce Report for mailings', 0, 0, 1, @mailCompId, NULL),
+  (@option_group_id_report, 'Mailstudsrapport', 'Mailing/bounce', 'CRM_Report_Form_Mailing_Bounce', NULL, 0, NULL, 34, 'Bounce Report for mailings', 0, 0, 1, @mailCompId, NULL),
   (@option_group_id_report, 'Mail Summary Report', 'Mailing/summary', 'CRM_Report_Form_Mailing_Summary', NULL, 0, NULL, 35, 'Summary statistics for mailings', 0, 0, 1, @mailCompId, NULL),
   (@option_group_id_report, 'Mail Opened Report', 'Mailing/opened', 'CRM_Report_Form_Mailing_Opened', NULL, 0, NULL, 36, 'Display contacts who opened emails from a mailing', 0, 0, 1, @mailCompId, NULL),
   (@option_group_id_report, 'Mail Clickthrough Report', 'Mailing/clicks', 'CRM_Report_Form_Mailing_Clicks', NULL, 0, NULL, 37, 'Display clicks from each mailing', 0, 0, 1, @mailCompId, NULL),
@@ -5528,7 +5528,7 @@ SELECT @option_group_id_medium        := max(id) from civicrm_option_group where
 INSERT INTO
    `civicrm_option_value` (`option_group_id`, `label`, `value`, `name`, `grouping`, `filter`, `is_default`, `weight`, `description`, `is_optgroup`, `is_reserved`, `is_active`)
 VALUES
-    (@option_group_id_medium, 'In Person',  1, 'in_person', NULL, 0,  0, 1, NULL, 0, 1, 1),
+    (@option_group_id_medium, 'Personligen',  1, 'in_person', NULL, 0,  0, 1, NULL, 0, 1, 1),
     (@option_group_id_medium, 'Telefon',  2, 'phone', NULL, 0,  1, 2, NULL, 0, 1, 1),
     (@option_group_id_medium, 'E-post',  3, 'email', NULL, 0,  0, 3, NULL, 0, 1, 1),
     (@option_group_id_medium, 'Fax',  4, 'fax', NULL, 0,  0, 4, NULL, 0, 1, 1),
@@ -5892,10 +5892,10 @@ INSERT INTO civicrm_uf_group
     (2,  'supporter_profile',  'Individual,Contact',  'Supporter Profile',  2,           0,           '<p><strong>The information you provide will NOT be shared with any third party organisations.</strong></p><p>Thank you for getting involved in our campaign!</p>'),
     (3,  'participant_status', 'Participant',         'Deltagarens status',             0,      1,           NULL),
     (4,  'new_individual',     'Individual,Contact',  'Ny person'    ,             0,      1,           NULL),
-    (5,  'new_organization',   'Organization,Contact','New Organization'  ,             0,      1,           NULL),
-    (6,  'new_household',      'Household,Contact',   'New Household'     ,             0,      1,           NULL),
+    (5,  'new_organization',   'Organization,Contact','Ny organisation'  ,             0,      1,           NULL),
+    (6,  'new_household',      'Household,Contact',   'Nytt hushåll'     ,             0,      1,           NULL),
     (7,  'summary_overlay',    'Contact',   		      'Summary Overlay'   ,             0,      1,           NULL),
-    (8,  'shared_address',     'Contact',   		      'Shared Address'                , 0,      1,           NULL),
+    (8,  'shared_address',     'Contact',   		      'Delad adress'                , 0,      1,           NULL),
     (9,  'on_behalf_organization', 'Contact,Organization','On Behalf Of Organization',  0,      1,           NULL),
     (10,  'contribution_batch_entry', 'Contribution', 'Contribution Bulk Entry' ,       0,      1,           NULL),
     (11,  'membership_batch_entry', 'Membership',     'Membership Bulk Entry' ,         0,      1,           NULL),
@@ -5955,8 +5955,8 @@ INSERT INTO civicrm_uf_field
        (  8,           'country',               0,           0,           4,      'User and User Admin Only', 0,           0,             1,                'Land (hem)',        		'Contact',     NULL,  NULL),
        (  8,           'state_province',        0,           0,           5,      'User and User Admin Only', 0,           0,             1,                'Delstat (hem)',          		'Contact',     NULL,  NULL),
        (  9,           'organization_name',     1,           0,           1,      'User and User Admin Only',  0,           0,             NULL,             'Organisationens namn',              'Organization',NULL,  NULL),
-       (  9,           'phone',                 1,           0,           2,      'User and User Admin Only',  0,           0,             3,             'Phone (Main) ',                  'Contact',    NULL,   1),
-       (  9,           'email',                 1,           0,           3,      'User and User Admin Only',  0,           0,             3,             'Email (Main) ',                  'Contact',    NULL,   NULL),
+       (  9,           'phone',                 1,           0,           2,      'User and User Admin Only',  0,           0,             3,             'Telefon (primär)',                  'Contact',    NULL,   1),
+       (  9,           'email',                 1,           0,           3,      'User and User Admin Only',  0,           0,             3,             'Epost (primär)',                  'Contact',    NULL,   NULL),
        (  9,           'street_address',        1,           0,           4,      'User and User Admin Only',  0,           0,             3,             'Gatuadress',                 'Contact',    NULL,   NULL),
        (  9,           'city',                  1,           0,           5,      'User and User Admin Only',  0,           0,             3,             'Postadress',                           'Contact',    NULL,   NULL),
        (  9,           'postal_code',           1,           0,           6,      'User and User Admin Only',  0,           0,             3,             'Postnummer',                    'Contact',    NULL,   NULL),
@@ -5990,7 +5990,7 @@ INSERT INTO civicrm_participant_status_type
   (id, name,                                  label,                                                       class,      is_reserved, is_active, is_counted, weight, visibility_id) VALUES
   (1,  'Registered',                          'Anmäld',                          'Positive', 1,           1,         1,          1,      1            ),
   (2,  'Attended',                            'Närvarade',                            'Positive', 0,           1,         1,          2,      2            ),
-  (3,  'No-show',                             'No-show',                             'Negative', 0,           1,         0,          3,      2            ),
+  (3,  'No-show',                             'Frånvarande',                             'Negative', 0,           1,         0,          3,      2            ),
   (4,  'Cancelled',                           'Avbruten',                           'Negative', 1,           1,         0,          4,      2            ),
   (5,  'Pending from pay later',              'Avvaktar senare inbetalning',              'Pending',  1,           1,         1,          5,      2            ),
   (6,  'Pending from incomplete transaction', 'Avvaktar avbruten anmälan', 'Pending',  1,           1,         0,          6,      2            ),
@@ -6059,7 +6059,7 @@ INSERT INTO civicrm_option_group
 
 INSERT INTO civicrm_option_value
   (option_group_id,        name,       label,   value,                                  weight) VALUES
-      (@tpl_ogid_case, 'case_activity', 'Cases - Send Copy of an Activity',            1, 1) ,      (@tpl_ogid_contribution, 'contribution_dupalert', 'Contributions - Duplicate Organization Alert',            1, 1) ,      (@tpl_ogid_contribution, 'contribution_offline_receipt', 'Contributions - Receipt (off-line)',            2, 2) ,      (@tpl_ogid_contribution, 'contribution_online_receipt', 'Contributions - Receipt (on-line)',            3, 3) ,      (@tpl_ogid_contribution, 'contribution_recurring_notify', 'Contributions - Recurring Start and End Notification',            4, 4) ,      (@tpl_ogid_contribution, 'contribution_recurring_cancelled', 'Contributions - Recurring Cancellation Notification',            5, 5) ,      (@tpl_ogid_contribution, 'contribution_recurring_billing', 'Contributions - Recurring Billing Updates',            6, 6) ,      (@tpl_ogid_contribution, 'contribution_recurring_edit', 'Contributions - Recurring Updates',            7, 7) ,      (@tpl_ogid_contribution, 'pcp_notify', 'Personal Campaign Pages - Admin Notification',            8, 8) ,      (@tpl_ogid_contribution, 'pcp_status_change', 'Personal Campaign Pages - Supporter Status Change Notification',            9, 9) ,      (@tpl_ogid_contribution, 'pcp_supporter_notify', 'Personal Campaign Pages - Supporter Welcome',            10, 10) ,      (@tpl_ogid_event, 'event_offline_receipt', 'Events - Registration Confirmation and Receipt (off-line)',            1, 1) ,      (@tpl_ogid_event, 'event_online_receipt', 'Events - Registration Confirmation and Receipt (on-line)',            2, 2) ,      (@tpl_ogid_event, 'event_registration_receipt', 'Events - Receipt only',            3, 3) ,      (@tpl_ogid_event, 'participant_cancelled', 'Events - Registration Cancellation Notice',            4, 4) ,      (@tpl_ogid_event, 'participant_confirm', 'Events - Registration Confirmation Invite',            5, 5) ,      (@tpl_ogid_event, 'participant_expired', 'Arrangemang - Avvaktande meddelande om anmälans utgångsdatum',            6, 6) ,      (@tpl_ogid_friend, 'friend', 'Tell-a-Friend Email',            1, 1) ,      (@tpl_ogid_membership, 'membership_offline_receipt', 'Memberships - Signup and Renewal Receipts (off-line)',            1, 1) ,      (@tpl_ogid_membership, 'membership_online_receipt', 'Memberships - Receipt (on-line)',            2, 2) ,      (@tpl_ogid_membership, 'membership_autorenew_cancelled', 'Memberships - Auto-renew Cancellation Notification',            3, 3) ,      (@tpl_ogid_membership, 'membership_autorenew_billing', 'Memberships - Auto-renew Billing Updates',            4, 4) ,      (@tpl_ogid_meta, 'test_preview', 'Test-drive - Receipt Header',            1, 1) ,      (@tpl_ogid_pledge, 'pledge_acknowledge', 'Pledges - Acknowledgement',            1, 1) ,      (@tpl_ogid_pledge, 'pledge_reminder', 'Pledges - Payment Reminder',            2, 2) ,      (@tpl_ogid_uf, 'uf_notify', 'Profiles - Admin Notification',            1, 1) ,      (@tpl_ogid_petition, 'petition_sign', 'Petition - signature added',            1, 1) ,      (@tpl_ogid_petition, 'petition_confirmation_needed', 'Petition - need verification',            2, 2) ;
+      (@tpl_ogid_case, 'case_activity', 'Cases - Send Copy of an Activity',            1, 1) ,      (@tpl_ogid_contribution, 'contribution_dupalert', 'Contributions - Duplicate Organization Alert',            1, 1) ,      (@tpl_ogid_contribution, 'contribution_offline_receipt', 'Contributions - Receipt (off-line)',            2, 2) ,      (@tpl_ogid_contribution, 'contribution_online_receipt', 'Contributions - Receipt (on-line)',            3, 3) ,      (@tpl_ogid_contribution, 'contribution_recurring_notify', 'Contributions - Recurring Start and End Notification',            4, 4) ,      (@tpl_ogid_contribution, 'contribution_recurring_cancelled', 'Contributions - Recurring Cancellation Notification',            5, 5) ,      (@tpl_ogid_contribution, 'contribution_recurring_billing', 'Contributions - Recurring Billing Updates',            6, 6) ,      (@tpl_ogid_contribution, 'contribution_recurring_edit', 'Contributions - Recurring Updates',            7, 7) ,      (@tpl_ogid_contribution, 'pcp_notify', 'Personal Campaign Pages - Admin Notification',            8, 8) ,      (@tpl_ogid_contribution, 'pcp_status_change', 'Personal Campaign Pages - Supporter Status Change Notification',            9, 9) ,      (@tpl_ogid_contribution, 'pcp_supporter_notify', 'Personal Campaign Pages - Supporter Welcome',            10, 10) ,      (@tpl_ogid_event, 'event_offline_receipt', 'Events - Registration Confirmation and Receipt (off-line)',            1, 1) ,      (@tpl_ogid_event, 'event_online_receipt', 'Events - Registration Confirmation and Receipt (on-line)',            2, 2) ,      (@tpl_ogid_event, 'event_registration_receipt', 'Events - Receipt only',            3, 3) ,      (@tpl_ogid_event, 'participant_cancelled', 'Events - Registration Cancellation Notice',            4, 4) ,      (@tpl_ogid_event, 'participant_confirm', 'Events - Registration Confirmation Invite',            5, 5) ,      (@tpl_ogid_event, 'participant_expired', 'Arrangemang - Avvaktande meddelande om anmälans utgångsdatum',            6, 6) ,      (@tpl_ogid_friend, 'friend', 'Tipsa en vän epost',            1, 1) ,      (@tpl_ogid_membership, 'membership_offline_receipt', 'Memberships - Signup and Renewal Receipts (off-line)',            1, 1) ,      (@tpl_ogid_membership, 'membership_online_receipt', 'Memberships - Receipt (on-line)',            2, 2) ,      (@tpl_ogid_membership, 'membership_autorenew_cancelled', 'Memberships - Auto-renew Cancellation Notification',            3, 3) ,      (@tpl_ogid_membership, 'membership_autorenew_billing', 'Memberships - Auto-renew Billing Updates',            4, 4) ,      (@tpl_ogid_meta, 'test_preview', 'Test-drive - Receipt Header',            1, 1) ,      (@tpl_ogid_pledge, 'pledge_acknowledge', 'Pledges - Acknowledgement',            1, 1) ,      (@tpl_ogid_pledge, 'pledge_reminder', 'Pledges - Payment Reminder',            2, 2) ,      (@tpl_ogid_uf, 'uf_notify', 'Profiles - Admin Notification',            1, 1) ,      (@tpl_ogid_petition, 'petition_sign', 'Petition - signature added',            1, 1) ,      (@tpl_ogid_petition, 'petition_confirmation_needed', 'Petition - need verification',            2, 2) ;
     SELECT @tpl_ovid_case_activity := MAX(id) FROM civicrm_option_value WHERE option_group_id = @tpl_ogid_case AND name = 'case_activity';
     SELECT @tpl_ovid_contribution_dupalert := MAX(id) FROM civicrm_option_value WHERE option_group_id = @tpl_ogid_contribution AND name = 'contribution_dupalert';
     SELECT @tpl_ovid_contribution_offline_receipt := MAX(id) FROM civicrm_option_value WHERE option_group_id = @tpl_ogid_contribution AND name = 'contribution_offline_receipt';
@@ -14918,7 +14918,7 @@ or want to inquire about reinstating your registration for this event.{/ts}</p>
 ', @tpl_ovid_participant_expired, 0,          1) ,      
       
       
-      ('Tell-a-Friend Email', '{ts 1=$senderContactName 2=$title}%1 wants you to know about %2{/ts}
+      ('Tipsa en vän epost', '{ts 1=$senderContactName 2=$title}%1 wants you to know about %2{/ts}
 ', '{$senderMessage}
 
 {if $generalLink}{ts}For more information, visit:{/ts}
@@ -14975,7 +14975,7 @@ or want to inquire about reinstating your registration for this event.{/ts}</p>
 </body>
 </html>
 ', @tpl_ovid_friend, 1,          0),
-      ('Tell-a-Friend Email', '{ts 1=$senderContactName 2=$title}%1 wants you to know about %2{/ts}
+      ('Tipsa en vän epost', '{ts 1=$senderContactName 2=$title}%1 wants you to know about %2{/ts}
 ', '{$senderMessage}
 
 {if $generalLink}{ts}For more information, visit:{/ts}
@@ -19504,4 +19504,4 @@ INSERT INTO `civicrm_report_instance`
 VALUES
     (  @domainID, 'Survey Details', 'survey/detail', 'Detailed report for canvassing, phone-banking, walk lists or other surveys.', 'access CiviReport', 'a:39:{s:6:"fields";a:2:{s:9:"sort_name";s:1:"1";s:6:"result";s:1:"1";}s:22:"assignee_contact_id_op";s:2:"eq";s:25:"assignee_contact_id_value";s:0:"";s:12:"sort_name_op";s:3:"has";s:15:"sort_name_value";s:0:"";s:17:"street_number_min";s:0:"";s:17:"street_number_max";s:0:"";s:16:"street_number_op";s:3:"lte";s:19:"street_number_value";s:0:"";s:14:"street_name_op";s:3:"has";s:17:"street_name_value";s:0:"";s:15:"postal_code_min";s:0:"";s:15:"postal_code_max";s:0:"";s:14:"postal_code_op";s:3:"lte";s:17:"postal_code_value";s:0:"";s:7:"city_op";s:3:"has";s:10:"city_value";s:0:"";s:20:"state_province_id_op";s:2:"in";s:23:"state_province_id_value";a:0:{}s:13:"country_id_op";s:2:"in";s:16:"country_id_value";a:0:{}s:12:"survey_id_op";s:2:"in";s:15:"survey_id_value";a:0:{}s:12:"status_id_op";s:2:"eq";s:15:"status_id_value";s:1:"1";s:11:"custom_1_op";s:2:"in";s:14:"custom_1_value";a:0:{}s:11:"custom_2_op";s:2:"in";s:14:"custom_2_value";a:0:{}s:17:"custom_3_relative";s:1:"0";s:13:"custom_3_from";s:0:"";s:11:"custom_3_to";s:0:"";s:11:"description";s:75:"Detailed report for canvassing, phone-banking, walk lists or other surveys.";s:13:"email_subject";s:0:"";s:8:"email_to";s:0:"";s:8:"email_cc";s:0:"";s:10:"permission";s:17:"access CiviReport";s:6:"groups";s:0:"";s:9:"domain_id";i:1;}');
 
- UPDATE civicrm_domain SET version = '4.3.2';
+ UPDATE civicrm_domain SET version = '4.3.3';

@@ -4496,7 +4496,7 @@ VALUES
     ('Üdvözlő üzenet','Welcome','Your Subscription has been Activated','Welcome. Your subscription to the {welcome.group} mailing list has been activated.','Welcome. Your subscription to the {welcome.group} mailing list has been activated.',1,1),
     ('Leiratkozó üzenet','Unsubscribe','Un-subscribe Confirmation','You have been un-subscribed from the following groups: {unsubscribe.group}. You can re-subscribe by mailing {action.resubscribe} or clicking <a href=\"{action.resubscribeUrl}\">here</a>.','You have been un-subscribed from the following groups: {unsubscribe.group}. You can re-subscribe by mailing {action.resubscribe} or clicking %3',1,1),
     ('Újra Feliratkozási üzenet','Resubscribe','Re-subscribe Confirmation','You have been re-subscribed to the following groups: {resubscribe.group}. You can un-subscribe by mailing {action.unsubscribe} or clicking <a href=\"{action.unsubscribeUrl}\">here</a>.','You have been re-subscribed to the following groups: {resubscribe.group}. You can un-subscribe by mailing {action.unsubscribe} or clicking {action.unsubscribeUrl}',1,1),
-    ('Opt-out Message','OptOut','Opt-out Confirmation','Your email address has been removed from {domain.name} mailing lists.','Your email address has been removed from {domain.name} mailing lists.',1,1),
+    ('Leiratkozási üzenet','OptOut','Opt-out Confirmation','Your email address has been removed from {domain.name} mailing lists.','Your email address has been removed from {domain.name} mailing lists.',1,1),
     ('Auto-responder','Reply','Please Send Inquiries to Our Contact Email Address','This is an automated reply from an un-attended mailbox. Please send any inquiries to the contact email address listed on our web-site.','This is an automated reply from an un-attended mailbox. Please send any inquiries to the contact email address listed on our web-site.',1,1);
 
 
@@ -4543,7 +4543,7 @@ VALUES
    ('case_status'                   , 'Ügy státusz'                        , 1, 1),
    ('participant_listing'           , 'Résztvevők listája'                , 1, 1),
    ('safe_file_extension'           , 'Biztonságos fájl kiterjesztés'                , 1, 1),
-   ('from_email_address'            , 'From Email Address'                 , 1, 1),
+   ('from_email_address'            , 'Küldő e-mail cím'                 , 1, 1),
    ('mapping_type'                  , 'Mapping Type'                       , 1, 1),
    ('wysiwyg_editor'                , 'WYSIWYG Editor'                     , 1, 1),
    ('recur_frequency_units'         , 'Recurring Frequency Units'          , 1, 1),
@@ -19504,4 +19504,4 @@ INSERT INTO `civicrm_report_instance`
 VALUES
     (  @domainID, 'Survey Details', 'survey/detail', 'Detailed report for canvassing, phone-banking, walk lists or other surveys.', 'access CiviReport', 'a:39:{s:6:"fields";a:2:{s:9:"sort_name";s:1:"1";s:6:"result";s:1:"1";}s:22:"assignee_contact_id_op";s:2:"eq";s:25:"assignee_contact_id_value";s:0:"";s:12:"sort_name_op";s:3:"has";s:15:"sort_name_value";s:0:"";s:17:"street_number_min";s:0:"";s:17:"street_number_max";s:0:"";s:16:"street_number_op";s:3:"lte";s:19:"street_number_value";s:0:"";s:14:"street_name_op";s:3:"has";s:17:"street_name_value";s:0:"";s:15:"postal_code_min";s:0:"";s:15:"postal_code_max";s:0:"";s:14:"postal_code_op";s:3:"lte";s:17:"postal_code_value";s:0:"";s:7:"city_op";s:3:"has";s:10:"city_value";s:0:"";s:20:"state_province_id_op";s:2:"in";s:23:"state_province_id_value";a:0:{}s:13:"country_id_op";s:2:"in";s:16:"country_id_value";a:0:{}s:12:"survey_id_op";s:2:"in";s:15:"survey_id_value";a:0:{}s:12:"status_id_op";s:2:"eq";s:15:"status_id_value";s:1:"1";s:11:"custom_1_op";s:2:"in";s:14:"custom_1_value";a:0:{}s:11:"custom_2_op";s:2:"in";s:14:"custom_2_value";a:0:{}s:17:"custom_3_relative";s:1:"0";s:13:"custom_3_from";s:0:"";s:11:"custom_3_to";s:0:"";s:11:"description";s:75:"Detailed report for canvassing, phone-banking, walk lists or other surveys.";s:13:"email_subject";s:0:"";s:8:"email_to";s:0:"";s:8:"email_cc";s:0:"";s:10:"permission";s:17:"access CiviReport";s:6:"groups";s:0:"";s:9:"domain_id";i:1;}');
 
- UPDATE civicrm_domain SET version = '4.3.2';
+ UPDATE civicrm_domain SET version = '4.3.3';
