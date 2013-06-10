@@ -910,11 +910,10 @@ class CRM_Utils_DgwUtils {
             return $resultParams;
         }
         $userID  = $params[ user_id];
-        require_once('api/v2/GroupContact.php');
         $groupParms = array (
-            'version'       =>  2,
-            'contact_id'    =>  $userID);
-        $userGroups = civicrm_group_contact_get( $groupParms );
+            'version'       =>  3,
+            'contact_id'    =>  $userID );
+        $userGroups = civicrm_api( 'GroupContact', 'get', $groupParms );
         if ( civicrm_error( $userGroups ) ) {
             $resultParams['is_error'] == 1;
             $resultParams['error_message'] == "Error from group_contact API: ".$userGroups['error_message'];
@@ -924,7 +923,7 @@ class CRM_Utils_DgwUtils {
         $resultParams['wijk'] = false;
         $resultParams['admin'] = false;
         $resultParams['groups'] = $userGroups;
-        foreach( $userGroups as $keyGroup => $userGroup ) {
+        foreach( $userGroups['values'] as $keyGroup => $userGroup ) {
             if ( $environment === "test" ) {
                 if ( $userGroup['group_id'] == 28 ) {
                     if ( isset( $params['is_dirbest'] ) && $params['is_dirbest'] == 1 ) {

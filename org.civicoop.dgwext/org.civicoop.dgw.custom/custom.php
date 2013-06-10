@@ -340,80 +340,60 @@ function custom_civicrm_buildForm( $formName, &$form ) {
             }
         }
     }
-    /*
-     * incident 14 01 13 003 groep DirBest mag alleen beschikbaar zijn als
-     * gebruiker in die groep of beheerder
-     * DGW19 groep Consulenten Wijk en Ontwikkeling alleen beschikbaar als
-     * gebruiker in die groep of beheerder
-     * DGW21 sommige groepen alleen beschikbaar voor beheerders (o a FirstSync,
-     * SyncGebruikers)
-     */
     if ( $formName == "CRM_Contact_Form_GroupContact") {
-        /*
-         * check eerst of gebruiker beheerder. Als dat het geval is mogen
-         * alle groepen. Als gebruiker beheerder, dan lid van groep 1 (Administrators)
-         */
+        require_once 'CRM/Utils/DgwUtils.php';
         global $user;
         $userBeheerder = false;
         if ( in_array( "klantinformatie admin", $user->roles ) ) {
             $userBeheerder = true;
         }
+
         if ( !$userBeheerder ) {
+
             $elements = & $form->getvar('_elements');
             $element = & $elements[1];
             $opties = & $element->_options;
-            foreach ( $opties as $optie=>$waarden ) {
-                /*
-                 * DGW21 groepen die alleen voor administrator zichtbaar zijn weghalen
-                 */
-                if ( $waarden['text'] == "Complex 37 en 46B voor Elke" ) {
+            /*
+             * remove elements that are only available for administrator
+             */
+            if ( $waarden['text'] == "Complex 37 en 46B voor Elke" ) {
+                unset( $opties[$optie]);
+            }
+            if ( $waarden['text'] == "SyncGebruikers" ) {
+                unset( $opties[$optie]);
+            }
+            if ( $waarden['text'] == "FirstSync" ) {
+                unset( $opties[$optie]);
+            }
+            /*
+             * only show groups that user is authorised for
+             */
+            if ( !$session ) {
+                $session =& CRM_Core_Session::singleton();
+            }
+            $userID  = $session->get( 'userID' );
+            require_once 'CRM/Utils/DgwUtils.php';
+            $checkUserParams = array(
+                'user_id'       =>  $userID,
+                'is_wijk'       =>  1,
+                'is_dirbest'    =>  1
+            );
+            $checkUser = CRM_Utils_DgwUtils::getGroupsCurrentUser( $checkUserParams );
+            if ( $checkUser['is_error'] == 0 ) {
+                $userWijk = $checkUser['wijk'];
+                $userDirBest = $checkUser['dirbest'];
+            } else {
+                $userWijk = false;
+                $userDirBest = false;
+            }
+            if ( $waarden['text'] == "Consulenten Wijk en Ontwikkeling" ) {
+                if ( !$userWijk ) {
                     unset( $opties[$optie]);
                 }
-                if ( $waarden['text'] == "SyncGebruikers" ) {
-                    unset( $opties[$optie]);
-                }
-                if ( $waarden['text'] == "FirstSync" ) {
-                    unset( $opties[$optie]);
-                }
-                /*
-                 * groepen voor gebruiker ophalen met API en checken
-                 * of er groep Consulenten Wijk en Ontwikkeling (DGW19)
-                 * of groep Dir/Best (incident 14 01 13 003) er tussen
-                 * zit
-                 */
-                if ( !$session ) {
-                    $session =& CRM_Core_Session::singleton();
-                }
-                $userID  = $session->get( 'userID' );
-                require_once 'CRM/Utils/DgwUtils.php';
-                $checkUserParams = array(
-                    'user_id'       =>  $userID,
-                    'is_wijk'       =>  1,
-                    'is_dirbest'    =>  1
-                );
-                $checkUser = CRM_Utils_DgwUtils::getGroupsCurrentUser( $checkUserParams );
-                if ( $checkUser['is_error'] == 0 ) {
-                    $userWijk = $checkUser['wijk'];
-                    $userDirBest = $checkUser['dirbest'];
-                } else {
-                    $userWijk = false;
-                    $userDirBest = false;
-                }
-                /*
-                 * DGW19 alleen groep Consulenten Wijk en Ontwikkeling als lid van die groep
-                 */
-                if ( $waarden['text'] == "Consulenten Wijk en Ontwikkeling" ) {
-                    if ( !$userWijk ) {
-                        unset( $opties[$optie]);
-                    }
-                }
-                /*
-                 * incident 14 01 13 003 alleen groep Dir/Best als lid van die groep
-                 */
-                if ( $waarden['text'] == "Dir/Best" ) {
-                    if ( !$userDirBest ) {
-                        unset ( $opties[$optie] );
-                    }
+            }
+            if ( $waarden['text'] == "Dir/Best" ) {
+                if ( !$userDirBest ) {
+                    unset ( $opties[$optie] );
                 }
             }
         }
