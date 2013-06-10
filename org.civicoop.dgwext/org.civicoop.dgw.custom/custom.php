@@ -41,7 +41,7 @@ function custom_civicrm_enable() {
      * street parsing rules have changed in the upgrade to 4.3.x
      */
     $changeAddressQry =
-"UPDATE civicrm_address SET street_unit = street_number_suffix, street_number_suffix = null where street_number suffix IS NOT NULL";
+"UPDATE civicrm_address SET street_unit = street_number_suffix, street_number_suffix = NULL where street_number_suffix IS NOT NULL";
     CRM_Core_DAO::executeQuery( $changeAddressQry );
 
   return _custom_civix_civicrm_enable();
