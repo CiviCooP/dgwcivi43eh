@@ -62,13 +62,13 @@ class CRM_Group_Page_AJAX {
 
     if ( isset($params['parent_id']) ) {
       // requesting child groups for a given parent
-      $params['page'] = 1; 
+      $params['page'] = 1;
       $params['rp']   = 25;
       $groups = CRM_Contact_BAO_Group::getGroupListSelector($params);
 
       echo json_encode($groups);
-      CRM_Utils_System::civiExit();      
-    } else {      
+      CRM_Utils_System::civiExit();
+    } else {
       $sortMapper = array(
         0 => 'groups.title', 1 => 'groups.id', 2 => 'createdBy.sort_name', 3 => '',
         4 => 'groups.group_type', 5 => 'groups.visibility',
@@ -91,7 +91,7 @@ class CRM_Group_Page_AJAX {
       $groups = CRM_Contact_BAO_Group::getGroupListSelector($params);
 
       // if no groups found with parent-child hierarchy and logged in user say can view child groups only (an ACL case),
-      // go ahead with flat hierarchy, CRM-12225 
+      // go ahead with flat hierarchy, CRM-12225
       if (empty($groups)) {
         $groupsAccessible = CRM_Core_PseudoConstant::group();
         $parentsOnly      = CRM_Utils_Array::value('parentsOnly', $params);
@@ -101,8 +101,8 @@ class CRM_Group_Page_AJAX {
           $groups = CRM_Contact_BAO_Group::getGroupListSelector($params);
         }
       }
-      
-      $groups = self::filterGroups($groups);      
+
+      $groups = self::filterGroups($groups);
 
       $iFilteredTotal = $iTotal = $params['total'];
       $selectorElements = array(
@@ -118,40 +118,43 @@ class CRM_Group_Page_AJAX {
       CRM_Utils_System::civiExit();
     }
   }
-  
+
   private static function filterGroups($groups) {
-  	$session = CRM_Core_Session::singleton();  	
-  	
-  	$userAdminDGW = false;
-  	$userConsulent = false;
-  	$userDirBest = false;
-  	$params = array(
-  			'version' => 3,
-  			'sequential' => 1,
-  			'contact_id' => $session->get('userID')
-  	);
-  	$result = civicrm_api('GroupContact', 'get', $params);
-  	if (is_array($result['values'])) {
-  		foreach($result['values'] as $key => $value) {
-  			if ($value['group_id'] == 18) {
-  				$userConsulent = true;
-  			}
-  			if ($value['group_id'] == 28) {
-  				$userDirBest = true;
-  			}
-  			if ($value['group_id'] == 1) {
-  				$userAdminDGW = true;
-  			} 
-  		}
+  	$session = CRM_Core_Session::singleton();
+        global $user;
+        if ( in_array( "klantinformatie admin", $user->roles ) ) {
+            $userAdminDGW = true;
+        } else {
+            $userAdminDGW = false;
+            $userConsulent = false;
+            $userDirBest = false;
+            $params = array(
+                'version' => 3,
+                'sequential' => 1,
+                'contact_id' => $session->get('userID')
+            );
+            $result = civicrm_api('GroupContact', 'get', $params);
+            if (is_array($result['values'])) {
+                foreach($result['values'] as $key => $value) {
+                    if ($value['group_id'] == 18) {
+                        $userConsulent = true;
+                    }
+                    if ($value['group_id'] == 28) {
+                            $userDirBest = true;
+                    }
+                    if ($value['group_id'] == 1) {
+                            $userAdminDGW = true;
+                    }
+                }
+            }
   	}
-  	
   	$group_checks = array(
-  		'1' => array('admin'=>true, 'consulent'=>false, 'dirbest'=>false), 
-  		'2' => array('admin'=>true, 'consulent'=>false, 'dirbest'=>false), 
-  		'3' => array('admin'=>true, 'consulent'=>false, 'dirbest'=>false), 
-  		'11' => array('admin'=>true, 'consulent'=>false, 'dirbest'=>false), 
-  		'17' => array('admin'=>true, 'consulent'=>false, 'dirbest'=>false), 
-  		'18' => array('admin'=>true, 'consulent'=>true, 'dirbest'=>false), 
+  		'1' => array('admin'=>true, 'consulent'=>false, 'dirbest'=>false),
+  		'2' => array('admin'=>true, 'consulent'=>false, 'dirbest'=>false),
+  		'3' => array('admin'=>true, 'consulent'=>false, 'dirbest'=>false),
+  		'11' => array('admin'=>true, 'consulent'=>false, 'dirbest'=>false),
+  		'17' => array('admin'=>true, 'consulent'=>false, 'dirbest'=>false),
+  		'18' => array('admin'=>true, 'consulent'=>true, 'dirbest'=>false),
   		'28' => array('admin'=>true, 'consulent'=>false, 'dirbest'=>true));
   	$groups2 = array();
   	foreach($groups as $gid => $group) {
@@ -167,12 +170,12 @@ class CRM_Group_Page_AJAX {
   				$valid = true;
   			}
   		}
-  		
+
   		if ($valid) {
   			$groups2[$gid] = $group;
   		}
   	}
-  	
+
   	return $groups2;
   }
 }
