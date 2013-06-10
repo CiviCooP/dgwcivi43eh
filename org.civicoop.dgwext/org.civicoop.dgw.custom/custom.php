@@ -340,8 +340,11 @@ function custom_civicrm_buildForm( $formName, &$form ) {
             }
         }
     }
+    /*
+     * DGW incident 14 01 13 003
+     */
     if ( $formName == "CRM_Contact_Form_GroupContact") {
-        require_once 'CRM/Utils/DgwUtils.php';
+
         global $user;
         $userBeheerder = false;
         if ( in_array( "klantinformatie admin", $user->roles ) ) {
@@ -394,6 +397,53 @@ function custom_civicrm_buildForm( $formName, &$form ) {
             if ( $waarden['text'] == "Dir/Best" ) {
                 if ( !$userDirBest ) {
                     unset ( $opties[$optie] );
+                }
+            }
+        }
+    }
+    /*
+     * default 'track url' to off
+     */
+    if ( $formName == "CRM_Mailing_Form_Settings" ) {
+        $defaults = array('url_tracking' => 0);
+        $form->setDefaults( $defaults );
+    }
+    /*
+     * DGW incident 06 10 11 005
+     */
+    if ( $formName == "CRM_Case_Form_CaseView" ) {
+        global $user;
+        $userBeheerder = false;
+        if ( in_array( "klantinformatie admin", $user->roles ) ) {
+            $userBeheerder = true;
+        }
+
+        if ( !$userBeheerder ) {
+            /*
+             * only show details if user in special group
+             */
+            if ( !isset( $session ) ) {
+                $session =& CRM_Core_Session::singleton();
+            }
+            $userID  = $session->get( 'userID' );
+            require_once 'CRM/Utils/DgwUtils.php';
+            $checkUserParams = array(
+                'user_id'       =>  $userID,
+                'is_wijk'       =>  1
+            );
+            $checkUser = CRM_Utils_DgwUtils::getGroupsCurrentUser( $checkUserParams );
+            if ( $checkUser['is_error'] == 0 ) {
+                $userWijk = $checkUser['wijk'];
+            } else {
+                $userWijk = false;
+            }
+            $elements = & $form->getElement('activity_type_id');
+            $options = & $elements->_options;
+            foreach ($options as $sleutel=>$optie) {
+                if ( $optie['attr']['value'] == 110) {
+                    if ( $userWijk == false ) {
+                        unset($options[$sleutel]);
+                    }
                 }
             }
         }

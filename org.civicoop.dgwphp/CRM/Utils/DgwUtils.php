@@ -909,7 +909,7 @@ class CRM_Utils_DgwUtils {
             $resultParams['error_message'] = "No user_id passed or user_id empty";
             return $resultParams;
         }
-        $userID  = $params[ user_id];
+        $userID  = $params['user_id'];
         $groupParms = array (
             'version'       =>  3,
             'contact_id'    =>  $userID );
@@ -958,7 +958,7 @@ class CRM_Utils_DgwUtils {
      * @return - $environment containing "test" or "prod"
      */
     static function checkEnvironment( ) {
-        if ( !$config ) {
+        if ( !isset( $config ) ) {
             $config = CRM_Core_Config::singleton( );
         }
         if ( $config->userFrameworkBaseURL === "http://insitetest2/" ) {
