@@ -353,7 +353,7 @@ function custom_civicrm_buildForm( $formName, &$form ) {
 
         if ( !$userBeheerder ) {
 
-            $elements = & $form->getvar('_elements');
+            $elements = & $form->getVar('_elements');
             $element = & $elements[1];
             $opties = & $element->_options;
             /*
