@@ -200,6 +200,9 @@ function custom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$er
  *   huishouden and medehuurder and copy latest set
  */
 function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
+    /*
+     * Synchronization First Noa
+     */
     if ( $objectName == "Address" || $objectName == "Email" || $objectName == "Phone" ) {
         /*
          * remove and then copy new set to huishouden and medehuurder if
@@ -250,6 +253,33 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
                     break;
             }
         }
+    }
+    /*
+     * BOS1303566
+     */
+    if ( $objectName == "Individual" ) {
+        $prefix_id = 0;
+        if ( $objectRef->gender_id == 1 ) {
+            $prefix_id = 1;
+        }
+        if ( $objectRef->gender_id == 2 ) {
+            $prefix_id = 2;
+        }
+        require_once 'CRM/Utils/DgwUtils.php';
+        $displayGreetings = CRM_Utils_DgwUtils::setDisplayGreetings( $objectRef->gender_id,
+                $objectRef->middle_name, $objectRef->last_name );
+        $greetings = "";
+        if ( isset( $displayGreetings['is_error'] ) ) {
+            if ( $displayGreetings['is_error'] == 0 ) {
+               if ( isset( $displayGreetings['greetings'] ) ) {
+                   $greetings = $displayGreetings['greetings'];
+               }
+            }
+        }
+        $updContact = "UPDATE civicrm_contact set prefix_id = $prefix_id, ";
+        $updContact .= "email_greeting_display = '$greetings', addressee_display = '$greetings', ";
+        $updContact .= "postal_greeting_display = '$greetings' WHERE id = $objectId";
+        CRM_Core_DAO::executeQuery( $updContact );
     }
 }
 /**
@@ -508,6 +538,49 @@ function custom_civicrm_buildForm( $formName, &$form ) {
                         }
                     }
                 }
+            }
+        }
+        /*
+         * BOS1303566
+         */
+        $action = $form->getVar('_action');
+        /*
+         * only for create or edit
+         */
+        if ( $action == 1 || $action == 2 ) {
+            $type = $form->getVar('_activityTypeId');
+            if ( $type == 32 ) {
+                $dateNu = date('d-m-Y H:i', strtotime( 'now' ) );
+                $currentUserId = $form->getVar('_currentUserId');
+                require_once 'api/v2/Contact.php';
+                $apiParams = array(
+                    'id'                    =>  $currentUserId,
+                    'return.display_name'   =>  1
+                    );
+                $contactApi = civicrm_contact_get( $apiParams );
+                $displayName = "";
+                if ( !civicrm_error( $contactApi ) ) {
+                    if ( isset( $contactApi[$currentUserId]['display_name'] ) ) {
+                        $displayName = $contactApi[$currentUserId]['display_name'];
+                    }
+                }
+                if ( !empty( $displayName ) ) {
+                    $tekstUserDate = $displayName.", ".$dateNu." :";
+                } else {
+                    $tekstUserDate = $dateNu." :";
+                }
+                $defaults = $form->getVar('_defaultValues');
+                if ( isset( $defaults['details'] ) ) {
+                    if ( empty( $defaults['details'] ) ) {
+                        $details = $tekstUserDate;
+                    } else {
+                        $details = $defaults['details'].$tekstUserDate;
+                    }
+                } else {
+                    $details = $tekstUserDate;
+                }
+                $defaults['details'] = $details;
+                $form->setDefaults( $defaults );
             }
         }
     }
