@@ -51,47 +51,42 @@
 {* DGW19 - Voor act type 109 details alleen laten zien als user in groep 18 met variabele showWijk *}
 {* incident 14 01 13 003 zelfde functionaliteit nodig voor groep Dir/Best (28 in test, 24 in prod environment) *}
 {*                       met variabele userDirBest *}
-{assign var='userDirBest' value=0}
-{assign var='userWijk' value=0}
-{assign var='typeWijk' value=109}
-{assign var='typeDirBest' value=118}
-{assign var='groupWijk' value=18}
-{assign var='userAdmin' value=0}
 {assign var='showStuff' value=1}
-{if $config->userFrameworkBaseURL eq "http://insitetest2/"}
-    {assign var='groupDirBest' value=28}
-{else}
-    {assign var='groupDirBest' value=24}
-{/if}
-{* get all groups for user if typeWijk or typeDirBest *}
-{foreach from=$form.activity_type_id.value item=typeID}
-    {if $typeID eq $typeWijk}
+{if $form.activity_type_id.value.0 == 109 or $form.activity_type_id.value.0 == 118}
+    {if $form.activity_type_id.value.0 == 109}
         {assign var='txtShow' value="Gevoelige informatie, neem contact op met Consulent Wijk en Ontwikkeling voor meer details!"}
     {/if}
-    {if $typeID eq $typeDirBest}
+    {if $form.activity_type_id.value.0 == 118}
         {assign var='txtShow' value="Neem contact op met de directeur/bestuurder voor meer informatie"}
     {/if}
-    {if $typeID eq $typeWijk or $typeID eq $typeDirBest}
-        {crmAPI var="userGroups" entity="groupcontact" action="get" contact_id=$session->get('userID')}
-        {foreach from=$userGroups.values item=userGroup}
+    {* get all groups for user *}
+    {crmAPI var="userGroups" entity="GroupContact" action="get" contact_id=$session->get('userID')}
+    {assign var='showStuff' value=0}
+    {foreach from=$userGroups.values item=userGroup}
+        {if $form.activity_type_id.value.0 == 109}
             {if $userGroup.group_id eq 1}
-                {assign var='userAdmin' value=1}
+                {assign var='showStuff' value=1}
             {/if}
             {if $userGroup.group_id eq $groupWijk}
-                {assign var='userWijk' value=1}
+                {assign var='showStuff' value=1}
+            {/if}
+        {/if}
+        {if $form.activity_type_id.value.0 == 118}
+            {if $config->userFrameworkBaseURL eq "http://insitetest2/"}
+                {assign var='groupDirBest' value=28}
+            {else}
+                {assign var='groupDirBest' value=24}
+            {/if}
+            {if $userGroup.group_id eq 1}
+                {assign var='showStuff' value=1}
             {/if}
             {if $userGroup.group_id eq $groupDirBest}
-                {assign var='userDirBest' value=1}
+                {assign var='showStuff' value=1}
             {/if}
-        {/foreach}
-        {if $userAdmin eq 1 or $userDirBest eq 1 or $userWijk eq 1}
-            {assign var='showStuff' value=1}
-        {else}
-            {assign var='showStuff' value=0}
         {/if}
-    {/if}
-{/foreach}
-{* end DGW19 / incident 14 01 13 003 1e deel *}	
+    {/foreach}
+{/if}
+{* end DGW19 / incident 14 01 13 003 1e deel *}
 
 {if $cdType }
   {include file="CRM/Custom/Form/CustomData.tpl"}
@@ -171,7 +166,7 @@
   <h3>{$activityTypeName}</h3>
     {if $activityTypeDescription }
     <div class="help">{$activityTypeDescription}</div>
-    {/if}  
+    {/if}
   {else}
     {if $context eq 'standalone' or $context eq 'search' or $context eq 'smog'}
     <tr class="crm-activity-form-block-activity_type_id">
@@ -235,7 +230,7 @@
             {/if}
             {if isset($naw.$id.phone) and $naw.$id.phone ne ""}
                 , tel:&nbsp;{$naw.$id.phone}
-			{/if}	
+			{/if}
             )&nbsp;
             {* end DGW18 *}
         {/foreach}
@@ -320,7 +315,7 @@
                 {if $defaultWysiwygEditor eq 0}{$form.details.html|crmStripAlternatives|crmReplace:class:huge}{else}{$form.details.html|crmStripAlternatives}{/if}
             {else}
                 {$txtShow}
-			{/if}
+            {/if}
         {* end DGW19 tweede deel *}
       </td>
     {/if}
@@ -368,7 +363,7 @@
   </tr>
   {/if}
 
-{* DGW19 / incident 14 01 13 003 bijlagen alleen als showStuff = 1 *}   
+{* DGW19 / incident 14 01 13 003 bijlagen alleen als showStuff = 1 *}
 {if $showStuff eq 1}
   {if $action eq 4 AND $currentAttachmentInfo}
     {include file="CRM/Form/attachment.tpl"}{* For view action the include provides the row and cells. *}

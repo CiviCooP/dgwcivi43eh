@@ -455,7 +455,7 @@ function custom_civicrm_buildForm( $formName, &$form ) {
         global $user;
         $userBeheerder = false;
         if ( in_array( "klantinformatie admin", $user->roles ) ) {
-            $userBeheerder = true;
+          $userBeheerder = true;
         }
         if ( !$userBeheerder ) {
             /*
@@ -483,32 +483,29 @@ function custom_civicrm_buildForm( $formName, &$form ) {
                 $userDirBest = false;
                 $userAdmin = false;
             }
-            $elements = & $form->getvar('_elements');
-            $actTypes = & $elements[7];
-            $actTypes = & $actTypes->_options;
-            $vervolgTypes = & $elements[15];
-            $vervolgTypes = & $vervolgTypes->_options;
-            foreach ( $actTypes as $keyActType => $valActType ) {
-                if ( $valActType['text'] == "Let op! Gevoelige informatie" ) {
-                    if ( !$userWijk && !$userAdmin ) {
-                        unset( $actTypes[$keyActType] );
-                    }
-                }
-                if ( $valActType['text'] == "Gespreksverslag dir/best" ) {
-                    if ( !$userDirBest && !$userAdmin ) {
-                        unset( $actTypes[$keyActType] );
-                    }
-                }
-            }
-            foreach ( $vervolgTypes as $keyVervolgType => $valVervolgType ) {
-                if ( $valVervolgType['text'] == "Let op! Gevoelige informatie" ) {
-                    if ( !$userWijk && !$userAdmin ) {
-                        unset( $vervolgTypes[$keyVervolgType] );
-                    }
-                }
-                if ( $valVervolgType['text'] == "Gespreksverslag dir/best" ) {
-                    if ( !$userDirBest && !$userAdmin ) {
-                        unset( $vervolgTypes[$keyVervolgType] );
+            $formElements = & $form->getVar('_elements');
+            $action = $form->getVar('_action');
+            foreach ( $formElements as $keyFormElement => & $formElement ) {
+                if ( $formElement->_attributes['name'] == 'activity_type_id' ||
+                        $formElement->_attributes['name'] == 'followup_activity_type_id') {
+                    if ( isset( $formElement->_options ) ) {
+                        $typeOptions = & $formElement->_options;
+                        if ( !empty( $typeOptions ) ) {
+                            foreach ( $typeOptions as $keyOption => $typeOption ) {
+                                if ( isset( $typeOption['attr']['value'] ) ) {
+                                    if ( $typeOption['attr']['value'] == 109 ) {
+                                        if ( !$userWijk && !$userAdmin ) {
+                                            unset( $typeOptions[$keyOption] );
+                                        }
+                                    }
+                                    if ( $typeOption['attr']['value'] == 118 ) {
+                                        if ( !$userDirBest && !$userAdmin ) {
+                                            unset( $typeOptions[$keyOption] );
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
