@@ -448,4 +448,70 @@ function custom_civicrm_buildForm( $formName, &$form ) {
             }
         }
     }
+    /*
+     * DGW incident 14 01 13 003
+     */
+    if ( $formName == "CRM_Activity_Form_Activity" ) {
+        global $user;
+        $userBeheerder = false;
+        if ( in_array( "klantinformatie admin", $user->roles ) ) {
+            $userBeheerder = true;
+        }
+        if ( !$userBeheerder ) {
+            /*
+             * only show details if user in special group
+             */
+            if ( !isset( $session ) ) {
+                $session =& CRM_Core_Session::singleton();
+            }
+            $userID  = $session->get( 'userID' );
+            require_once 'CRM/Utils/DgwUtils.php';
+            $checkUserParams = array(
+                'user_id'       =>  $userID,
+                'is_wijk'       =>  1,
+                'is_dirbest'    =>  1,
+                'is_admin'      =>  1
+            );
+            require_once 'CRM/Utils/DgwUtils.php';
+            $checkUser = CRM_Utils_DgwUtils::getGroupsCurrentUser( $checkUserParams );
+            if ( $checkUser['is_error'] == 0 ) {
+                $userWijk = $checkUser['wijk'];
+                $userDirBest = $checkUser['dirbest'];
+                $userAdmin = $checkUser['admin'];
+            } else {
+                $userWijk = false;
+                $userDirBest = false;
+                $userAdmin = false;
+            }
+            $elements = & $form->getvar('_elements');
+            $actTypes = & $elements[7];
+            $actTypes = & $actTypes->_options;
+            $vervolgTypes = & $elements[15];
+            $vervolgTypes = & $vervolgTypes->_options;
+            foreach ( $actTypes as $keyActType => $valActType ) {
+                if ( $valActType['text'] == "Let op! Gevoelige informatie" ) {
+                    if ( !$userWijk && !$userAdmin ) {
+                        unset( $actTypes[$keyActType] );
+                    }
+                }
+                if ( $valActType['text'] == "Gespreksverslag dir/best" ) {
+                    if ( !$userDirBest && !$userAdmin ) {
+                        unset( $actTypes[$keyActType] );
+                    }
+                }
+            }
+            foreach ( $vervolgTypes as $keyVervolgType => $valVervolgType ) {
+                if ( $valVervolgType['text'] == "Let op! Gevoelige informatie" ) {
+                    if ( !$userWijk && !$userAdmin ) {
+                        unset( $vervolgTypes[$keyVervolgType] );
+                    }
+                }
+                if ( $valVervolgType['text'] == "Gespreksverslag dir/best" ) {
+                    if ( !$userDirBest && !$userAdmin ) {
+                        unset( $vervolgTypes[$keyVervolgType] );
+                    }
+                }
+            }
+        }
+    }
 }

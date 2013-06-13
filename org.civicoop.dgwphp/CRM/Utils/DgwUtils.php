@@ -919,6 +919,7 @@ class CRM_Utils_DgwUtils {
             $resultParams['error_message'] == "Error from group_contact API: ".$userGroups['error_message'];
             return $resultParams;
         }
+        $resultParams['is_error'] = 0;
         $resultParams['dirbest'] = false;
         $resultParams['wijk'] = false;
         $resultParams['admin'] = false;
