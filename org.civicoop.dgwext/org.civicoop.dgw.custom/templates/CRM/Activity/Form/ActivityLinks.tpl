@@ -42,37 +42,37 @@
 {* Links for scheduling/logging meetings and calls and Sending Email *}
 {if $cdType eq false }
 {if $contact_id }
-{assign var = "contactId" value= $contact_id }
-	{* DGW19 - Act type 108 alleen laten zien als user in groep 18 *}
-    {* incident 14 01 13 003 - Act type 118 alleen laten zien als user in groep 28 *}
-    {assign var='userDirBest' value=0}
-    {if $config->userFrameworkBaseURL eq "http://insitetest2/"}
-        {assign var='groupDirBest' value=28}
-    {else}
-        {assign var='groupDirBest' value=24}
-    {/if}
-    {assign var='typeDirBest' value=118}
-    {assign var='userWijk' value=0}
-    {assign var='typeWijk' value=109}
-    {assign var='groupWijk' value=18}
-    {assign var='userAdmin' value=0}
-    {crmAPI var="userGroups" entity="GroupContact" action="get" contact_id=$session->get('userID')}
-    {* als één van de groepen groep Wijk, dan userWijk=1 (tonen) *}
-    {* als één van de groepen groep DirBest dan userDirBest=1 (tonen) *}
-    {* als één van de groepen groep 1 dan userAdmin=1 (tonen) *}
-    {foreach from=$userGroups.values item=userGroup}
-        {if $userGroup.group_id eq 1}
-            {assign var='userAdmin' value=1}
-        {/if}    
-        {if $userGroup.group_id eq $groupWijk}
-            {assign var='userWijk' value=1}
-        {/if}
-        {if $userGroup.group_id eq $groupDirBest}
-            {assign var='userDirBest' value=1}
-        {/if}    
-    {/foreach}	
-    {* end DGW19 en incident 14 01 13 003 1e deel *}
+    {assign var = "contactId" value= $contact_id }
+
 {/if}
+{* DGW19 - Act type 108 alleen laten zien als user in groep 18 *}
+{* incident 14 01 13 003 - Act type 118 alleen laten zien als user in groep 28 *}
+{assign var='typeWijk' value=109}
+{assign var='typeDirBest' value=118}
+{assign var='groupWijk' value=18}
+{assign var='userAdmin' value=0}
+{assign var='userWijk' value=0}
+{assign var='userDirBest' value=0}
+{if $config->userFrameworkBaseURL eq "http://insitetest2/"}
+    {assign var='groupDirBest' value=28}
+{else}
+    {assign var='groupDirBest' value=24}
+{/if}
+{* get all groups for user *}
+{crmAPI var="userGroups" entity="GroupContact" action="get" contact_id=$session->get('userID')}
+{assign var='showStuff' value=0}
+{foreach from=$userGroups.values item=userGroup}
+    {if $userGroup.group_id eq 1}
+        {assign var='userAdmin' value=1}
+    {/if}
+    {if $userGroup.group_id eq $groupWijk}
+        {assign var='userWijk' value=1}
+    {/if}
+    {if $userGroup.group_id eq $groupDirBest}
+        {assign var='userDirBest' value=1}
+    {/if}
+{/foreach}
+{* end DGW19 en incident 14 01 13 003 1e deel *}
 
 {if $as_select} {* on 3.2, the activities can be either a drop down select (on the activity tab) or a list (on the action menu) *}
 <select onchange="if (this.value) window.location=''+ this.value; else return false" name="other_activity" id="other_activity" class="form-select">

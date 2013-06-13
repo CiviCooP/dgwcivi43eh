@@ -64,6 +64,7 @@
     {assign var='showStuff' value=0}
     {foreach from=$userGroups.values item=userGroup}
         {if $form.activity_type_id.value.0 == 109}
+            {assign var='groupWijk' value=18}
             {if $userGroup.group_id eq 1}
                 {assign var='showStuff' value=1}
             {/if}
