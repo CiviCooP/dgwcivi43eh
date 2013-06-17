@@ -281,6 +281,94 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
         $updContact .= "postal_greeting_display = '$greetings' WHERE id = $objectId";
         CRM_Core_DAO::executeQuery( $updContact );
     }
+    /*
+     * incident 01 10 12 002 - add username and date to details activity,
+     * remove 'old' username and date if required to avoid doubles
+     */
+    if ( $objectName == 'Activity') {
+        if ( $op == "create" || $op == "edit" ) {
+            $activityTypeId = $objectRef->activity_type_id;
+            if ( $activityTypeId == 32 ) {
+                $details = $objectRef->details;
+                $activityId = $objectRef->id;
+                /*
+                 * explode details in parts between <p> to decide
+                 * if there is already a username and date and no other
+                 * text. If that is the case, the 'old' username and
+                 * date can be removed
+                 */
+                $arrayDetails = explode("<p>", $details );
+                if ( !empty( $arrayDetails ) ) {
+                    $aantalElementen = count( $arrayDetails );
+                    $lastElement = end( $arrayDetails );
+                    $lastParts = explode( "</p>", $lastElement );
+                    $lastTekst = trim( $lastParts[0] );
+                    $arrayAchter = explode( ":", $lastTekst );
+                    $lastAchter = end( $arrayAchter);
+                    if ( empty( $lastAchter ) ) {
+                        $lastTekst = substr( $lastTekst, 0, -8 );
+                        $dateNu = date('d-m-Y', strtotime( 'now' ) );
+                        $session = CRM_Core_Session::singleton( );
+                        $contactId  = $session->get( 'userID' );
+                        require_once 'api/v2/Contact.php';
+                        $apiParams = array(
+                            'id'                    =>  $contactId,
+                            'return.display_name'   =>  1
+                        );
+                        $contactApi = civicrm_contact_get( $apiParams );
+                        $displayName = "";
+                        if ( !civicrm_error( $contactApi ) ) {
+                            if ( isset( $contactApi[$contactId]['display_name'] ) ) {
+                                $displayName = $contactApi[$contactId]['display_name'];
+                            }
+                        }
+                        if ( !empty( $displayName ) ) {
+                            $tekstUserDate = $displayName.", ".$dateNu;
+                        } else {
+                            $tekstUserDate = $dateNu;
+                        }
+                        if ( trim( $lastTekst ) == $tekstUserDate ) {
+                            array_pop( $arrayDetails );
+                            $details = implode( "<p>", $arrayDetails );
+                            $updAct =
+    "UPDATE civicrm_activity SET details = '$details' WHERE id = $activityId";
+                            CRM_Core_DAO::executeQuery( $updAct );
+                        }
+                    }
+                }
+            }
+        }
+    }
+    /*
+     * incident 20 06 12 004 depending on the CiviCRM settings, a mail is sent
+     * to the assignee contact for an activity. That is fine.
+     * What also happens is that an activity is automatically created for
+     * the sending of this assignment email. De Goede Woning does not want that!
+     * Assignment is only internal, so all these - copy sent to activities are
+     * simply in the way. These will be removed here.
+     */
+    if ( $objectName == 'Activity' ) {
+        $apiParams = array(
+            'version'           =>  3,
+            'option_group_id'   =>  2,
+            'label'             =>  'E-mail'
+        );
+        $actType = civicrm_api( 'OptionValue', 'Getsingle', $apiParams );
+        if ( !isset( $actType['is_error'] ) || $actType['is_error'] == 0 ) {
+            if ( $objectRef->activity_type_id == $actType['value'] ) {
+                if ( !empty( $objectRef->source_record_id ) ) {
+                    $actPrevious = $objectId - 1;
+                    if ( $objectRef->source_record_id === $actPrevious ) {
+                        $subjectParts = explode( "- copy sent to", $objectRef->subject );
+                        if ( isset( $subjectParts[1] ) ) {
+                            $actDel = "DELETE FROM civicrm_activity WHERE id = $objectId ";
+                            CRM_Core_DAO::executeQuery( $actDel );
+                        }
+                    }
+                }
+            }
+       }
+    }
 }
 /**
  * Implementation of hook_civicrm_pre
