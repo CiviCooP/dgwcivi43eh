@@ -75,10 +75,11 @@ foreach($q as $action) {
 	$p = $action;
 }
 
+unset($_REQUEST);
+$_REQUEST = array();
 foreach($_GET as $key => $value) {
 	$_REQUEST[$key] = $value;
 }
-
 require_once 'CRM/Utils/DgwREST.php';
 $rest = new CRM_Utils_DgwREST();
 
