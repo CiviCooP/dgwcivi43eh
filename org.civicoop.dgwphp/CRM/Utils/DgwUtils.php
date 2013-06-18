@@ -1015,4 +1015,48 @@ class CRM_Utils_DgwUtils {
         $displayGreetings['greetings'] = $greetings;
         return $displayGreetings;
     }
+    /**
+     * static function to spilt string in parts and upper case each part
+     *
+     * @author Erik Hommel (erik.hommel@civicoop.org)
+     * @param $inputString
+     * @return $outputString
+     */
+    static function upperCaseSplitTxt( $inputString ) {
+       	$outputString = null;
+        if ( !empty( $inputString ) ) {
+            $stringParts = explode ( " ", $inputString );
+            if ( isset ( $stringParts[1] ) ) {
+                foreach ( $stringParts as $stringPart ) {
+                    $stringPart = ucfirst( strtolower( $stringPart ) );
+                }
+                $outputString = implode( " ", $stringParts );
+            } else {
+                $outputString = ucfirst( strtolower ( $inputString ) );
+            }
+        }
+	return $outputString;
+    }
+    /**
+     * static function to correct Dutch date format problem with short dates
+     * (okt becomes oct, mei becomes may and maa becomes mar)
+     *
+     * @author Erik Hommel (erik.hommel@civicoop.org)
+     * @param $inputDate
+     * @return $outputDate
+     */
+    static function correctNlDate( $inputDate ) {
+        $outputDate = $inputDate;
+        $dates = explode( "-", $inputDate );
+        if ( $dates[1] == "Okt" ) {
+            $outputDate = $dates[0]."-Oct-".$dates[2];
+        }
+	if ( $dates[1] == "Mei" ) {
+            $outputDate = $dates[0]."-May-".$dates[2];
+	}
+        if ( $dates[1] == "Maa" ) {
+            $outputDate = $dates[0]."-Mar-".$dates[2];
+	}
+	return $outputDate;
+    }
 }
