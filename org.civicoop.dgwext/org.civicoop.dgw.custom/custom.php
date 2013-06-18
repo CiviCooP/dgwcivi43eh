@@ -359,10 +359,12 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
                 if ( !empty( $objectRef->source_record_id ) ) {
                     $actPrevious = $objectId - 1;
                     if ( $objectRef->source_record_id === $actPrevious ) {
-                        $subjectParts = explode( "- copy sent to", $objectRef->subject );
-                        if ( isset( $subjectParts[1] ) ) {
-                            $actDel = "DELETE FROM civicrm_activity WHERE id = $objectId ";
-                            CRM_Core_DAO::executeQuery( $actDel );
+                        if ( isset( $objectRef->subject ) ) {
+                            $subjectParts = explode( "- copy sent to", $objectRef->subject );
+                            if ( isset( $subjectParts[1] ) ) {
+                                $actDel = "DELETE FROM civicrm_activity WHERE id = $objectId ";
+                                CRM_Core_DAO::executeQuery( $actDel );
+                            }
                         }
                     }
                 }
