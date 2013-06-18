@@ -45,7 +45,7 @@ for($i=1; $i < count($k); $i++) {
 	$a = explode("=", $k[$i]);
 	if (count($a) == 2) {
 		$_GET[$a[0]] = $a[1];
-	} 
+	}
 }
 
 /**
@@ -65,7 +65,7 @@ if (isset($_GET['entity'])) {
 
 $q = $k[0];
 $q = explode("/", $q);
-$p =""; 
+$p ="";
 foreach($q as $action) {
 	if (strlen($p) && $p == 'dgwcontact') {
 		$c = CRM_Utils_DgwApiUtils::parseEntity($action);

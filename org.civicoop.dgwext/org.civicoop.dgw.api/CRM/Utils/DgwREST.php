@@ -163,30 +163,45 @@ class CRM_Utils_DgwREST {
       return $json;
     }
 
+    /*
+     * cater for specific DGW behaviour without values in the array
+     */
+    if ( !isset( $result['values'] ) ) {
+        $xml = "<?xml version=\"1.0\"?>
+<ResultSet xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">
+";
+        // check if this is a single element result (contact_get etc)
+        // or multi element
+        if ( $hier ) {
+            foreach ( $result as $n => $v ) {
+                $xml .= "<Result>\n" . CRM_Utils_Array::xml( $v ) . "</Result>\n";
+            }
+        } else {
+            $xml .= "<Result>\n" . CRM_Utils_Array::xml( $result ) . "</Result>\n";
+        }
 
-    if (isset($result['count'])) {
+        $xml .= "</ResultSet>\n";
+    } else {
+        if (isset($result['count'])) {
+          $count = ' count="' . $result['count'] . '" ';
+        }
+        else $count = "";
+        $xml = "<?xml version=\"1.0\"?>
+          <ResultSet xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" $count>
+          ";
+        // check if this is a single element result (contact_get etc)
+        // or multi element
+        if ($hier) {
+          foreach ($result['values'] as $n => $v) {
+            $xml .= "<Result>\n" . CRM_Utils_Array::xml($v) . "</Result>\n";
+          }
+        }
+        else {
+          $xml .= "<Result>\n" . CRM_Utils_Array::xml($result) . "</Result>\n";
+        }
 
-
-      $count = ' count="' . $result['count'] . '" ';
-
-
+        $xml .= "</ResultSet>\n";
     }
-    else $count = "";
-    $xml = "<?xml version=\"1.0\"?>
-      <ResultSet xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" $count>
-      ";
-    // check if this is a single element result (contact_get etc)
-    // or multi element
-    if ($hier) {
-      foreach ($result['values'] as $n => $v) {
-        $xml .= "<Result>\n" . CRM_Utils_Array::xml($v) . "</Result>\n";
-      }
-    }
-    else {
-      $xml .= "<Result>\n" . CRM_Utils_Array::xml($result) . "</Result>\n";
-    }
-
-    $xml .= "</ResultSet>\n";
     return $xml;
   }
 
@@ -349,7 +364,7 @@ class CRM_Utils_DgwREST {
       }
       $valid_user = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact', $api_key, 'id', 'api_key');
     }
-    
+
     // If we didn't find a valid user either way, then die.
     if (empty($valid_user)) {
       return self::error("Invalid session or user api_key invalid");
@@ -393,7 +408,7 @@ class CRM_Utils_DgwREST {
       $result['deprecated'] = "Please upgrade to API v3";
       return $result;
     }
-    
+
     $hasAdminRights = false;
     $grp_check = civicrm_api('GroupContact', 'getsingle', array('version' => 3, 'group_id' => 1, 'contact_id' => $userID));
     if (!civicrm_error($grp_check)) {
@@ -412,7 +427,7 @@ class CRM_Utils_DgwREST {
         )
       );
     }
-    
+
     if (strtolower(substr($args[1],0,3)) != 'dgw' && !$hasAdminRight) {
     	require_once 'api/v3/utils.php';
     	return civicrm_api3_create_error("SECURITY: You don't have access to this api's.");
@@ -420,7 +435,7 @@ class CRM_Utils_DgwREST {
 
     // trap all fatal errors
     CRM_Core_Error::setCallback(array('CRM_Utils_REST', 'fatal'));
-    
+
     //make sure id is not required by delete action
     if (strtolower(substr($args[1],0,3)) == 'dgw' && strtolower($args[2]) == 'delete' && !isset($params['id'])) {
     	$params['id'] = 1;
