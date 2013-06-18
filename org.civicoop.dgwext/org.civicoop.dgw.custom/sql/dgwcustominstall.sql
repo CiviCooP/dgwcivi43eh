@@ -70,8 +70,52 @@ INSERT INTO `dgw_config` SET label = 'vjt check', value = 'Check';
 INSERT INTO `dgw_config` SET label = 'locatie oud', value = 'Oud';
 INSERT INTO `dgw_config` SET label = 'locatie toekomst', value = 'Toekomst';
 INSERT INTO `dgw_config` SET label = 'kov bestandsnaam', value = 'kov_';
-INSERT INTO `dgw_config` SET label = 'kov pad', value = '/home/kov';
+INSERT INTO `dgw_config` SET label = 'kov pad', value = '/home/kov/';
 INSERT INTO `dgw_config` SET label = 'kov tabel', value = 'kovimport';
 INSERT INTO `dgw_config` SET label = 'kov header', value = 'kovhdr';
 INSERT INTO `dgw_config` SET label = 'kov foutgroep', value = 'Koopovereenkomst Huishouden Fout';
+
+CREATE TABLE `kovhdr` (
+  `kov_nr` int(11) NOT NULL DEFAULT '0',
+  `vge_nr` int(11) DEFAULT NULL,
+  `corr_naam` varchar(128) DEFAULT NULL,
+  `ov_datum` varchar(45) DEFAULT NULL,
+  `vge_adres` varchar(128) DEFAULT NULL,
+  `type` varchar(45) DEFAULT NULL,
+  `prijs` varchar(45) DEFAULT NULL,
+  `notaris` varchar(75) DEFAULT NULL,
+  `tax_waarde` varchar(45) DEFAULT NULL,
+  `taxateur` varchar(45) DEFAULT NULL,
+  `tax_datum` varchar(45) DEFAULT NULL,
+  `bouwkundige` varchar(45) DEFAULT NULL,
+  `bouw_datum` varchar(45) DEFAULT NULL,
+  `definitief` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`kov_nr`)
+)ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+CREATE TABLE `kovimport` (
+  `kov_nr` int(11) DEFAULT NULL,
+  `vge_nr` int(11) DEFAULT NULL,
+  `pers_nr` int(11) DEFAULT NULL,
+  `corr_naam` varchar(128) DEFAULT NULL,
+  `ov_datum` varchar(45) DEFAULT NULL,
+  `vge_adres` varchar(128) DEFAULT NULL,
+  `type` varchar(45) DEFAULT NULL,
+  `spec` varchar(45) DEFAULT NULL,
+  `prijs` varchar(45) DEFAULT NULL,
+  `notaris` varchar(75) DEFAULT NULL,
+  `tax_waarde` varchar(45) DEFAULT NULL,
+  `taxateur` varchar(45) DEFAULT NULL,
+  `tax_datum` varchar(45) DEFAULT NULL,
+  `bouwkundige` varchar(45) DEFAULT NULL,
+  `bouw_datum` varchar(45) DEFAULT NULL,
+  `definitief` varchar(45) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT
+CHARSET=utf8
+COLLATE=utf8_unicode_ci;
+
+
+
 
