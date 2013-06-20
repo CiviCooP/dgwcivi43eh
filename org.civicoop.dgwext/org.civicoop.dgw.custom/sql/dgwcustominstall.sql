@@ -50,7 +50,7 @@ INSERT INTO `dgw_config` SET label = 'sync first error entity veld', value = 'En
 INSERT INTO `dgw_config` SET label = 'sync first error entity_id veld', value = 'entity_id_err';
 INSERT INTO `dgw_config` SET label = 'sync first error key_first veld', value = 'key_first_err';
 INSERT INTO `dgw_config` SET label = 'sync first error datum veld', value = 'datum synchronisatieprobleem';
-INSERT INTO `dgw_config` SET label = 'sync first error foutboodschap'. value = 'Foutboodschap';
+INSERT INTO `dgw_config` SET label = 'sync first error foutboodschap', value = 'Foutboodschap';
 INSERT INTO `dgw_config` SET label = 'relatie hoofdhuurder', value = 'Hoofdhuurder';
 INSERT INTO `dgw_config` SET label = 'relatie medehuurder', value = 'Medehuurder';
 INSERT INTO `dgw_config` SET label = 'default location type', value = 'Thuis';
