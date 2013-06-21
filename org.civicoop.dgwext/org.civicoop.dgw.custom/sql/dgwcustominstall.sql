@@ -53,6 +53,7 @@ INSERT INTO `dgw_config` SET label = 'sync first error datum veld', value = 'dat
 INSERT INTO `dgw_config` SET label = 'sync first error foutboodschap', value = 'Foutboodschap';
 INSERT INTO `dgw_config` SET label = 'relatie hoofdhuurder', value = 'Hoofdhuurder';
 INSERT INTO `dgw_config` SET label = 'relatie medehuurder', value = 'Medehuurder';
+INSERT INTO `dgw_config` SET label = 'relatie koopovereenkomst', value = 'Koopovereenkomst partner';
 INSERT INTO `dgw_config` SET label = 'default location type', value = 'Thuis';
 INSERT INTO `dgw_config` SET label = 'helpdesk mail', value = 'helpdesk@degoedewoning.nl';
 
