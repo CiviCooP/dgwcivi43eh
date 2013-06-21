@@ -75,6 +75,7 @@ INSERT INTO `dgw_config` SET label = 'kov pad', value = '/home/kov/';
 INSERT INTO `dgw_config` SET label = 'kov tabel', value = 'kovimport';
 INSERT INTO `dgw_config` SET label = 'kov header', value = 'kovhdr';
 INSERT INTO `dgw_config` SET label = 'kov foutgroep', value = 'Koopovereenkomst Huishouden Fout';
+INSERT INTO `dgw_config` SET label = 'kov custom tabel', value = 'Koopovereenkomst';
 
 CREATE TABLE `kovhdr` (
   `kov_nr` int(11) NOT NULL DEFAULT '0',
