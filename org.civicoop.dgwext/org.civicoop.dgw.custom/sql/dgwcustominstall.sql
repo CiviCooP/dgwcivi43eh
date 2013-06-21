@@ -75,7 +75,20 @@ INSERT INTO `dgw_config` SET label = 'kov pad', value = '/home/kov/';
 INSERT INTO `dgw_config` SET label = 'kov tabel', value = 'kovimport';
 INSERT INTO `dgw_config` SET label = 'kov header', value = 'kovhdr';
 INSERT INTO `dgw_config` SET label = 'kov foutgroep', value = 'Koopovereenkomst Huishouden Fout';
-INSERT INTO `dgw_config` SET label = 'kov custom tabel', value = 'Koopovereenkomst';
+INSERT INTO `dgw_config` SET label = 'kov nummer veld', value = 'KOV nummer First';
+INSERT INTO `dgw_config` SET label = 'kov vge nummer veld', value = 'VGE nummer KOV';
+INSERT INTO `dgw_config` SET label = 'kov vge adres veld', value = 'VGE adres KOV';
+INSERT INTO `dgw_config` SET label = 'kov overdracht veld', value = 'Datum overdracht';
+INSERT INTO `dgw_config` SET label = 'kov naam veld', value = 'Correspondentienaam KOV';
+INSERT INTO `dgw_config` SET label = 'kov definitief veld', value = 'Definitief';
+INSERT INTO `dgw_config` SET label = 'kov type veld', value = 'Type KOV';
+INSERT INTO `dgw_config` SET label = 'kov prijs veld', value = 'Verkoopprijs';
+INSERT INTO `dgw_config` SET label = 'kov notaris veld', value = 'Notaris';
+INSERT INTO `dgw_config` SET label = 'kov waarde veld', value = 'Taxatiewaarde';
+INSERT INTO `dgw_config` SET label = 'kov taxateur veld', value = 'Taxateur';
+INSERT INTO `dgw_config` SET label = 'kov taxatiedatum veld', value = 'Taxatiedatum';
+INSERT INTO `dgw_config` SET label = 'kov bouwkundige veld', value = 'Bouwkundige';
+INSERT INTO `dgw_config` SET label = 'kov bouwdatum veld', value = 'Datum bouwkundige keuring';
 
 CREATE TABLE `kovhdr` (
   `kov_nr` int(11) NOT NULL DEFAULT '0',
