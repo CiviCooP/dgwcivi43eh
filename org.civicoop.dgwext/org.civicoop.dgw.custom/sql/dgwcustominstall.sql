@@ -9,6 +9,7 @@ COLLATE = utf8_general_ci;
 
 INSERT INTO `dgw_config` SET label = 'tabel data first', value = 'Aanvullende persoonsgegevens';
 INSERT INTO `dgw_config` SET label = 'persoonsnummer first', value = 'Persoonsnummer First';
+INSERT INTO `dgw_config` SET label = 'persoonsnummer first org', value = 'Nr. in First';
 INSERT INTO `dgw_config` SET label = 'bsn', value = 'BSN';
 INSERT INTO `dgw_config` SET label = 'burgerlijke staat', value = 'Burgerlijke staat';
 
