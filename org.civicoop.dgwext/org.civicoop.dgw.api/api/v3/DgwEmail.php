@@ -96,12 +96,12 @@ function civicrm_api3_dgw_email_update($inparms) {
 	 * if start_date passed and format invalid, error
 	*/
 	if (isset($inparms['start_date']) && !empty($inparms['start_date'])) {
-		$valid_date = CRM_Utils_DgwUtils::checkDateFormat($inparms['start_date']);
-		if (!$valid_date) {
-			return civicrm_api3_create_error("Onjuiste formaat start_date");
-		} else {
-			$start_date = $inparms['start_date'];
-		}
+            $valid_date = CRM_Utils_DgwUtils::checkDateFormat($inparms['start_date']);
+            if (!$valid_date) {
+                return civicrm_api3_create_error("Onjuiste formaat start_date");
+            } else {
+                $start_date = $inparms['start_date'];
+            }
 	}
 	/*
 	 * if end_date passed and format invalid, error
