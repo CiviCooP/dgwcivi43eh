@@ -193,7 +193,7 @@ class CRM_Utils_DgwApiUtils {
 		* En omdat het een inactief (verborgen) veld is kunnen we ook niet zoeken via
 		* de Contact api met als parameter custom_*
 		*/
-		$query = "SELECT ".$entity_id_field['column_name']." AS `entity_id` FROM ".$cde_refno_field_froup['table_name']." WHERE ".$cde_refno_field['column_name']." = '$cde_refno' AND ".$entity_field['column_name']." = '".$entity_type."'";
+		$query = "SELECT ".$entity_id_field['column_name']." AS `entity_id` FROM ".$cde_refno_field_froup['table_name']." WHERE ".$cde_refno_field['column_name']." = '$first_key' AND ".$entity_field['column_name']." = '".$entity_type."'";
 		$daoSync = CRM_Core_DAO::executeQuery($query);
 		if ($daoSync->fetch()) {
 			$id = $daoSync->entity_id;

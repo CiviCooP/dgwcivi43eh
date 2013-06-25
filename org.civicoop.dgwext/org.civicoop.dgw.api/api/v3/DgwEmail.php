@@ -321,25 +321,44 @@ function civicrm_api3_dgw_email_create($inparms) {
 			$end_date = $inparms['end_date'];
 		}
 	}
-
 	$persoonsnummer_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('persoonsnummer_first');
-
 	/*
 	 * if contact not in civicrm, error
 	*/
 	if (isset($pers_nr)) {
-		$checkparms = array("custom_".$persoonsnummer_first_field['id'] => $pers_nr);
+            $checkparms = array("custom_".$persoonsnummer_first_field['id'] => $pers_nr);
 	} else {
-		$checkparms = array("contact_id" => $contact_id);
+            $checkparms = array("contact_id" => $contact_id);
 	}
 	$checkparms['version'] = 3;
-	$check_contact = civicrm_api('Contact', 'get', $checkparms);
-	if (civicrm_error($check_contact)) {
-		return civicrm_api3_create_error("Contact niet gevonden");
+	$check_contact = civicrm_api('Contact', 'getsingle', $checkparms);
+	if ( isset( $check_contact['count'] ) ) {
+            if ( $check_contact['count'] == 0 ) {
+                $persoonsnummer_org_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName( 'nr_in_first' );
+                $checkparms = array(
+                    'version'                                   =>  3,
+                    'custom_'.$persoonsnummer_org_field['id']   =>  $pers_nr
+                );
+                $check_contact = civicrm_api('Contact', 'getsingle', $checkparms );
+                if ( isset( $check_contact['is_error'] ) && $check_contact['is_error'] == 1 )  {
+                    if ( isset( $check_contact['error_message'] ) ) {
+                        return civicrm_api3_create_error( "Onverwachte fout in api Contact Getsingle: {$check_contact['error_message']}" );
+                    } else {
+                        return civicrm_api3_create_error( "Onverwachte fout in api Contact Getsingle" );
+                    }
+                }
+            }
+        }
+        if ( isset( $check_contact['contact_id'] ) ) {
+            $contact_id = $check_contact['contact_id'];
 	} else {
-		$check_contact = reset($check_contact['values']);
-		$contact_id = $check_contact['contact_id'];
-	}
+            if ( isset( $check_contact['error_message'] ) ) {
+                $returnMessage = "Contact niet gevonden, foutmelding van API Contact Getsingle : ".$check_contact['error_message'];
+            } else {
+                $returnMessage = "Contact niet gevonden";
+            }
+            return civicrm_api3_create_error( $returnMessage );
+        }
 
 	/*
 	 * if location_type is invalid, error
