@@ -32,20 +32,20 @@
  | Marker       :   DGW3                                              |
  | Description  :   Disable edit or delete for household if huur- or  |
  |                  koopovereenkomst present                          |
- | Date         :   31 Jan 2011                                       | 
+ | Date         :   31 Jan 2011                                       |
  | Marker       :   DGW3                                              |
  | Description  :   Disable edit and delete for household if          |
  |                  huur- of koopovereenkomst present                 |
  | Date         :   10 Feb 2011                                       |
  | Marker       :   DGW6                                              |
  | Description  :   Add button to access First if persoonsnummer      |
- |                  First not empty                                   | 
- | Date			:   10 Feb 2011                                       |
- | Marker		:   DGW7                                              |
+ |                  First not empty                                   |
+ | Date         :   10 Feb 2011                                       |
+ | Marker       :   DGW7                                              |
  | Description  :   Add button to access payment details First        |
- | Marker		:	DGW20                                             |
- | Date			:	6 Nov 2011                                        |
- | Description	:	Aanpassing naar D:/ voor eWorX Active X 		  |
+ | Marker       :   DGW20                                             |
+ | Date         :   6 Nov 2011                                        |
+ | Description  :   Aanpassing naar D:/ voor eWorX Active X 	      |
  |                                                                    |
  +--------------------------------------------------------------------+
 *}
@@ -53,13 +53,18 @@
 {* Customization DGW3 disable edit mode for household if *}
 {* huurovereenkomst or koopovereenkomst is present *}
 {if $contact_type eq 'Household'}
-	{foreach from=$allTabs key=tabName item=tabValue}
-		{if $tabValue.title eq 'Huurovereenkomst' or $tabValue.title eq 'Koopovereenkomst'}
-			{if $tabValue.count gt 0}
-				{assign var="permission" value="view"}
-			{/if}	
-		{/if}	
-	{/foreach}
+    {foreach from=$allTabs key=tabName item=tabValue}
+        {if $tabValue.title eq 'Huurovereenkomst (huishouden)' or $tabValue.title eq 'Koopovereenkomst'}
+            {if $tabValue.count gt 0}
+                {* if user admin permission to edit, otherwise view only *}
+                {if (call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') ) }
+                    {assign var="permission" value="edit"}
+                {else}
+                    {assign var="permission" value="view"}
+                {/if}
+            {/if}
+        {/if}
+    {/foreach}
 {/if}
 {* end DGW3 *}
 
@@ -85,16 +90,16 @@ End Function
 {assign var="buttonsFirst" value=0}
 {assign var="persnrFirst" value=0}
 {foreach from=$viewCustomData item=cfValues key=customGroupId}
-	{foreach from=$cfValues item=cfItem key=cfID}
-		{if $cfItem.title eq 'Aanvullende persoonsgegevens'}
-			{foreach from=$cfItem.fields item=cfElement key=cfItemID}
-				{if $cfElement.field_title eq 'Persoonsnummer First' and $cfElement.field_value ne ''}
-					{assign var="buttonsFirst" value=1}
-					{assign var="persnrFirst" value=$cfElement.field_value}
-				{/if}	
-			{/foreach}	
-		{/if}
-	{/foreach}
+    {foreach from=$cfValues item=cfItem key=cfID}
+        {if $cfItem.title eq 'Aanvullende persoonsgegevens'}
+            {foreach from=$cfItem.fields item=cfElement key=cfItemID}
+                {if $cfElement.field_title eq 'Persoonsnummer First' and $cfElement.field_value ne ''}
+                    {assign var="buttonsFirst" value=1}
+                    {assign var="persnrFirst" value=$cfElement.field_value}
+                {/if}
+            {/foreach}
+        {/if}
+    {/foreach}
 {/foreach}
 {* end DGW1 check Persoonsnummer First *}
 
@@ -163,17 +168,17 @@ End Function
                   </a>
               </li>
           {/if}
-          
+
           {* DGW1 add button for eWorX / First / Betalingen if buttonsFirst *}
           {if $buttonsFirst }
           	{* tijdelijk voor test bosworX - als user Bas Frelink, gebruik OpenBosHuurder *}
           	<a href="vbscript:OpenHuurder({$persnrFirst}, true)" class="dashboard button" title="eWorX"><span>
           	<div class="icon inform-icon"></div>eWorX</span></a>
-          	
-          	{* DGW6 button to access First with Persoonsnummer First *}   
+
+          	{* DGW6 button to access First with Persoonsnummer First *}
           	<a href="http://fhpxyp1.a004.woonsuite.nl:7777/portal/page/portal/NCCW/EFP_WOOND_PER?p_par_refno={$persnrFirst}" target="_new" class="dashboard button" title="Betaaloverzicht" <span>
           	<div class="icon inform-icon"></div>First</span> </a>
-          	
+
           	{* DGW7 button to access payments in First with Persoonsnummer First *}
           	<a href="http://fhpxyp1.a004.woonsuite.nl:7777/portal/page/portal/NCCW/EFP_WOOND_HV?p_par_refno={$persnrFirst}" target="_new" class="dashboard button" title="Betaaloverzicht" <span>
           	<div class="icon inform-icon"></div>Betaaloverzicht</span></a>
@@ -354,7 +359,7 @@ End Function
                       <div class="contactCardLeft">
                         <div class="crm-summary-comm-pref-block">
                         <div class="crm-summary-block" id="communication-pref-block" >
-                          {include file="CRM/Contact/Page/Inline/CommunicationPreferences.tpl"} 
+                          {include file="CRM/Contact/Page/Inline/CommunicationPreferences.tpl"}
                         </div>
                         </div>
                       </div> <!-- contactCardLeft -->
@@ -363,7 +368,7 @@ End Function
                         <div class="contactCardRight">
                           <div class="crm-summary-demographic-block">
                           <div class="crm-summary-block" id="demographic-block">
-                            {include file="CRM/Contact/Page/Inline/Demographics.tpl"} 
+                            {include file="CRM/Contact/Page/Inline/Demographics.tpl"}
                           </div>
                           </div>
                         </div> <!-- contactCardRight -->
@@ -372,7 +377,7 @@ End Function
                       <div class="separator"></div>
                     </div> <!-- contact panel -->
                 </div><!--contact_details-->
-       
+
                 {if $showCustomData}
                   <div id="customFields">
                     <div class="contact_panel">
@@ -387,8 +392,8 @@ End Function
                       <div class="clear"></div>
                     </div>
                   </div>
-                {/if}         
-       
+                {/if}
+
                 {if !empty($hookContent) and isset($hookContentPlacement) and $hookContentPlacement eq 1}
                   {include file="CRM/Contact/Page/View/SummaryHook.tpl"}
                 {/if}
