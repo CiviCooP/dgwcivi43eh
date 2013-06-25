@@ -284,10 +284,10 @@ function civicrm_api3_dgw_email_create($inparms) {
 		$location_type = strtolower(trim($inparms['location_type']));
 	}
 	/*
-	 * if no is_primary passed, error
+	 * if no is_primary passed, set default to 0
 	*/
 	if (!isset($inparms['is_primary'])) {
-		return civicrm_api3_create_error("Is_primary ontbreekt");
+		$is_primary = 0;
 	} else {
 		$is_primary = trim($inparms['is_primary']);
 	}
