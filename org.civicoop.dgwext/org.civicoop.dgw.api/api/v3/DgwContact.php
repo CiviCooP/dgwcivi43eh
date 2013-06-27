@@ -560,6 +560,8 @@ function civicrm_api3_dgw_contact_create($inparms) {
     $aanbod_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Bekend_met_koopaanbod');
     $particulier_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Particuliere_markt');
 
+    echo "<p>Contac type is $contact_type </p>";
+
     if ($contact_type == "Individual") {
     	/*
          * create array with required data, minimal is contact_id
@@ -621,8 +623,11 @@ function civicrm_api3_dgw_contact_create($inparms) {
         	$customparms['custom_'.$entity_id_field['id']] = $contact_id;
         	$customparms['custom_'.$key_first_field['id']] = $pers_first;
         }
-
-        $civicres2 = civicrm_api('CustomValue', 'Create', $customparms);
+        $customparms['entity_id'] = $contact_id;
+        echo "<p>Custom parms is : </p>";
+        print_r( $customparms );
+        $civires2 = civicrm_api('CustomValue', 'Create', $customparms);
+        print_r( $civires2 );
     }
     /*
      * create custom data for Organization
