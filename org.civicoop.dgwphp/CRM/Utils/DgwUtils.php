@@ -1059,4 +1059,77 @@ class CRM_Utils_DgwUtils {
 	}
 	return $outputDate;
     }
+    /**
+     * static function to retrieve the active household for a contact through a specified relationship
+     *
+     * @author Erik Hommel (erik.hommel@civicoop.org)
+     * @param $contactId, $relType
+     * @return $result array with count and householdId if applicable
+     */
+    static function retrieveActiveHouseHold( $contactId, $relType ) {
+        $result = array( );
+        if ( empty( $contactId ) ) {
+            $result['count'] = 0;
+            return $result;
+        }
+        $relLabel = self::getDgwConfigValue( $relType );
+        $apiParams = array(
+            'version'   =>  3,
+            'label_a_b' =>  $relLabel
+        );
+        $apiRelType = civicrm_api( 'RelationshipType', 'Getsingle', $apiParams );
+        if( isset( $apiRelType['id'] ) ) {
+            $relTypeId = $apiRelType['id'];
+        }
+        $apiParams = array(
+            'version'               =>  3,
+            'relationship_type_id'  =>  $relTypeId,
+            'contact_id_a'          =>  $contactId
+        );
+        $apiRelations = civicrm_api( 'Relationship', 'Get', $apiParams );
+        if ( isset( $apiRelations['is_error'] ) && $apiRelations['is_error'] == 1 ) {
+            $result['count'] = 0;
+            return $result;
+        }
+        $result['count'] = 0;
+        foreach ( $apiRelations['values'] as $keyRelation => $apiRelation ) {
+            if ( !isset( $apiRelation['end_date'] ) || empty( $apiRelation['end_date'] ) ) {
+                $result['count']++;
+                $result['household_id'] = $apiRelation['contact_id_b'];
+            } else {
+                if ( date('Ymd', strtotime( $apiRelation['end_date'] ) ) > date('Ymd') ) {
+                    $result['count']++;
+                    $result['household_id'] = $apiRelation['contact_id_b'];
+                }
+            }
+        }
+        return $result;
+    }
+    /**
+     * static function getHuurovereenkomst
+     *
+     * @author Erik Hommel (erik.hommel@civicoop.org)
+     * @param $hovId
+     * @return $hovData object
+     */
+    static function getHuurovereenkomstHuishouden( $hovId ) {
+        $hovData = array( );
+        if ( empty( $hovId ) ) {
+            $hovData['is_error'] = 1;
+            $hovData['error_message'] = "hovId is empty";
+            return $hovData;
+        }
+        $hovTableLabel = self::getDgwConfigValue( 'tabel huurovereenkomst huishouden' );
+        $hovTable = self::getCustomGroupTableName( $hovTableLabel );
+        $hovNummerFieldArray = self::getCustomField( array( 'label' => 'hovnummer huishouden') );
+        if ( isset( $hovNummerFieldArray['column_name'] ) ) {
+            $hovNummerField = $hovNummerFieldArray['column_name'];
+            $qryHov = "SELECT * FROM $hovTable WHERE $hovNummerField = '$hovId'";
+            $daoHov = CRM_Core_DAO::executeQuery( $qryHov );
+            if ( $daoHov->fetch() ) {
+                $hovData = $daoHov;
+            }
+        }
+        return $hovData;
+    }
 }

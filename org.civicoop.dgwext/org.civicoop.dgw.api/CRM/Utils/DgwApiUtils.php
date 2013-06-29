@@ -114,57 +114,6 @@ class CRM_Utils_DgwApiUtils {
 		}
 		return $return;
 	}
-
-	/*
-	 * function to check if a contact is a hoofdhuurder
-	*/
-	public static function is_hoofdhuurder($contact_id) {
-		/*
-		 * only if contact_id is not empty
-		*/
-		if (empty($contact_id)) {
-			return 0;
-		}
-		/*
-		 * check if there is a relationship 'hoofdhuurder' for the contact_id
-		*/
-		$rel_hfd_id = self::retrieveRelationshipTypeIdByNameAB('Hoofdhuurder');
-		$parms = array(
-			'version' => 3,
-			'relationship_type_id' => $rel_hfd_id,
-			'contact_id_a' => $contact_id,
-		);
-		$res = civicrm_api('Relationship', 'get', $parms);
-		if (is_array($res['values'])) {
-			$c = reset($res['values']);
-			return $c['contact_id_b'];
-		}
-		return 0;
-	}
-
-	public static function aantalMedehuurders($huishouden_id) {
-		/*
-		 * only if contact_id is not empty
-		*/
-		if (empty($huishouden_id)) {
-			return 0;
-		}
-		/*
-		 * check if there is a relationship 'hoofdhuurder' for the contact_id
-		*/
-		$rel_hfd_id = self::retrieveRelationshipTypeIdByNameAB('Medehuurder');
-		$parms = array(
-				'version' => 3,
-				'relationship_type_id' => $rel_hfd_id,
-				'contact_id_b' => $huishouden_id,
-		);
-		$res = civicrm_api('Relationship', 'get', $parms);
-		if (civicrm_error($res)) {
-			return 0;
-		}
-		return $res['count'];
-	}
-
 	public static function retrieveRelationshipTypeIdByNameAB($name) {
 		$id = 0;
 		$parms = array(
