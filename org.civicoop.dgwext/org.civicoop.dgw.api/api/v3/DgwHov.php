@@ -255,6 +255,12 @@ function civicrm_api3_dgw_hov_create( $inparms ) {
             if ( isset( $hh_res['id'] ) ) {
                 $huishouden_id = (int) $hh_res['id'];
                 $key = "";
+                /*
+                 * copy address, email and phone from hoofdhuurder
+                 */
+                CRM_Utils_DgwUtils::processAddressesHoofdHuurder( $hh_id );
+                CRM_Utils_DgwUtils::processEmailsHoofdHuurder( $hh_id );
+                CRM_Utils_DgwUtils::processPhonesHoofdHuurder( $hh_id );
             } else {
                 $returnMsg = "Onverwachte fout: huishouden niet aangemaakt in CiviCRM";
                 if ( isset( $hh_res['error_message'] ) ) {
