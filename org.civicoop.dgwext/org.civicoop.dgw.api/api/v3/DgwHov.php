@@ -404,7 +404,7 @@ function civicrm_api3_dgw_hov_create( $inparms ) {
  * Function to update huurovereenkomst
  */
 function civicrm_api3_dgw_hov_update($inparms) {
-    /*
+d    /*
      * if no hov_nummer passed, error
      */
     if (!isset($inparms['hov_nummer'])) {
@@ -419,8 +419,10 @@ function civicrm_api3_dgw_hov_update($inparms) {
     $type = null;
     $org_id = null;
     $huis_id = CRM_Utils_DgwApiUtils::getHovFromTable($hov_nummer, 'HOV_nummer_First');
+    $type = "huishouden";
     if (!$huis_id) {
         $org_id = CRM_Utils_DgwApiUtils::getHovFromTable($hov_nummer, 'hov_nummer');
+        $type = "organisatie";
         if (!$org_id) {
             return civicrm_api3_create_error("Huurovereenkomst niet gevonden");
         }
@@ -447,9 +449,6 @@ function civicrm_api3_dgw_hov_update($inparms) {
         }
         if ( isset( $res_hh['contact_id'] ) ) {
             $hh_id = $res_hh['contact_id'];
-            if ( isset( $res_hh['contact_type'] ) ) {
-                $type = strtolower( $res_hh['contact_type']);
-            }
         } else {
             if ( isset( $res_hh['error_message'] ) ) {
                 $returnMessage = "Contact niet gevonden, foutmelding van API Contact Getsingle : ".$res_hh['error_message'];
