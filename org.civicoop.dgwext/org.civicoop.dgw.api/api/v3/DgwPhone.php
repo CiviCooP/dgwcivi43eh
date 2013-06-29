@@ -395,13 +395,6 @@ function civicrm_api3_dgw_phone_create($inparms) {
                 'custom_'.$persoonsnummer_org_field['id']   =>  $pers_nr
             );
             $check_contact = civicrm_api('Contact', 'getsingle', $checkparms );
-            if ( isset( $check_contact['is_error'] ) && $check_contact['is_error'] == 1 )  {
-                if ( isset( $check_contact['error_message'] ) ) {
-                    return civicrm_api3_create_error( "Onverwachte fout in api Contact Getsingle: {$check_contact['error_message']}" );
-                } else {
-                    return civicrm_api3_create_error( "Onverwachte fout in api Contact Getsingle" );
-                }
-            }
         }
     }
     if ( isset( $check_contact['contact_id'] ) ) {
