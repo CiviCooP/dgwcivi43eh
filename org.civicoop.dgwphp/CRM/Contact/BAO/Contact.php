@@ -283,7 +283,7 @@ class CRM_Contact_BAO_Contact extends CRM_Contact_DAO_Contact {
 
       $isEdit = TRUE;
       if ($invokeHooks) {
-        if ( $params['hook_context'] ) {
+        if ( isset( $params['hook_context'] ) ) {
             $hookContext = $params['hook_context'];
             unset( $params['hook_context'] );
         } else {
