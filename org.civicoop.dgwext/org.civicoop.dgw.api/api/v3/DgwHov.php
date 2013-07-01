@@ -404,7 +404,7 @@ function civicrm_api3_dgw_hov_create( $inparms ) {
  * Function to update huurovereenkomst
  */
 function civicrm_api3_dgw_hov_update($inparms) {
-d    /*
+    /*
      * if no hov_nummer passed, error
      */
     if (!isset($inparms['hov_nummer'])) {
@@ -651,15 +651,15 @@ d    /*
             $res_cor = civicrm_api('Contact', 'Create', $cor_parms);
         }
         /*
-         * if hh_persoon passed, check if relation hoofdhuurder or medehuurder
-         * already exists between persoon and huishouden.
+         * if hh_persoon passed or end_date set, check if relation hoofdhuurder or
+         * medehuurder already exists between persoon and huishouden.
          */
-        if (isset($hh_persoon)) {
+        if ( isset( $hh_persoon ) || isset( $end_date) ) {
             $rel_hfd_id = CRM_Utils_DgwApiUtils::retrieveRelationshipTypeIdByNameAB('Hoofdhuurder');
             $parms = array(
                 'version' => 3,
                 'relationship_type_id' => $rel_hfd_id,
-                'contact_id_a' => $huis_id,
+                'contact_id_b' => $huis_id,
             );
             $res = civicrm_api('Relationship', 'get', $parms);
             $updated = false;
@@ -669,12 +669,14 @@ d    /*
                     $rel_params['id'] = $rid;
                     $rel_params['relationship_type_id'] = $rel_hfd_id;
                     if (isset($hh_start_date) && !empty($hh_start_date)) {
-                            $rel_params['start_date'] = $hh_start_date;
+                        $rel_params['start_date'] = $hh_start_date;
                     }
                     if (isset($hh_end_date) && !empty($hh_end_date)) {
-                            $rel_params['end_date'] = $hh_end_date;
+                        $rel_params['end_date'] = $hh_end_date;
+                    } else {
+                        $rel_params['end_date'] = $end_date;
                     }
-                    civicrm_api('Relationship', 'Create', $rel_params);
+                    $relRes = civicrm_api('Relationship', 'Create', $rel_params);
                     $updated = true;
                 }
             }
