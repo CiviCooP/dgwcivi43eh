@@ -1060,52 +1060,6 @@ class CRM_Utils_DgwUtils {
 	return $outputDate;
     }
     /**
-     * static function to retrieve the active household for a contact through a specified relationship
-     *
-     * @author Erik Hommel (erik.hommel@civicoop.org)
-     * @param $contactId, $relType
-     * @return $result array with count and householdId if applicable
-     */
-    static function retrieveActiveHouseHold( $contactId, $relType ) {
-        $result = array( );
-        if ( empty( $contactId ) ) {
-            $result['count'] = 0;
-            return $result;
-        }
-        $relLabel = self::getDgwConfigValue( $relType );
-        $apiParams = array(
-            'version'   =>  3,
-            'label_a_b' =>  $relLabel
-        );
-        $apiRelType = civicrm_api( 'RelationshipType', 'Getsingle', $apiParams );
-        if( isset( $apiRelType['id'] ) ) {
-            $relTypeId = $apiRelType['id'];
-        }
-        $apiParams = array(
-            'version'               =>  3,
-            'relationship_type_id'  =>  $relTypeId,
-            'contact_id_a'          =>  $contactId
-        );
-        $apiRelations = civicrm_api( 'Relationship', 'Get', $apiParams );
-        if ( isset( $apiRelations['is_error'] ) && $apiRelations['is_error'] == 1 ) {
-            $result['count'] = 0;
-            return $result;
-        }
-        $result['count'] = 0;
-        foreach ( $apiRelations['values'] as $keyRelation => $apiRelation ) {
-            if ( !isset( $apiRelation['end_date'] ) || empty( $apiRelation['end_date'] ) ) {
-                $result['count']++;
-                $result['household_id'] = $apiRelation['contact_id_b'];
-            } else {
-                if ( date('Ymd', strtotime( $apiRelation['end_date'] ) ) > date('Ymd') ) {
-                    $result['count']++;
-                    $result['household_id'] = $apiRelation['contact_id_b'];
-                }
-            }
-        }
-        return $result;
-    }
-    /**
      * static function getHuurovereenkomst
      *
      * @author Erik Hommel (erik.hommel@civicoop.org)
@@ -1131,5 +1085,30 @@ class CRM_Utils_DgwUtils {
             }
         }
         return $hovData;
+    }
+    /**
+     * static function to check if koopovereenkomst exists
+     * @author Erik Hommel (erik.hommel@civicoop.org)
+     * @param $kovId
+     * @return boolean
+     */
+    static function checkKovExists ( $kovId ) {
+        if ( empty( $kovId ) ) {
+            return false;
+        }
+        $kovTableLabel = self::getDgwConfigValue( 'tabel koopovereenkomst' );
+        $kovTable = self::getCustomGroupTableName( $kovTableLabel );
+        $kovNummerFieldArray = self::getCustomField( array( 'label' => 'kovnummer') );
+        if ( isset( $kovNummerFieldArray['column_name'] ) ) {
+            $kovNummerField = $kovNummerFieldArray['column_name'];
+            $qryKov = "SELECT COUNT(*) AS aatal FROM $kovTable WHERE $kovNummerField = '$kovId'";
+            $daoKov = CRM_Core_DAO::executeQuery( $qryKov );
+            if ( $daoKov->fetch() ) {
+                if ( $daoKov->aantal > 0 ) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
