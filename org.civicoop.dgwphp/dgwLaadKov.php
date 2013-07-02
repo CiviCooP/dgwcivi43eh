@@ -70,6 +70,7 @@ if ( !$isError ) {
     }
 }
 if ( !$isError ) {
+    CRM_Core_Session::setStatus('Het laden van koopovereenkomsten is bezig', 'Laden koopovereenkomsten actief', 'info');
     /*
      * truncate load and header table and load new data
      */
@@ -227,9 +228,11 @@ if ( !$isError ) {
                      * use that household
                      */
                     $activeHoofdHuurder = CRM_Utils_DgwUtils::getHuishoudens( $contactId, true );
-                    if ( $activeHoofdHuurder['count'] > 0 ) {
-                        $createHouseHold = false;
-                        $houseHoldId = $activeHoofdHuurder['household_id'];
+                    if ( isset( $activeHoofdHuuder['count'] ) ) {
+                        if ( $activeHoofdHuurder['count'] > 0 ) {
+                            $createHouseHold = false;
+                            $houseHoldId = $activeHoofdHuurder['household_id'];
+                        }
                     }
                     /*
                      * if no householdId yet, check if contact is active 'koopovereenkomst partner'
@@ -237,9 +240,11 @@ if ( !$isError ) {
                      */
                     if ( $createHouseHold ) {
                         $activeKoopPartner = CRM_Utils_DgwUtils::getHuishoudens( $contactId, true );
-                        if ( $activeKoopPartner['count'] > 0 ) {
-                            $createHouseHold = false;
-                            $houseHoldId = $activeKoopPartner['household_id'];
+                        if ( isset( $activeKoopPartner['count'] ) ) {
+                            if ( $activeKoopPartner['count'] > 0 ) {
+                                $createHouseHold = false;
+                                $houseHoldId = $activeKoopPartner['household_id'];
+                            }
                         }
                     }
                     /*
@@ -281,7 +286,7 @@ if ( !$isError ) {
                      * update or create koopovereenkomst if there is a household
                      */
                     if ( isset( $houseHoldId ) && !empty( $houseHoldId ) ) {
-                        $labelCustomTable = CRM_Utils_DgwUtils::getDgwConfigValue( 'kov custom table' );
+                        $labelCustomTable = CRM_Utils_DgwUtils::getDgwConfigValue( 'tabel koopovereenkomst' );
                         $apiParams = array(
                             'version'   =>  3,
                             'title'     =>  $labelCustomTable
@@ -319,7 +324,8 @@ if ( !$isError ) {
                         $apiParams['label'] = $fldLabel;
                         $apiCustomField = civicrm_api( 'CustomField', 'getsingle', $apiParams );
                         if ( isset( $apiCustomField['column_name'] ) ) {
-                            $kovFieldsSql[] = "{$apiCustomField['column_name']} = '{$headerDAO->vge_adres}'";
+                            $escapedString = CRM_Core_DAO::escapeString( $headerDAO->vge_adres);
+                            $kovFieldsSql[] = "{$apiCustomField['column_name']} = '$escapedString'";
                         }
 
                         $fldLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'kov overdracht veld' );
@@ -333,7 +339,8 @@ if ( !$isError ) {
                         $apiParams['label'] = $fldLabel;
                         $apiCustomField = civicrm_api( 'CustomField', 'getsingle', $apiParams );
                         if ( isset( $apiCustomField['column_name'] ) ) {
-                            $kovFieldsSql[] = "{$apiCustomField['column_name']} = '{$headerDAO->corr_naam}'";
+                            $escapedString = CRM_Core_DAO::escapeString( $headerDAO->corr_naam );
+                            $kovFieldsSql[] = "{$apiCustomField['column_name']} = '$escapedString'";
                         }
 
                         $fldLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'kov definitief veld' );
@@ -361,7 +368,8 @@ if ( !$isError ) {
                         $apiParams['label'] = $fldLabel;
                         $apiCustomField = civicrm_api( 'CustomField', 'getsingle', $apiParams );
                         if ( isset( $apiCustomField['column_name'] ) ) {
-                            $kovFieldsSql[] = "{$apiCustomField['column_name']} = '{$headerDAO->notaris}'";
+                            $escapedString = CRM_Core_DAO::escapeString( $headerDAO->notaris );
+                            $kovFieldsSql[] = "{$apiCustomField['column_name']} = '$escapedString'";
                         }
 
                         $fldLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'kov waarde veld' );
@@ -375,7 +383,8 @@ if ( !$isError ) {
                         $apiParams['label'] = $fldLabel;
                         $apiCustomField = civicrm_api( 'CustomField', 'getsingle', $apiParams );
                         if ( isset( $apiCustomField['column_name'] ) ) {
-                            $kovFieldsSql[] = "{$apiCustomField['column_name']} = '{$headerDAO->taxateur}'";
+                            $escapedString = CRM_Core_DAO::escapeString( $headerDAO->taxateur );
+                            $kovFieldsSql[] = "{$apiCustomField['column_name']} = '$escapedString'";
                         }
 
                         $fldLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'kov taxatiedatum veld' );
@@ -389,7 +398,8 @@ if ( !$isError ) {
                         $apiParams['label'] = $fldLabel;
                         $apiCustomField = civicrm_api( 'CustomField', 'getsingle', $apiParams );
                         if ( isset( $apiCustomField['column_name'] ) ) {
-                            $kovFieldsSql[] = "{$apiCustomField['column_name']} = '{$headerDAO->bouwkundige}'";
+                            $escapedString = CRM_Core_DAO::escapeString( $headerDAO->bouwkundige );
+                            $kovFieldsSql[] = "{$apiCustomField['column_name']} = '$escapedString'";
                         }
 
                         $fldLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'kov bouwdatum veld' );

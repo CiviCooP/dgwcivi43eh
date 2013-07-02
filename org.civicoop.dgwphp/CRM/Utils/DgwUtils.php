@@ -1101,7 +1101,7 @@ class CRM_Utils_DgwUtils {
         $kovNummerFieldArray = self::getCustomField( array( 'label' => 'kovnummer') );
         if ( isset( $kovNummerFieldArray['column_name'] ) ) {
             $kovNummerField = $kovNummerFieldArray['column_name'];
-            $qryKov = "SELECT COUNT(*) AS aatal FROM $kovTable WHERE $kovNummerField = '$kovId'";
+            $qryKov = "SELECT COUNT(*) AS aantal FROM $kovTable WHERE $kovNummerField = '$kovId'";
             $daoKov = CRM_Core_DAO::executeQuery( $qryKov );
             if ( $daoKov->fetch() ) {
                 if ( $daoKov->aantal > 0 ) {
