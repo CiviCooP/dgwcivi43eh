@@ -646,7 +646,7 @@ function civicrm_api3_dgw_hov_update($inparms) {
         //update correspondentie naam bij huishouden
         if (isset($inparms['corr_name'])) {
             $cor_parms['version'] = 3;
-            $cor_parms['name'] = trim($inparms['corr_name']);
+            $cor_parms['household_name'] = trim($inparms['corr_name']);
             $cor_parms['contact_id'] = $huis_id;
             $res_cor = civicrm_api('Contact', 'Create', $cor_parms);
         }
