@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<CaseType>
+  <name>Dossier opzegging huurcontract</name>
+  <ActivityTypes>
+    <ActivityType><name>Open Case</name><max_instances>1</max_instances></ActivityType>
+	<ActivityType><name>Close Case</name></ActivityType>
+  </ActivityTypes>
+<ActivitySets>
+    <ActivitySet>
+      <name>standard_timeline</name>
+      <label>Standaard Tijdlijn</label>
+      <timeline>true</timeline>
+      <ActivityTypes>
+        <ActivityType>
+          <name>Open Case</name>
+          <status>Completed</status>
+        </ActivityType>
+      </ActivityTypes>
+    </ActivitySet>
+  </ActivitySets> 
+  <CaseRoles>
+    	<RelationshipType><name>Dossiermanager</name><creator>1</creator><manager>1</manager></RelationshipType>
+    	<RelationshipType><name>Technisch woonconsulent</name></RelationshipType>
+ </CaseRoles>
+</CaseType>
