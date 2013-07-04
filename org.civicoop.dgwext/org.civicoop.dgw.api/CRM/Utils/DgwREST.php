@@ -369,6 +369,43 @@ class CRM_Utils_DgwREST {
     if (empty($valid_user)) {
       return self::error("Invalid session or user api_key invalid");
     }
+    /*--------------------------------------------------------
+     * CiviCooP customization for De Goede Woning
+     * request with status received
+     */
+    $message = "Request \'".$_SERVER['QUERY_STRING'].
+            "\' received and logged";
+    $username = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact',
+            $valid_user, 'display_name', 'id');
+
+    $from_ip = $_SERVER['SERVER_ADDR'];
+    $from_host = $_SERVER['HTTP_HOST'];
+    $from_uri = $_SERVER['REQUEST_URI'];
+    /*
+     * get function name, first explode from_uri on "?" and take second
+     * part. Explode this second part on "/", element 2 will contain funct.
+     * including parms. Explode this on "&" and first element contains
+     * function
+     */
+    $log_function = "";
+    $logstep1 = explode("?", $from_uri);
+    if (isset($logstep1[1])) {
+        $logstep2 = explode("/", $logstep1[1]);
+        if (isset($logstep2[2])) {
+            $logstep3 = explode("&", $logstep2[2]);
+            $log_function = $logstep3[0];
+        }
+    }
+    $request_timestamp = date("Y-m-d H:i:s", $_SERVER['REQUEST_TIME']);
+    $logqry = "INSERT INTO dgw_restlog SET from_ip = '$from_ip', from_host =
+        '$from_host', from_uri = '$from_uri', from_user = '$username',
+        log_message = '$message', log_function = '$log_function',
+        request_timestamp = '$request_timestamp'";
+    CRM_Core_DAO::executeQuery( $logqry );
+    /*
+     * End EE-atWork mod DGW2
+     *--------------------------------------------------------*/
+
 
     return self::process($args, true, $valid_user);
   }
