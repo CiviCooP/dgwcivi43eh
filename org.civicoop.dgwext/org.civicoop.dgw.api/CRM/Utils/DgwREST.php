@@ -291,6 +291,7 @@ class CRM_Utils_DgwREST {
     if (!empty($r)) {
       $q = $r;
     }
+    
     if (!empty($q)) {
       $args = explode('/', $q);
       // If the function isn't in the civicrm namespace, reject the request.

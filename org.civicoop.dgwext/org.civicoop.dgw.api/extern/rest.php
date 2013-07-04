@@ -40,6 +40,10 @@ if (isset($_SERVER['PATH_INFO']) && strlen($_SERVER['PATH_INFO'])) {
 	unset($_GET['q']);
 }
 
+if ($q == "civicrm/login") {
+	$_GET['q'] = "civicrm/login";
+}
+
 $k = explode("&", $q);
 for($i=1; $i < count($k); $i++) {
 	$a = explode("=", $k[$i]);
