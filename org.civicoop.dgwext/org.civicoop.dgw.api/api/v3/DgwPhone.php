@@ -142,8 +142,10 @@ function civicrm_api3_dgw_phone_update($inparms) {
         /*
          * if location_type = toekomst and start_date is not > today, error
          */
-        if ($location_type == "toekomst" && $start_date <= date("Ymd")) {
-            return civicrm_api3_create_error("Combinatie location_type en start/end_date ongeldig");
+        if ( isset( $location_type ) ) {
+            if ($location_type == "toekomst" && $start_date <= date("Ymd")) {
+                return civicrm_api3_create_error("Combinatie location_type en start/end_date ongeldig");
+            }
         }
     }
     /*
@@ -157,9 +159,11 @@ function civicrm_api3_dgw_phone_update($inparms) {
         /*
          * if location_type = oud and end_date is empty or > today, error
         */
-        if ($location_type == "oud") {
-            if (empty($end_date) || $end_date > date("Ymd")) {
-                return civicrm_api3_create_error("Combinatie location_type en start/end_date ongeldig");
+        if ( isset( $location_type ) ) {
+            if ($location_type == "oud") {
+                if (empty($end_date) || $end_date > date("Ymd")) {
+                    return civicrm_api3_create_error("Combinatie location_type en start/end_date ongeldig");
+                }
             }
         }
     }
