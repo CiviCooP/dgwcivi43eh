@@ -685,10 +685,6 @@ function civicrm_api3_dgw_address_get($inparms) {
         $data['street_suffix'] = '';
         if (isset($data['street_unit'])) {
             $data['street_suffix'] = $data['street_unit'];
-            unset($data['street_suffix']);
-        }
-        if (isset($data['street_unit'])) {
-            $data['street_suffix'] .= $data['street_unit'];
             unset($data['street_unit']);
         }
         if (isset($data['country_id'])) {

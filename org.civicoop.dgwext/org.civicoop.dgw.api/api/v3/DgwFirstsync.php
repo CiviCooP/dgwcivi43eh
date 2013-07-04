@@ -17,7 +17,7 @@ function civicrm_api3_dgw_firstsync_error($inparms) {
 		return civicrm_api3_create_error("CustomGroup Fouten_synchronisatie_first niet gevonden");
 	}
 	$error_group_id = $error_group['id'];
-	
+
 	/*
 	 * if contact_id not in parms, empty or not numeric, error
 	*/
@@ -32,7 +32,7 @@ function civicrm_api3_dgw_firstsync_error($inparms) {
 	if (!is_numeric($contact_id)) {
 		return civicrm_api3_create_error("Contact_id mag alleen numeriek zijn, doorgegeven was ".$contact_id." aan dgwcontact_firstsyncerror");
 	}
-	
+
 	/*
 	 * if action not in parms, empty or not ins/upd, error
 	*/
@@ -47,7 +47,7 @@ function civicrm_api3_dgw_firstsync_error($inparms) {
 	if ($action != "ins" && $action != "upd") {
 		return civicrm_api3_create_error("Action heeft ongeldigde waarde ".$action." voor dgwcontact_firstsyncerror");
 	}
-	
+
 	/*
 	 * if entity not in parms, empty or invalid, error
 	*/
@@ -62,7 +62,7 @@ function civicrm_api3_dgw_firstsync_error($inparms) {
 	if ($entity != "contact" && $entity != "phone" && $entity != "address" && $entity != "email") {
 		return civicrm_api3_create_error("Entity heeft ongeldigde waarde ".$entity." voor dgwcontact_firstsyncerror");
 	}
-	
+
 	/*
 	 * If entity_id not in parms, empty or not numeric, error
 	*/
@@ -89,7 +89,7 @@ function civicrm_api3_dgw_firstsync_error($inparms) {
 		return civicrm_api3_create_error( "Lege foutboodschap doorgegeven in dgwcontact_firstsyncerror");
 	}
 	$errdate = date("Y-m-d H:i:s");
-	
+
 	/*
 	 * Incident 09 06 11 001 : check if there is already a record with
 	* the same error message for the contact. If so, update date
@@ -100,7 +100,7 @@ function civicrm_api3_dgw_firstsync_error($inparms) {
 	$entity_id_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity_id_err');
 	$key_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first_err');
 	$error_msg_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Foutboodschap');
-	
+
 	$custom_fields = CRM_Utils_DgwApiUtils::retrieveCustomValuesForContactAndCustomGroupSorted( $contact_id, $error_group_id);
 	foreach($custom_fields as $key => $field) {
 		if ($field['Foutboodschap'] == $errmsg) {
@@ -117,7 +117,7 @@ function civicrm_api3_dgw_firstsync_error($inparms) {
 			return $outparms;
 		}
 	}
-	
+
 	/*
 	* Create record in first sync error table with error message
 	*/
@@ -140,7 +140,7 @@ function civicrm_api3_dgw_firstsync_error($inparms) {
 	if (civicrm_error($civicres)) {
 		return civicrm_api3_create_error($civicres['error_message']);
 	}
-	
+
 	$outparms['is_error'] = "0";
 	return $outparms;
 }
@@ -157,10 +157,10 @@ function civicrm_api3_dgw_firstsync_remove($inparms) {
 	if (!is_array($group)) {
 		return civicrm_api3_create_error("CustomGroup Synchronisatie_First_Noa niet gevonden");
 	}
-	
+
 	$group_id = $group['id'];
 	$error_group_id = $error_group['id'];
-	
+
 	/*
 	 * if contact_id empty or not numeric, error
 	*/
@@ -238,7 +238,7 @@ function civicrm_api3_dgw_firstsync_remove($inparms) {
 	} else {
 		$key_first = null;
 	}
-	
+
 	$custom_group = CRM_Utils_DgwApiUtils::retrieveCustomGroupByid($group_id);
 	$custom_fields = CRM_Utils_DgwApiUtils::retrieveCustomValuesForContactAndCustomGroupSorted( $contact_id, $group_id);
 	$action_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('action');
@@ -271,10 +271,10 @@ function civicrm_api3_dgw_firstsync_remove($inparms) {
 						if (civicrm_error($civires2)) {
 							return civicrm_api3_create_error($civires2['error_message']);
 						}
-					} 
+					}
 				}
 			}
-			
+
 			$fields = array(
 				'action_err' => $action,
 				'entity_err' => $entity,
@@ -304,7 +304,7 @@ function civicrm_api3_dgw_firstsync_remove($inparms) {
 					}
 				}
 			}
-			
+
 			$fields = array(
 					'action_err' => $action,
 					'entity_err' => $entity,
@@ -324,11 +324,11 @@ function civicrm_api3_dgw_firstsync_remove($inparms) {
 				$aantal ++;
 			}
 		}
-		
+
 		if ($aantal == 0) {
 			$gid = CRM_Utils_DgwApiUtils::getGroupIdByTitle('FirstSync');
 			$civiparms2 = array(
-					"version"       => 3, 
+					"version"       => 3,
 					"contact_id"    =>  $contact_id,
 					"group_id"      =>  $gid);
 			$civires2 = civicrm_api('GroupContact', 'delete', $civiparms2);
@@ -345,68 +345,61 @@ function civicrm_api3_dgw_firstsync_remove($inparms) {
 /*
  * Function to sync with first
 */
-function civicrm_api3_dgw_firstsync_get($inparms) {
-	$group = CRM_Utils_DgwApiUtils::retrieveCustomGroupByName('Synchronisatie_First_Noa');
-	if (!is_array($group)) {
-		return civicrm_api3_create_error("CustomGroup Synchronisatie_First_Noa niet gevonden");
-	}	
-	$group_for_first_sync = $group['id'];
-	
-	/*
-	 * initialize output parameter array
-	*/
-	$outparms = array("");
-	$civiparms = array (
-			'version' => 3,
-	);
-	
-	$group_id = CRM_Utils_DgwApiUtils::getGroupIdByTitle('FirstSync');
-	if ($group_id === false) {
-		return civicrm_api3_create_error('No group FirstSync found');
-	}
-	
-
-	/**
-	 * Use the GroupContact api
-	 */
-	$civiparms['group_id'] = $group_id;
-	$civires1 = civicrm_api('GroupContact', 'get', $civiparms);
-	if (civicrm_error($civires1)) {
-		return civicrm_api3_create_error($civires1['error_message']);
-	}
-
-	$i = 1;
-	foreach ($civires1['values'] as $contact) {
-		
-		$pers_first = CRM_Utils_DgwApiUtils::retrievePersoonsNummerFirst($contact['contact_id']);
-		$fields = CRM_Utils_DgwApiUtils::retrieveCustomValuesForContactAndCustomGroupSorted( $contact['contact_id'], $group_for_first_sync);
-		
-		foreach($fields as $field) {
-			$proccessRecord = true;
-			/*
-			 * issue 269: do not send if key_first is empty and action is
-			* not ins
-			* do not send if entity = address or contact and action is
-			* delete
-			*/
-			if (empty($field['key_first']) && $field['action'] != 'ins') {
-				$proccessRecord = false;
-			}
-			if ($field['action'] == 'del' && ($field['entity'] == 'contact' || $field['entity'] == 'address')) {
-				$proccessRecord = false;
-			} 
-			if ($field['action'] == 'none') {
-				$proccessRecord = false;
-			}
-			if ($proccessRecord) {
-				$data = $field;
-				$data['contact_id'] = $contact['contact_id'];
-				$data['persoonsnummer_first'] = $pers_first;
-				$outparms[$i] = $data;
-				$i++;
-			}
-		}
-	}
-	$outparms[0]['record_count'] = $i - 1;
-	return $outparms;
+function civicrm_api3_dgw_firstsync_get( $inparms ) {
+    $group = CRM_Utils_DgwApiUtils::retrieveCustomGroupByName('Synchronisatie_First_Noa');
+    if (!is_array($group)) {
+        return civicrm_api3_create_error("CustomGroup Synchronisatie_First_Noa niet gevonden");
+    }
+    $group_for_first_sync = $group['id'];
+    /*
+     * initialize output parameter array
+     */
+    $outparms = array("");
+    $civiparms = array (
+        'version' => 3,
+    );
+    $group_id = CRM_Utils_DgwApiUtils::getGroupIdByTitle('FirstSync');
+    if ($group_id === false) {
+        return civicrm_api3_create_error('No group FirstSync found');
+    }
+    /**
+     * Use the GroupContact api
+     */
+    $civiparms['group_id'] = $group_id;
+    $civires1 = civicrm_api('GroupContact', 'get', $civiparms);
+    if (civicrm_error($civires1)) {
+        return civicrm_api3_create_error($civires1['error_message']);
+    }
+    $i = 1;
+    foreach ($civires1['values'] as $contact) {
+        $pers_first = CRM_Utils_DgwApiUtils::retrievePersoonsNummerFirst($contact['contact_id']);
+        $fields = CRM_Utils_DgwApiUtils::retrieveCustomValuesForContactAndCustomGroupSorted( $contact['contact_id'], $group_for_first_sync);
+        foreach($fields as $field) {
+            $proccessRecord = true;
+            /*
+             * issue 269: do not send if key_first is empty and action is
+             * not ins
+             * do not send if entity = address or contact and action is
+             * delete
+             */
+            if (empty($field['key_first']) && $field['action'] != 'ins') {
+                $proccessRecord = false;
+            }
+            if ($field['action'] == 'del' && ($field['entity'] == 'contact' || $field['entity'] == 'address')) {
+                $proccessRecord = false;
+            }
+            if ($field['action'] == 'none') {
+                $proccessRecord = false;
+            }
+            if ($proccessRecord) {
+                $data = $field;
+                $data['contact_id'] = $contact['contact_id'];
+                $data['persoonsnummer_first'] = $pers_first;
+                $outparms[$i] = $data;
+                $i++;
+            }
+        }
+    }
+    $outparms[0]['record_count'] = $i - 1;
+    return $outparms;
 }
