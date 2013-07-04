@@ -38,34 +38,40 @@ function mutatieproces_civicrm_uninstall() {
 function mutatieproces_civicrm_enable() {
 	_mutatieproces_add_relationship_type('Technisch woonconsulent is', 'Technisch woonconsulent', '', '');
 	$dossier = _mutatieproces_add_case('Dossier opzegging huurcontract');
+	$gid = false;
 	if ($dossier) {
-		_mutatieproces_add_field('einde_huurcontract', 'Opzegging huurcontract', $dossier, 'Case', 'mutatienr', 'Mutatienummer First Noa', 'String', 'Text', '1');
-		
-		_mutatieproces_add_field('einde_huurcontract', 'Opzegging huurcontract', $dossier, 'Case', 'vge_nr', 'VGE nummer', 'String', 'Text', '1');
-		_mutatieproces_add_field('einde_huurcontract', 'Opzegging huurcontract', $dossier, 'Case', 'complexnr', 'Complexnummer', 'String', 'Text', '1');
-		_mutatieproces_add_field('einde_huurcontract', 'Opzegging huurcontract', $dossier, 'Case', 'hov_nr', 'Huurovereenkomst nr.', 'String', 'Text', '1');
-		_mutatieproces_add_field('einde_huurcontract', 'Opzegging huurcontract', $dossier, 'Case', 'hov_start_datum', 'Huurovereenkomst startdatum', 'Date', 'Select Date', '1');
-		
-		_mutatieproces_add_field('einde_huurcontract', 'Opzegging huurcontract', $dossier, 'Case', 'vge_straat', 'Straat', 'String', 'Text', '1');
-		_mutatieproces_add_field('einde_huurcontract', 'Opzegging huurcontract', $dossier, 'Case', 'vge_huisnummer', 'Huisnummer', 'String', 'Text', '1');
-		_mutatieproces_add_field('einde_huurcontract', 'Opzegging huurcontract', $dossier, 'Case', 'vge_suffix', 'Toevoeging', 'String', 'Text', '1');
-		_mutatieproces_add_field('einde_huurcontract', 'Opzegging huurcontract', $dossier, 'Case', 'vge_postcode', 'Postcode', 'String', 'Text', '1');
-		_mutatieproces_add_field('einde_huurcontract', 'Opzegging huurcontract', $dossier, 'Case', 'vge_plaats', 'Woonplaats', 'String', 'Text', '1');
-		
-		_mutatieproces_add_field('einde_huurcontract', 'Opzegging huurcontract', $dossier, 'Case', 'hov_end_datum', 'Verwachte einddatum', 'Date', 'Select Date', '1');
-		
-		_mutatieproces_add_field('einde_huurcontract', 'Opzegging huurcontract', $dossier, 'Case', 'woningwaardering', 'Woningwaardering', 'Memo', 'TextArea', '1');
-		_mutatieproces_add_field('einde_huurcontract', 'Opzegging huurcontract', $dossier, 'Case', 'woningoppervlakte', 'Totale woonoppervlakte', 'String', 'Text', '1');
-		
-		_mutatieproces_add_field('einde_huurcontract', 'Opzegging huurcontract', $dossier, 'Case', 'epa_label', 'EPA label', 'String', 'Text', '1');
-		_mutatieproces_add_field('einde_huurcontract', 'Opzegging huurcontract', $dossier, 'Case', 'epa_pre_label', 'EPA pre-label', 'String', 'Text', '1');
-		
-		_mutatieproces_add_field('einde_huurcontract', 'Opzegging huurcontract', $dossier, 'Case', 'plattegrond', 'Bijlage plattegrond', 'File', 'File', '1');
-		_mutatieproces_add_field('einde_huurcontract', 'Opzegging huurcontract', $dossier, 'Case', 'opnamerapport', 'Bijlage opnamerapport', 'File', 'File', '1');
-		_mutatieproces_add_field('einde_huurcontract', 'Opzegging huurcontract', $dossier, 'Case', 'staat_van_oplevering', 'Bijlage staat van oplevering', 'File', 'File', '1');
+		$gid = mutatieproces_add_group('einde_huurcontract', 'Opzegging huurcontract', $dossier, 'Case');
 	}
 	
-	_mutatieproces_enable_group('einde_huurcontract');
+	if ($gid) {
+		_mutatieproces_add_field($gid, 'mutatienr', 'Mutatienummer First Noa', 'String', 'Text', '1');
+		
+		_mutatieproces_add_field($gid, 'vge_nr', 'VGE nummer', 'String', 'Text', '1');
+		_mutatieproces_add_field($gid, 'complexnr', 'Complexnummer', 'String', 'Text', '1');
+		_mutatieproces_add_field($gid, 'hov_nr', 'Huurovereenkomst nr.', 'String', 'Text', '1');
+		_mutatieproces_add_field($gid, 'hov_start_datum', 'Huurovereenkomst startdatum', 'Date', 'Select Date', '1');
+		
+		_mutatieproces_add_field($gid, 'vge_straat', 'Straat', 'String', 'Text', '1');
+		_mutatieproces_add_field($gid, 'vge_huisnummer', 'Huisnummer', 'String', 'Text', '1');
+		_mutatieproces_add_field($gid, 'vge_suffix', 'Toevoeging', 'String', 'Text', '1');
+		_mutatieproces_add_field($gid, 'vge_postcode', 'Postcode', 'String', 'Text', '1');
+		_mutatieproces_add_field($gid, 'vge_plaats', 'Woonplaats', 'String', 'Text', '1');
+		
+		_mutatieproces_add_field($gid, 'hov_end_datum', 'Verwachte einddatum', 'Date', 'Select Date', '1');
+		
+		_mutatieproces_add_field($gid, 'woningwaardering', 'Woningwaardering', 'Memo', 'TextArea', '1');
+		_mutatieproces_add_field($gid, 'woningoppervlakte', 'Totale woonoppervlakte', 'String', 'Text', '1');
+		
+		_mutatieproces_add_field($gid, 'epa_label', 'EPA label', 'String', 'Text', '1');
+		_mutatieproces_add_field($gid, 'epa_pre_label', 'EPA pre-label', 'String', 'Text', '1');
+		
+		_mutatieproces_add_field($gid, 'plattegrond', 'Bijlage plattegrond', 'File', 'File', '1');
+		_mutatieproces_add_field($gid, 'opnamerapport', 'Bijlage opnamerapport', 'File', 'File', '1');
+		_mutatieproces_add_field($gid, 'staat_van_oplevering', 'Bijlage staat van oplevering', 'File', 'File', '1');
+				
+		_mutatieproces_enable_group('einde_huurcontract', true);
+	}
+	
 	return _mutatieproces_civix_civicrm_enable();
 }
 
@@ -154,7 +160,7 @@ function _mutatieproces_add_case($case) {
 	return $option_value_value;
 }
 
-function _mutatieproces_add_field($group, $group_title, $case_id, $extends, $name, $label, $data_type, $html_type, $active) {
+function mutatieproces_add_group($group, $group_title, $case_id, $extends) {
 	$params['version']  = 3;
 	$params['name'] = $group;
 	$result = civicrm_api('CustomGroup', 'getsingle', $params);
@@ -173,23 +179,24 @@ function _mutatieproces_add_field($group, $group_title, $case_id, $extends, $nam
 		$gid = $result['id'];
 	}
 	
-	if ($gid) {
+	return $gid;
+} 
+
+function _mutatieproces_add_field($gid, $name, $label, $data_type, $html_type, $active) {
+	$params['version']  = 3;
+	$params['custom_group_id'] = $gid;
+	$params['label'] = $label;
+	$result = civicrm_api('CustomField', 'getsingle', $params);
+	if (!isset($result['id'])) {
 		unset($params);
 		$params['version']  = 3;
 		$params['custom_group_id'] = $gid;
+		$params['name'] = $name;
 		$params['label'] = $label;
-		$result = civicrm_api('CustomField', 'getsingle', $params);
-		if (!isset($result['id'])) {
-			unset($params);
-			$params['version']  = 3;
-			$params['custom_group_id'] = $gid;
-			$params['name'] = $name;
-			$params['label'] = $label;
-			$params['html_type'] = $html_type;
-			$params['data_type'] = $data_type;
-			$params['is_active'] = $active;
-			$result = civicrm_api('CustomField', 'create', $params);
-		}
+		$params['html_type'] = $html_type;
+		$params['data_type'] = $data_type;
+		$params['is_active'] = $active;
+		$result = civicrm_api('CustomField', 'create', $params);
 	}
 }
 
