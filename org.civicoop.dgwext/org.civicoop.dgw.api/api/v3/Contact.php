@@ -25,9 +25,6 @@
   | GNU Affero General Public License or the licensing of CiviCRM,     |
   | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
   +--------------------------------------------------------------------+
-  | Erik Hommel (CiviCooP) - erik.hommel@civicoop.org                  |
-  | changed to reflect hookContext in BAO call to deleteContact        |
-  +--------------------------------------------------------------------+
 */
 
 /**
@@ -298,12 +295,7 @@ function civicrm_api3_contact_delete($params) {
   }
   $restore = CRM_Utils_Array::value('restore', $params) ? $params['restore'] : FALSE;
   $skipUndelete = CRM_Utils_Array::value('skip_undelete', $params) ? $params['skip_undelete'] : FALSE;
-  if ( isset( $params['hook_context'] ) ) {
-      $hookContext = $params['hook_context'];
-  } else {
-      $hookContext = "core.api";
-  }
-  if (CRM_Contact_BAO_Contact::deleteContact($contactID, $restore, $skipUndelete, $hookContext )) {
+  if (CRM_Contact_BAO_Contact::deleteContact($contactID, $restore, $skipUndelete )) {
     return civicrm_api3_create_success();
   }
   else {

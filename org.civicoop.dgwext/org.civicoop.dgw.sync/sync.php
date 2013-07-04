@@ -182,7 +182,7 @@ function sync_civicrm_managed(&$entities) {
  *   synchronization work.
  *
  */
-function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef, $hookContext = "dgw.sync" ) {
+function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
     /*
      * only for some objects
      */
@@ -192,10 +192,18 @@ function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef, $hookContex
      */
     if ( $op != "create" ) {
         /*
-         * skip execution if hook originates from API De Goede Woning
+         * only if one of selected objects
          */
-        if ( $hookContext != "dgwapi.no_sync" ) {
-            if (in_array( $objectName, $syncedObjects ) ) {
+        if (in_array( $objectName, $syncedObjects ) ) {
+            /*
+             * skip execution if hook originates from API De Goede Woning
+             */
+            if ( !isset( $GLOBALS['dgw_api'] ) || !$GLOBALS['dgw_api'] ) {
+                unset( $GLOBALS['dgw_api'] );
+                $txt = "In de civicrm_post met operatie $op, objectName $objectName, id $objectId en ref ";
+                $txt .= json_encode( $objectRef );
+                CRM_Core_DAO::executeQuery( "INSERT INTO ehtest SET tekst = '$txt'" );
+
                 /*
                  * check if sync action is required when op = edit
                  */
@@ -249,7 +257,7 @@ function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef, $hookContex
  * - synchronization for crate operation
  *
  */
-function sync_civicrm_post( $op, $objectName, $objectId, &$objectRef, $hookContext = "dgw.sync" ) {
+function sync_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
     /*
      * only for some objects
      */
@@ -259,10 +267,14 @@ function sync_civicrm_post( $op, $objectName, $objectId, &$objectRef, $hookConte
      */
     if ( $op == "create" ) {
         /*
-         * skip execution if hook originates from API De Goede Woning
+         * only oif one of selected objects
          */
-        if ( $hookContext != "dgwapi.no_sync" ) {
-            if (in_array( $objectName, $syncedObjects ) ) {
+        if (in_array( $objectName, $syncedObjects ) ) {
+            /*
+             * skip execution if hook originates from API De Goede Woning
+             */
+            if ( !isset( $GLOBALS['dgw_api'] ) || !$GLOBALS['dgw_api'] ) {
+                unset( $GLOBALS['dgw_api'] );
                 if ( $objectName == "Individual" || $objectName == "Organization" ) {
                     $contactId = $objectId;
                 } else {
@@ -818,6 +830,10 @@ function _setSyncRecord( $action, $contactId, $entityId, $entityName, $keyFirst 
             $customValueParams[$entityFldId] = strtolower( $entityName );
             $customValueParams[$entityIdFldId] = $entityId;
             $customValueParams[$changeDateFldId] = date('Ymd');
+
+            $txt = "Vanuit de _setSyncRecord met actie $action en params ".json_encode( $customValueParams );
+            CRM_Core_DAO::executeQuery( "INSERT INTO ehtest SET tekst = '$txt'" );
+
             $resultSync = civicrm_api( 'CustomValue', 'Create', $customValueParams );
             break;
         case "edit":
@@ -831,6 +847,10 @@ function _setSyncRecord( $action, $contactId, $entityId, $entityName, $keyFirst 
                     $customValueParams[$keyFirstFldId.":".$customRecordId] = $keyFirst;
                 }
                 $customValueParams[$changeDateFldId.":".$customRecordId] = date('Ymd');
+
+            $txt = "Vanuit de _setSyncRecord met actie $action en params ".json_encode( $customValueParams );
+            CRM_Core_DAO::executeQuery( "INSERT INTO ehtest SET tekst = '$txt'" );
+
                 $resultSync = civicrm_api( 'CustomValue', 'Create', $customValueParams );
             }
             break;
@@ -839,6 +859,10 @@ function _setSyncRecord( $action, $contactId, $entityId, $entityName, $keyFirst 
             if ( $customRecordId != 0 ) {
                 $customValueParams[$actionFldId.":".$customRecordId] = "del";
                 $customValueParams[$changeDateFldId.":".$customRecordId] = date('Ymd');
+
+            $txt = "Vanuit de _setSyncRecord met actie $action en params ".json_encode( $customValueParams );
+            CRM_Core_DAO::executeQuery( "INSERT INTO ehtest SET tekst = '$txt'" );
+
                 $resultSync = civicrm_api( 'CustomValue', 'Create', $customValueParams );
             }
     }

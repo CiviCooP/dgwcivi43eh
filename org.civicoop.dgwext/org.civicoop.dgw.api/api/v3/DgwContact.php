@@ -193,6 +193,10 @@ function civicrm_api3_dgw_contact_get($inparms) {
  */
 function civicrm_api3_dgw_contact_create($inparms) {
     /*
+     * set superglobal to avoid double create via post or pre hook
+     */
+    $GLOBALS['dgw_api'] = true;
+    /*
      * If contact_type passed and not valid, error. Else set contact_type
      * to default 'Individual'
      */
@@ -504,11 +508,6 @@ function civicrm_api3_dgw_contact_create($inparms) {
     /*
      * use standard API to create CiviCRM contact
      */
-    if ( isset( $inparms['hook_context'] ) ) {
-        $civiparms['hook_context'] = $inparms['hook_context'];
-    } else {
-        $civiparms['hook_context'] = "dgwapi.no_sync";
-    }
     $create_contact = civicrm_api('Contact', 'create', $civiparms);
     if (civicrm_error($create_contact)) {
     	return civicrm_api3_create_error('Onbekende fout: '.$create_contact['error_message']);
@@ -633,6 +632,10 @@ function civicrm_api3_dgw_contact_create($inparms) {
  * Function to update contact
  */
 function civicrm_api3_dgw_contact_update($inparms) {
+    /*
+     * set superglobal to avoid double update via post or pre hook
+     */
+    $GLOBALS['dgw_api'] = true;
     /*
      * if no contact_id or persoonsnummer_first passed, error
      */
@@ -871,11 +874,6 @@ function civicrm_api3_dgw_contact_update($inparms) {
     $custom_update = false;
     if (isset($inparms['is_deleted']) && $inparms['is_deleted'] == 1) {
         $civiparms = array("contact_id" => $contact_id, 'version' => 3);
-        if ( isset( $inparms['hook_context'] ) ) {
-            $civiparms['hook_context'] = $inparms['hook_context'];
-        } else {
-            $civiparms['hook_context'] = "dgwapi.no_sync";
-        }
         $res_del = civicrm_api('Contact', 'delete', $civiparms);
         if (civicrm_error($res_del)) {
             return civicrm_api3_create_error("Contact kon niet verwijderd worden uit CiviCRM, melding : ".$res_del['error_message']);
@@ -920,11 +918,6 @@ function civicrm_api3_dgw_contact_update($inparms) {
                     $orgtopers = true;
                     $delparms['contact_id'] = $contact_id;
                     $delparms['version'] = 3;
-                    if ( isset( $inparms['hook_context'] ) ) {
-                        $delparms['hook_context'] = $inparms['hook_context'];
-                    } else {
-                        $delparms['hook_context'] = "dgwapi.no_sync";
-                    }
                     $delres = civicrm_api('Contact', 'delete', $delparms);
                     /*
                      * create individual with new values
@@ -948,11 +941,6 @@ function civicrm_api3_dgw_contact_update($inparms) {
                         $addparms['birth_date'] = $birth_date;
                     }
                     $addparms['version'] = 3;
-                    if ( isset( $inparms['hook_context'] ) ) {
-                        $addparms['hook_context'] = $inparms['hook_context'];
-                    } else {
-                        $addparms['hook_context'] = "dgwapi.no_sync";
-                    }
                     $addres = civicrm_api('Contact', 'Create', $addparms);
                     if (civicrm_error($addres)) {
                         return civicrm_api3_create_error("Onverwachte fout - persoon kon niet aangemaakt in dgwcontact_update voor organisatie naar persoon - ".$addres['error_message']);
@@ -1044,11 +1032,6 @@ function civicrm_api3_dgw_contact_update($inparms) {
          * issue 149: update only if not from org to per situation
          */
         if (!$orgtopers) {
-            if ( isset( $inparms['hook_context'] ) ) {
-                $civiparms['hook_context'] = $inparms['hook_context'];
-            } else {
-                $civiparms['hook_context'] = "dgwapi.no_sync";
-            }
             $res_contact = civicrm_api('Contact', 'Create',$civiparms);
             if (civicrm_error($res_contact)) {
                 return civicrm_api3_create_error("Onverwachte fout, contact $contact_id kon niet bijgewerkt worden in CiviCRM, melding : ". $res_contact['error_message']);
@@ -1111,11 +1094,6 @@ function civicrm_api3_dgw_contact_update($inparms) {
         }
         if (isset($particulier)) {
             $customparms['custom_'.$particulier_field['id']] = $particulier;
-        }
-        if ( isset( $inparms['hook_context'] ) ) {
-            $customparms['hook_context'] = $inparms['hook_context'];
-        } else {
-            $customparms['hook_context'] = "dgwapi.no_sync";
         }
         civicrm_api('Contact', 'Create', $customparms);
         /*

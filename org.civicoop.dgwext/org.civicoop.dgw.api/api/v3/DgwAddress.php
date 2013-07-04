@@ -14,6 +14,10 @@
  */
 function civicrm_api3_dgw_address_update($inparms) {
     /*
+     * set superglobal to avoid double update via post or pre hook
+     */
+    $GLOBALS['dgw_api'] = true;
+    /*
      * if no address_id or adr_refno passed, error
      */
     if (!isset($inparms['address_id']) && !isset($inparms['adr_refno'])) {
@@ -251,11 +255,6 @@ function civicrm_api3_dgw_address_update($inparms) {
     if (isset($end_date) && !empty($end_date)) {
         $params['end_date'] = $end_date;
     }
-    if ( isset( $inparms['hook_context'] ) ) {
-        $params['hook_context'] = $inparms['hook_context'];
-    } else {
-        $params['hook_context'] = "dgwapi.no_sync";
-    }
     $res_update = civicrm_api('Address', 'Create', $params);
     if (civicrm_error($res_update)) {
         return civicrm_api3_create_error('Onbekende fout: '.$res_update['error_msg']);
@@ -292,6 +291,10 @@ function civicrm_api3_dgw_address_update($inparms) {
  * Function to delete an address in CiviCRM
  */
 function civicrm_api3_dgw_address_delete($inparms) {
+    /*
+     * set superglobal to avoid double delete via post or pre hook
+     */
+    $GLOBALS['dgw_api'] = true;
     /*
      * if no address_id or adr_refno passed, error
      */
@@ -338,11 +341,6 @@ function civicrm_api3_dgw_address_delete($inparms) {
         'version'   =>  3,
         'id'        =>  $address_id
         );
-    if ( isset( $inparms['hook_context'] ) ) {
-        $address['hook_context'] = $inparms['hook_context'];
-    } else {
-        $address['hook_context'] = "dgwapi.no_sync";
-    }
     $res = civicrm_api( 'Address', 'delete', $address );
     $outparms['is_error'] = "0";
     return $outparms;
@@ -353,6 +351,10 @@ function civicrm_api3_dgw_address_delete($inparms) {
  * @return string
  */
 function civicrm_api3_dgw_address_create($inparms) {
+    /*
+     * set superglobal to avoid double create via post or pre hook
+     */
+    $GLOBALS['dgw_api'] = true;
     /*
      * if no contact_id or persoonsnummer_first passed, error
      */
@@ -584,11 +586,6 @@ function civicrm_api3_dgw_address_create($inparms) {
                 $address['supplemental_address_1'] = "(Tot ".$datum.")";
             }
         }
-    }
-    if ( isset( $inparms['hook_context'] ) ) {
-        $address['hook_context'] = $inparms['hook_context'];
-    } else {
-         $address['hook_context'] = "dgwapi.no_sync";
     }
     $res_adr = civicrm_api('Address', 'create', $address);
     if (civicrm_error($res_adr)) {
