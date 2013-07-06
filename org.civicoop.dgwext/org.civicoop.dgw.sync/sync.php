@@ -200,9 +200,6 @@ function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
              */
             if ( !isset( $GLOBALS['dgw_api'] ) || !$GLOBALS['dgw_api'] ) {
                 unset( $GLOBALS['dgw_api'] );
-                $txt = "In de civicrm_post met operatie $op, objectName $objectName, id $objectId en ref ";
-                $txt .= json_encode( $objectRef );
-                CRM_Core_DAO::executeQuery( "INSERT INTO ehtest SET tekst = '$txt'" );
 
                 /*
                  * check if sync action is required when op = edit
@@ -830,10 +827,6 @@ function _setSyncRecord( $action, $contactId, $entityId, $entityName, $keyFirst 
             $customValueParams[$entityFldId] = strtolower( $entityName );
             $customValueParams[$entityIdFldId] = $entityId;
             $customValueParams[$changeDateFldId] = date('Ymd');
-
-            $txt = "Vanuit de _setSyncRecord met actie $action en params ".json_encode( $customValueParams );
-            CRM_Core_DAO::executeQuery( "INSERT INTO ehtest SET tekst = '$txt'" );
-
             $resultSync = civicrm_api( 'CustomValue', 'Create', $customValueParams );
             break;
         case "edit":
@@ -847,10 +840,6 @@ function _setSyncRecord( $action, $contactId, $entityId, $entityName, $keyFirst 
                     $customValueParams[$keyFirstFldId.":".$customRecordId] = $keyFirst;
                 }
                 $customValueParams[$changeDateFldId.":".$customRecordId] = date('Ymd');
-
-            $txt = "Vanuit de _setSyncRecord met actie $action en params ".json_encode( $customValueParams );
-            CRM_Core_DAO::executeQuery( "INSERT INTO ehtest SET tekst = '$txt'" );
-
                 $resultSync = civicrm_api( 'CustomValue', 'Create', $customValueParams );
             }
             break;
@@ -859,10 +848,6 @@ function _setSyncRecord( $action, $contactId, $entityId, $entityName, $keyFirst 
             if ( $customRecordId != 0 ) {
                 $customValueParams[$actionFldId.":".$customRecordId] = "del";
                 $customValueParams[$changeDateFldId.":".$customRecordId] = date('Ymd');
-
-            $txt = "Vanuit de _setSyncRecord met actie $action en params ".json_encode( $customValueParams );
-            CRM_Core_DAO::executeQuery( "INSERT INTO ehtest SET tekst = '$txt'" );
-
                 $resultSync = civicrm_api( 'CustomValue', 'Create', $customValueParams );
             }
     }
