@@ -182,7 +182,7 @@ function sync_civicrm_managed(&$entities) {
  *   synchronization work.
  *
  */
-function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef, $hookContext = "dgw.sync" ) {
+function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
     /*
      * only for some objects
      */
@@ -192,10 +192,15 @@ function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef, $hookContex
      */
     if ( $op != "create" ) {
         /*
-         * skip execution if hook originates from API De Goede Woning
+         * only if one of selected objects
          */
-        if ( $hookContext != "dgwapi.no_sync" ) {
-            if (in_array( $objectName, $syncedObjects ) ) {
+        if (in_array( $objectName, $syncedObjects ) ) {
+            /*
+             * skip execution if hook originates from API De Goede Woning
+             */
+            if ( !isset( $GLOBALS['dgw_api'] ) || !$GLOBALS['dgw_api'] ) {
+                unset( $GLOBALS['dgw_api'] );
+
                 /*
                  * check if sync action is required when op = edit
                  */
@@ -249,7 +254,7 @@ function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef, $hookContex
  * - synchronization for crate operation
  *
  */
-function sync_civicrm_post( $op, $objectName, $objectId, &$objectRef, $hookContext = "dgw.sync" ) {
+function sync_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
     /*
      * only for some objects
      */
@@ -259,10 +264,14 @@ function sync_civicrm_post( $op, $objectName, $objectId, &$objectRef, $hookConte
      */
     if ( $op == "create" ) {
         /*
-         * skip execution if hook originates from API De Goede Woning
+         * only oif one of selected objects
          */
-        if ( $hookContext != "dgwapi.no_sync" ) {
-            if (in_array( $objectName, $syncedObjects ) ) {
+        if (in_array( $objectName, $syncedObjects ) ) {
+            /*
+             * skip execution if hook originates from API De Goede Woning
+             */
+            if ( !isset( $GLOBALS['dgw_api'] ) || !$GLOBALS['dgw_api'] ) {
+                unset( $GLOBALS['dgw_api'] );
                 if ( $objectName == "Individual" || $objectName == "Organization" ) {
                     $contactId = $objectId;
                 } else {

@@ -14,6 +14,10 @@
 */
 function civicrm_api3_dgw_phone_update($inparms) {
     /*
+     * set superglobal to avoid double update via post or pre hook
+     */
+    $GLOBALS['dgw_api'] = true;
+    /*
      * if no phone_id or cde_refno passed, error
      */
     if (!isset($inparms['phone_id']) && !isset($inparms['cde_refno'])) {
@@ -142,8 +146,10 @@ function civicrm_api3_dgw_phone_update($inparms) {
         /*
          * if location_type = toekomst and start_date is not > today, error
          */
-        if ($location_type == "toekomst" && $start_date <= date("Ymd")) {
-            return civicrm_api3_create_error("Combinatie location_type en start/end_date ongeldig");
+        if ( isset( $location_type ) ) {
+            if ($location_type == "toekomst" && $start_date <= date("Ymd")) {
+                return civicrm_api3_create_error("Combinatie location_type en start/end_date ongeldig");
+            }
         }
     }
     /*
@@ -157,9 +163,11 @@ function civicrm_api3_dgw_phone_update($inparms) {
         /*
          * if location_type = oud and end_date is empty or > today, error
         */
-        if ($location_type == "oud") {
-            if (empty($end_date) || $end_date > date("Ymd")) {
-                return civicrm_api3_create_error("Combinatie location_type en start/end_date ongeldig");
+        if ( isset( $location_type ) ) {
+            if ($location_type == "oud") {
+                if (empty($end_date) || $end_date > date("Ymd")) {
+                    return civicrm_api3_create_error("Combinatie location_type en start/end_date ongeldig");
+                }
             }
         }
     }
@@ -201,11 +209,6 @@ function civicrm_api3_dgw_phone_update($inparms) {
         if (isset($inparms['is_primary'])) {
             $params['is_primary'] = $inparms['is_primary'];
         }
-        if ( isset( $inparms['hook_context'] ) ) {
-            $params['hook_context'] = $inparms['hook_context'];
-        } else {
-            $params['hook_context'] = "dgwapi.no_sync";
-        }
         $res_update = civicrm_api('Phone', 'Create', $params);
         if (civicrm_error($res_update)) {
             return civicrm_api3_create_error('Onbekende fout: '.$res_update['error_msg']);
@@ -246,6 +249,10 @@ function civicrm_api3_dgw_phone_update($inparms) {
  * Function to delete a phone number in CiviCRM
 */
 function civicrm_api3_dgw_phone_delete($inparms) {
+    /*
+     * set superglobal to avoid double delete via post or pre hook
+     */
+    $GLOBALS['dgw_api'] = true;
     /*
      * if no phone_id or cde_refno passed, error
      */
@@ -292,17 +299,16 @@ function civicrm_api3_dgw_phone_delete($inparms) {
         'version'   =>  3,
         'id'        =>  $phone_id
     );
-    if ( isset( $inparms['hook_context'] ) ) {
-        $civiparms['hook_context'] = $inparms['hook_context'];
-    } else {
-        $civiparms['hook_context'] = "dgwapi.no_sync";
-    }
     $res = civicrm_api('Phone', 'delete', $civiparms);
     $outparms['is_error'] = "0";
     return $outparms;
 }
 
 function civicrm_api3_dgw_phone_create($inparms) {
+    /*
+     * set superglobal to avoid double create via post or pre hook
+     */
+    $GLOBALS['dgw_api'] = true;
     /*
      * if no contact_id or persoonsnummer_first passed, error
      */
@@ -490,11 +496,6 @@ function civicrm_api3_dgw_phone_create($inparms) {
         "phone_type_id"     =>  $phone_type_id,
         "phone"             =>  $phone,
         "version"           =>  3);
-    if ( isset( $inparms['hook_context'] ) ) {
-        $civiparms['hook_context'] = $inparms['hook_context'];
-    } else {
-        $civiparms['hook_context'] = "dgwapi.no_sync";
-    }
     $res_phone = civicrm_api('Phone', 'Create', $civiparms);
     if (civicrm_error($res_phone)) {
         return civicrm_api3_create_error("Onverwachte fout van CiviCRM, phone kon niet gemaakt worden, melding : ".$res_phone['error_message']);

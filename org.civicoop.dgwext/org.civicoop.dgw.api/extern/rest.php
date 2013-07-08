@@ -90,8 +90,10 @@ $rest = new CRM_Utils_DgwREST();
 $rest->loadCMSBootstrap();
 
 $return = $rest->run();
-if (isset($_GET['debug']) && $_GET['debug']) {
-  header('Content-Type: text/html');
+if ( isset( $_GET['json']) && $_GET['json'] ) {
+    header('Content-Type: text/javascript');
+} else {
+    header('Content-Type: text/xml' );
 }
 echo $return;
 

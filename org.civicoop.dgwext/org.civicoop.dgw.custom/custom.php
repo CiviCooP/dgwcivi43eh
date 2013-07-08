@@ -363,7 +363,7 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
                             $subjectParts = explode( "- copy sent to", $objectRef->subject );
                             if ( isset( $subjectParts[1] ) ) {
                                 $actDel = "DELETE FROM civicrm_activity WHERE id = $objectId ";
-                                CRM_Core_DAO::executeQuery( $actDel );
+                                //CRM_Core_DAO::executeQuery( $actDel );
                             }
                         }
                     }
