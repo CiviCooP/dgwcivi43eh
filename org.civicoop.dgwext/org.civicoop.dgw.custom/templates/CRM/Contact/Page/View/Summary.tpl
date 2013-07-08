@@ -54,13 +54,6 @@
  +--------------------------------------------------------------------+
 *}
 
-{* MUT001 Enable knop voor opzeggen huurcontract *}
-{assign var="huurovereenkomst_opzeggen" value="1"}
-{if $contact_type eq 'Household'}
-	{assign var="huurovereenkomst_opzeggen" value="1"}
-{/if}
-{* end MUT001 *}
-
 {* Customization DGW3 disable edit mode for household if *}
 {* huurovereenkomst or koopovereenkomst is present *}
 {if $contact_type eq 'Household'}
@@ -155,11 +148,7 @@ End Function
           {/if}
 		  
 		  {* MUT001 opzeggen huurovereenkomst *}
-		  {if $huurovereenkomst_opzeggen EQ '1'}
-			<a href="{crmURL p='civicrm/contact/view/hov_opzeggen' q="reset=1&cid=$contactId"}" class="edit button" title="{ts}Huurovereenkomst opzeggen{/ts}">
-				<span><div class="icon add-icon"></div>{ts}Huurovereenkomst opzeggen{/ts}</span>
-			</a>
-		  {/if}
+		  {include file="CRM/Contact/Page/View/hov_opzeggen.tpl"}
 		  {* end MUT001 *}
 
           {* Check for permissions to provide Restore and Delete Permanently buttons for contacts that are in the trash. *}
