@@ -97,11 +97,49 @@ class CRM_Contact_Form_Task_HOVOpzeggen extends CRM_Contact_Form_Task {
   	$gid = CRM_Utils_DgwMutatieprocesUtils::retrieveCustomGroupByName('Huurovereenkomst');
   	$values = CRM_Utils_DgwMutatieprocesUtils::retrieveCustomValuesForContactAndCustomGroupSorted($contact_id, $gid);
   	
+  	$case_type_id = $this->getCaseTypeId('DossierOpzeggingHuurcontract');
+  	$already_case = array();
+  	if ($case_type_id) {
+  		$result = civicrm_api('Case', 'get', array('version'=>3, 'contact_id'=>$contact_id, 'case_type_id' => $case_type_id));
+  		if (isset($result['values']) && is_array($result['values'])) {
+  			foreach($result['values'] as $val) {
+  				$custom_values = civicrm_api('CustomValue', 'get', array('version'=>3, 'entity_table'=>'', 'entity_id'=>$val['id'], 'return.einde_huurcontract:hov_nr'=>1));
+  				if (isset($custom_values['values']) && is_array($custom_values['values'])) {
+  					foreach($custom_values['values'] as $custom_value) {
+  						$already_case[] = $custom_value['latest'];
+  					}
+  				}
+  			}
+  		}
+  	}
+  	
+  	
   	foreach($values as $id => $value) {
-  		$hovs->addOption($value['VGE_adres_First'].' (HOV: '.$value['HOV_nummer_First'].', VGE: '.$value['VGE_nummer_First'].')', $id);
+  		if (!in_array($value['HOV_nummer_First'], $already_case)) {
+  			$hovs->addOption($value['VGE_adres_First'].' (HOV: '.$value['HOV_nummer_First'].', VGE: '.$value['VGE_nummer_First'].')', $id);
+  		}
   	}
   	
   	return $hovs;
+  }
+  
+  protected function getCaseTypeId($case) {
+  	$option_group = civicrm_api('OptionGroup', 'getsingle', array('name' => 'case_type', 'version' => '3'));
+  	$option_group_id = false;
+  	if (isset($option_group['id'])) {
+  		$option_group_id = $option_group['id'];
+  	} else {
+  		return false;
+  	}
+  	$option_value = civicrm_api('OptionValue', 'getsingle', array('option_group_id' => $option_group_id, 'name' => $case, 'version' => '3'));
+  	$option_value_id = false;
+  	$option_value_value = false;
+  	if (isset($option_value['id'])) {
+  		$option_value_id = $option_value['id'];
+  		$option_value_value = $option_value['value'];
+  	}
+  	
+  	return $option_value_value;
   }
 
   /**
@@ -151,17 +189,18 @@ class CRM_Contact_Form_Task_HOVOpzeggen extends CRM_Contact_Form_Task {
 		if ($result['is_error'] == '0' && $result['id']) {
 			$case_id = $result['id'];
 			
-			unset($params);
-			$params['version'] = 3;
-			$params['entity_id'] = $case_id;
-			
 			$custom_group_id = false;
+			unset($params);
 			$params['version']  = 3;
 			$params['name'] = 'einde_huurcontract';
 			$result = civicrm_api('CustomGroup', 'getsingle', $params);
 			if (isset($result['id'])) {
 				$custom_group_id = $result['id'];
 			}
+			
+			unset($params);
+			$params['version'] = 3;
+			$params['entity_id'] = $case_id;
 			
 			$hov_nr_field = CRM_Utils_DgwMutatieprocesUtils::retrieveCustomFieldByName('hov_nr', $custom_group_id);
 			$params['custom_'.$hov_nr_field['id']] = $hov['HOV_nummer_First'];
@@ -187,7 +226,6 @@ class CRM_Contact_Form_Task_HOVOpzeggen extends CRM_Contact_Form_Task {
 			}
 			
 			$result = civicrm_api('CustomValue', 'Create', $params);
-			
 			
 			$tag_id = CRM_Utils_DgwMutatieprocesUtils::createTag('Huuropzegging ontvangen');
 			if ($tag_id !== false) {

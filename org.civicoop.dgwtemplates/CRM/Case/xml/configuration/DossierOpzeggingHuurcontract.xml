@@ -4,6 +4,7 @@
   <name>Dossier opzegging huurcontract</name>
   <ActivityTypes>
     <ActivityType><name>Open Case</name><max_instances>1</max_instances></ActivityType>
+	<ActivityType><name>Adviesgesprek</name></ActivityType>
 	<ActivityType><name>Close Case</name></ActivityType>
   </ActivityTypes>
 <ActivitySets>

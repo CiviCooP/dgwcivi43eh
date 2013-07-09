@@ -37,6 +37,7 @@ function mutatieproces_civicrm_uninstall() {
  */
 function mutatieproces_civicrm_enable() {
 	_mutatieproces_add_relationship_type('Technisch woonconsulent is', 'Technisch woonconsulent', '', '');
+	_mutatieproces_add_activity_type('Adviesgesprek', 'Inplannen van een adviesgesprek');
 	$dossier = _mutatieproces_add_case('DossierOpzeggingHuurcontract');
 	$gid = false;
 	if ($dossier) {
@@ -294,4 +295,39 @@ function mutatieproces_civicrm_pageRun( &$page ) {
 		$page->assign('show_hov_opzeggen', '0');
 		$page->assign('hov_opzeggen_contact_id', '0');
 	}
+}
+
+function mutatieproces_civicrm_buildForm($formName, &$form) {
+	if ($formName == 'CRM_Case_Form_Case') {
+		if ($form->getAction() == CRM_Core_Action::ADD) {
+			$case_type_id = _mutatieproces_get_case_type_id('DossierOpzeggingHuurcontract');			
+			if ($case_type_id && $form->elementExists('case_type_id')) {
+				$cases = $form->getElement('case_type_id');
+				foreach($cases->_options as $id => $option) {
+					if ($id == $case_type_id) {
+						unset($cases->_options[$id]);
+					}
+				}
+			}
+		}
+	}
+}
+
+function _mutatieproces_get_case_type_id($case) {
+	$option_group = civicrm_api('OptionGroup', 'getsingle', array('name' => 'case_type', 'version' => '3'));
+	$option_group_id = false;
+	if (isset($option_group['id'])) {
+		$option_group_id = $option_group['id'];
+	} else {
+		return false;
+	}
+	$option_value = civicrm_api('OptionValue', 'getsingle', array('option_group_id' => $option_group_id, 'name' => $case, 'version' => '3'));
+	$option_value_id = false;
+	$option_value_value = false;
+	if (isset($option_value['id'])) {
+		$option_value_id = $option_value['id'];
+		$option_value_value = $option_value['value'];
+	}
+	 
+	return $option_value_value;
 }
