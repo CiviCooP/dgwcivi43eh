@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<menu>
+  <item>
+     <path>civicrm/contact/view/hov_opzeggen</path>
+     <title>Huurovereenkomst opzeggen</title>
+     <page_callback>CRM_Contact_Form_Task_HOVOpzeggen</page_callback>
+  </item>
+</menu>
