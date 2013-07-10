@@ -184,8 +184,6 @@ function civicrm_api3_dgw_contact_get($inparms) {
         }
     }
     $outparms[0]['record_count'] = ($i - 1);
-    echo "<p>Outparms is : </p>";
-    print_r( $outparms[1]);
     return ($outparms);
 }
 /*
