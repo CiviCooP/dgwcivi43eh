@@ -4562,7 +4562,7 @@ VALUES
    ('contact_reference_options'     , 'Kontakt-reference Autoudfyld Indstillinger', 1, 1),
    ('website_type'                  , 'Type af websted'                       , 1, 1),
    ('tag_used_for'                  , 'Mærke brugt til'                       , 1, 1),
-   ('currencies_enabled'            , 'Currencies Enabled'                 , 1, 1),
+   ('currencies_enabled'            , 'Aktiverede valutaer'                 , 1, 1),
    ('event_badge'                   , 'Arrangements-Navneskilt'                   , 1, 1),
    ('note_privacy'                  , 'Niveauer af privatliv for noter'           , 1, 1),
    ('campaign_type'                 , 'Kampagnetype'                      , 1, 1),
@@ -4895,7 +4895,7 @@ VALUES
   (@option_group_id_grantSt, 'Submitted',             1, 'Submitted',  NULL, 0, 1,    1, NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_grantSt, 'Godkendt',              2, 'Approved',  NULL, 0, NULL, 2, NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_grantSt, 'Afvist', 3, 'Rejected', NULL, 0, NULL, 3, NULL, 0, 0, 1, NULL, NULL),
-  (@option_group_id_grantSt, 'Paid',                  4, 'Paid',     NULL, 0, NULL, 4, NULL, 0, 0, 1, NULL, NULL),
+  (@option_group_id_grantSt, 'Betalt',                  4, 'Paid',     NULL, 0, NULL, 4, NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_grantSt, 'Awaiting Information\'', 5, 'Awaiting Information', NULL, 0, NULL, 5, NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_grantSt, 'Withdrawn',             6, 'Withdrawn',     NULL, 0, NULL, 6, NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_honorTyp, 'Til ære for'        , 1, 'In Honor of'       , NULL, 0, 1,    1, NULL, 0, 1, 1, NULL, NULL),
@@ -5189,9 +5189,9 @@ VALUES
 -- grouping field is specific to Quickbooks for mapping to .iif format
    (@option_group_id_fat, 'Aktiv', 1, 'Asset', NULL, 0, 0, 1, 'Things you own', 0, 1, 1, 2, NULL),
    (@option_group_id_fat, 'Ansvar', 2, 'Liability', NULL, 0, 0, 2, 'Things you own, like a grant still to be disbursed', 0, 1, 1, 2, NULL),
-   (@option_group_id_fat, 'Revenue', 3, 'Revenue', NULL, 0, 1, 3, 'Income from contributions and sales of tickets and memberships', 0, 1, 1, 2, NULL),
-   (@option_group_id_fat, 'Cost of Sales', 4, 'Cost of Sales', NULL, 0, 0, 4, 'Costs incurred to get revenue, e.g. premiums for donations, dinner for a fundraising dinner ticket', 0, 1, 1, 2, NULL),
-   (@option_group_id_fat, 'Expenses', 5, 'Expenses', NULL, 0, 0, 5, 'Things that are paid for that are consumable, e.g. grants disbursed', 0, 1, 1, 2, NULL),
+   (@option_group_id_fat, 'Indtægter', 3, 'Revenue', NULL, 0, 1, 3, 'Income from contributions and sales of tickets and memberships', 0, 1, 1, 2, NULL),
+   (@option_group_id_fat, 'Salgsomkostninger', 4, 'Cost of Sales', NULL, 0, 0, 4, 'Costs incurred to get revenue, e.g. premiums for donations, dinner for a fundraising dinner ticket', 0, 1, 1, 2, NULL),
+   (@option_group_id_fat, 'Udgifter', 5, 'Expenses', NULL, 0, 0, 5, 'Things that are paid for that are consumable, e.g. grants disbursed', 0, 1, 1, 2, NULL),
 
 -- account_relationship
     (@option_group_id_arel, 'Income Account is', 1, 'Income Account is', NULL, 0, 1, 1, 'Income Account is', 0, 1, 1, 2, NULL),
@@ -5219,17 +5219,17 @@ VALUES
    (@option_group_id_batch_status, 'Åben', 1, 'Åben', NULL, 0, NULL, 1, NULL, 0, 0, 1, NULL, NULL),
    (@option_group_id_batch_status, 'Lukket', 2, 'Lukket', NULL, 0, NULL, 2, NULL, 0, 0, 1, NULL, NULL),
    (@option_group_id_batch_status, 'Data Entry', 3, 'Data Entry', NULL, 0, NULL, 3, NULL, 0, 0, 1, NULL, NULL),
-   (@option_group_id_batch_status, 'Reopened', 4, 'Reopened', NULL, 0, NULL, 4, NULL, 0, 0, 1, NULL, NULL),
-   (@option_group_id_batch_status, 'Exported', 5, 'Exported', NULL, 0, NULL, 5, NULL, 0, 0, 1, NULL, NULL),
+   (@option_group_id_batch_status, 'Genåbnet', 4, 'Genåbnet', NULL, 0, NULL, 4, NULL, 0, 0, 1, NULL, NULL),
+   (@option_group_id_batch_status, 'Eksporteret', 5, 'Eksporteret', NULL, 0, NULL, 5, NULL, 0, 0, 1, NULL, NULL),
 
 -- default batch modes
    (@option_group_id_batch_mode, 'Manual Batch', 1, 'Manual Batch', NULL, 0, 0, 1, 'Manual Batch', 0, 1, 1, 2, NULL),
    (@option_group_id_batch_mode, 'Automatic Batch', 2, 'Automatic Batch', NULL, 0, 0, 2, 'Automatic Batch', 0, 1, 1, 2, NULL),
 
 -- Financial Item Status
-   (@option_group_id_financial_item_status, 'Paid', 1, 'Paid', NULL, 0, 0, 1, 'Paid', 0, 1, 1, 2, NULL),
-   (@option_group_id_financial_item_status, 'Partially paid', 2, 'Partially paid', NULL, 0, 0, 2, 'Partially paid', 0, 1, 1, 2, NULL),
-   (@option_group_id_financial_item_status, 'Unpaid', 3, 'Unpaid', NULL, 0, 0, 1, 'Unpaid', 0, 1, 1, 2, NULL),
+   (@option_group_id_financial_item_status, 'Betalt', 1, 'Paid', NULL, 0, 0, 1, 'Paid', 0, 1, 1, 2, NULL),
+   (@option_group_id_financial_item_status, 'Delvist betalt', 2, 'Partially paid', NULL, 0, 0, 2, 'Partially paid', 0, 1, 1, 2, NULL),
+   (@option_group_id_financial_item_status, 'Ubetalt', 3, 'Unpaid', NULL, 0, 0, 1, 'Unpaid', 0, 1, 1, 2, NULL),
 
 -- sms_api_type
    (@option_group_id_sms_api_type, 'http', 1, 'http', NULL, NULL, 0, 1, NULL, 0, 1, 1, NULL, NULL),
@@ -5268,13 +5268,13 @@ VALUES
   ( 'Medlems Betaling(er)'          , @contactID, @opval, 'Default account for membership sales', '4400', 'INC', 0, 1, 1, 0 ),
   ( 'Kampagnebidrag', @contactID, @opval, 'Sample account for recording payments to a campaign', '4100', 'INC', 0, 1, 0, 0 ),
   ( 'Arrangementsgebyr'            , @contactID, @opval, 'Default account for event ticket sales', '4300', 'INC', 0, 1, 0, 0 ),
-  ( 'Banking Fees'         , @contactID, @opexp, 'Payment processor fees and manually recorded banking fees', '5200', 'EXP', 0, 1, 0, 1 ),
+  ( 'Bankgebyrer'         , @contactID, @opexp, 'Payment processor fees and manually recorded banking fees', '5200', 'EXP', 0, 1, 0, 1 ),
   ( 'Deposit Bank Account' , @contactID, @opAsset, 'All manually recorded cash and cheques go to this account', '1100', 'BANK', 0, 1, 0, 1 ),
   ( 'Accounts Receivable'  , @contactID, @opAsset, 'Amounts to be received later (eg pay later event revenues)', '1200', 'AR', 0, 1, 0, 0 ),
   ( 'Accounts Payable'     , @contactID, @opLiability, 'Amounts to be paid out such as grants and refunds', '2200', 'AP', 0, 1, 0, 1 ),
   ( 'Præmier'             , @contactID, @opCost, 'Account to record cost of premiums provided to payors', '5100', 'COGS', 0, 1, 0, 1 ),
   ( 'Premiums inventory'   , @contactID, @opAsset, 'Account representing value of premiums inventory', '1375', 'OCASSET', 0, 1, 0, 0 ),
-  ( 'Discounts'            , @contactID, @opval, 'Contra-revenue account for amounts discounted from sales', '4900', 'INC', 0, 1, 0, 0 ),
+  ( 'Rabatter'            , @contactID, @opval, 'Contra-revenue account for amounts discounted from sales', '4900', 'INC', 0, 1, 0, 0 ),
   ( 'Payment Processor Account', @contactID, @opAsset, 'Account to record payments into a payment processor merchant account', '1150', 'BANK', 0, 1, 0, 0
 );
 
@@ -10040,7 +10040,7 @@ registration process.{/ts}
 {foreach from=$location.phone item=phone}
 {if $phone.phone}
 
-{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if}
+{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if} {if $phone.phone_ext} {ts}ext.{/ts} {$phone.phone_ext}{/if}
 {/foreach}
 {foreach from=$location.email item=eventEmail}
 {if $eventEmail.email}
@@ -10354,7 +10354,7 @@ registration process.{/ts}</p>
           {/if}
          </td>
          <td {$valueStyle}>
-          {$phone.phone}
+          {$phone.phone} {if $phone.phone_ext}&nbsp;{ts}ext.{/ts} {$phone.phone_ext}{/if}
          </td>
         </tr>
        {/if}
@@ -10778,7 +10778,7 @@ registration process.{/ts}
 {foreach from=$location.phone item=phone}
 {if $phone.phone}
 
-{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if}
+{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if} {if $phone.phone_ext} {ts}ext.{/ts} {$phone.phone_ext}{/if}
 {/foreach}
 {foreach from=$location.email item=eventEmail}
 {if $eventEmail.email}
@@ -11092,7 +11092,7 @@ registration process.{/ts}</p>
           {/if}
          </td>
          <td {$valueStyle}>
-          {$phone.phone}
+          {$phone.phone} {if $phone.phone_ext}&nbsp;{ts}ext.{/ts} {$phone.phone_ext}{/if}
          </td>
         </tr>
        {/if}
@@ -11539,7 +11539,7 @@ registration process.{/ts}
 {foreach from=$location.phone item=phone}
 {if $phone.phone}
 
-{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if}
+{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if} {if $phone.phone_ext} {ts}ext.{/ts} {$phone.phone_ext}{/if}
 {/foreach}
 {foreach from=$location.email item=eventEmail}
 {if $eventEmail.email}
@@ -11862,7 +11862,7 @@ registration process.{/ts}</p>
           {/if}
          </td>
          <td {$valueStyle}>
-          {$phone.phone}
+          {$phone.phone} {if $phone.phone_ext}&nbsp;{ts}ext.{/ts} {$phone.phone_ext}{/if}
          </td>
         </tr>
        {/if}
@@ -12273,7 +12273,7 @@ registration process.{/ts}
 {foreach from=$location.phone item=phone}
 {if $phone.phone}
 
-{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if}
+{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if} {if $phone.phone_ext} {ts}ext.{/ts} {$phone.phone_ext}{/if}
 {/foreach}
 {foreach from=$location.email item=eventEmail}
 {if $eventEmail.email}
@@ -12596,7 +12596,7 @@ registration process.{/ts}</p>
           {/if}
          </td>
          <td {$valueStyle}>
-          {$phone.phone}
+          {$phone.phone} {if $phone.phone_ext}&nbsp;{ts}ext.{/ts} {$phone.phone_ext}{/if}
          </td>
         </tr>
        {/if}
@@ -18621,7 +18621,7 @@ SELECT @financial_account_id_dtn       := max(id) FROM civicrm_financial_account
 SELECT @financial_account_id_md	       := max(id) FROM civicrm_financial_account WHERE name = 'Medlems Betaling(er)';
 SELECT @financial_account_id_cc	       := max(id) FROM civicrm_financial_account WHERE name = 'Kampagnebidrag';
 SELECT @financial_account_id_ef	       := max(id) FROM civicrm_financial_account WHERE name = 'Arrangementsgebyr';
-SELECT @financial_account_id_bf	       := max(id) FROM civicrm_financial_account WHERE name = 'Banking Fees';
+SELECT @financial_account_id_bf	       := max(id) FROM civicrm_financial_account WHERE name = 'Bankgebyrer';
 SELECT @financial_account_id_ap	       := max(id) FROM civicrm_financial_account WHERE name = 'Accounts Receivable';
 SELECT @financial_account_id_ar        := max(id) FROM civicrm_financial_account WHERE name = 'Deposit Bank Account';
 SELECT @financial_account_id_pp        := max(id) FROM civicrm_financial_account WHERE name = 'Payment Processor Account';
@@ -19510,4 +19510,4 @@ INSERT INTO `civicrm_report_instance`
 VALUES
     (  @domainID, 'Survey Details', 'survey/detail', 'Detailed report for canvassing, phone-banking, walk lists or other surveys.', 'access CiviReport', 'a:39:{s:6:"fields";a:2:{s:9:"sort_name";s:1:"1";s:6:"result";s:1:"1";}s:22:"assignee_contact_id_op";s:2:"eq";s:25:"assignee_contact_id_value";s:0:"";s:12:"sort_name_op";s:3:"has";s:15:"sort_name_value";s:0:"";s:17:"street_number_min";s:0:"";s:17:"street_number_max";s:0:"";s:16:"street_number_op";s:3:"lte";s:19:"street_number_value";s:0:"";s:14:"street_name_op";s:3:"has";s:17:"street_name_value";s:0:"";s:15:"postal_code_min";s:0:"";s:15:"postal_code_max";s:0:"";s:14:"postal_code_op";s:3:"lte";s:17:"postal_code_value";s:0:"";s:7:"city_op";s:3:"has";s:10:"city_value";s:0:"";s:20:"state_province_id_op";s:2:"in";s:23:"state_province_id_value";a:0:{}s:13:"country_id_op";s:2:"in";s:16:"country_id_value";a:0:{}s:12:"survey_id_op";s:2:"in";s:15:"survey_id_value";a:0:{}s:12:"status_id_op";s:2:"eq";s:15:"status_id_value";s:1:"1";s:11:"custom_1_op";s:2:"in";s:14:"custom_1_value";a:0:{}s:11:"custom_2_op";s:2:"in";s:14:"custom_2_value";a:0:{}s:17:"custom_3_relative";s:1:"0";s:13:"custom_3_from";s:0:"";s:11:"custom_3_to";s:0:"";s:11:"description";s:75:"Detailed report for canvassing, phone-banking, walk lists or other surveys.";s:13:"email_subject";s:0:"";s:8:"email_to";s:0:"";s:8:"email_cc";s:0:"";s:10:"permission";s:17:"access CiviReport";s:6:"groups";s:0:"";s:9:"domain_id";i:1;}');
 
- UPDATE civicrm_domain SET version = '4.3.4';
+ UPDATE civicrm_domain SET version = '4.3.5';

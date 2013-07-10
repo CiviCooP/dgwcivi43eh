@@ -5189,7 +5189,7 @@ VALUES
 -- grouping field is specific to Quickbooks for mapping to .iif format
    (@option_group_id_fat, 'Ativos', 1, 'Asset', NULL, 0, 0, 1, 'Things you own', 0, 1, 1, 2, NULL),
    (@option_group_id_fat, 'Responsabilidade.', 2, 'Liability', NULL, 0, 0, 2, 'Things you own, like a grant still to be disbursed', 0, 1, 1, 2, NULL),
-   (@option_group_id_fat, 'Revenue', 3, 'Revenue', NULL, 0, 1, 3, 'Income from contributions and sales of tickets and memberships', 0, 1, 1, 2, NULL),
+   (@option_group_id_fat, 'Receita', 3, 'Revenue', NULL, 0, 1, 3, 'Income from contributions and sales of tickets and memberships', 0, 1, 1, 2, NULL),
    (@option_group_id_fat, 'Cost of Sales', 4, 'Cost of Sales', NULL, 0, 0, 4, 'Costs incurred to get revenue, e.g. premiums for donations, dinner for a fundraising dinner ticket', 0, 1, 1, 2, NULL),
    (@option_group_id_fat, 'Expenses', 5, 'Expenses', NULL, 0, 0, 5, 'Things that are paid for that are consumable, e.g. grants disbursed', 0, 1, 1, 2, NULL),
 
@@ -5346,17 +5346,17 @@ VALUES
   (@option_group_id_languages, 0, 1, 'ca_ES', 'ca', 'Catalã; Valenciana', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ch_GU', 'ch', 'Chamorro', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ce_RU', 'ce', 'Chechena', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'ny_MW', 'ny', 'Nianja, Cinianja', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'ny_MW', 'ny', 'Chichewa; Chewa; Nyanja', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'zh_CN', 'zh', 'Chinês (China)', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'zh_TW', 'zh', 'Chinês (Taiwan)', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'cv_RU', 'cv', 'Tchuvache', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'kw_GB', 'kw', 'Cornualha', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'co_FR', 'co', 'Corsa', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'co_FR', 'co', 'Corsican', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'cr_CA', 'cr', 'Cree', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'hr_HR', 'hr', 'Croata', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'cs_CZ', 'cs', 'Tcheco', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'da_DK', 'da', 'Dinamarquês', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'dv_MV', 'dv', 'Divehi, Maldívio, Maldivense', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'dv_MV', 'dv', 'Divehi; Dhivehi; Maldivian;', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'nl_NL', 'nl', 'Neerlandês', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'dz_BT', 'dz', 'Butanês', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'en_AU', 'en', 'Inglês (Austrália)', @counter := @counter + 1),
@@ -5367,11 +5367,11 @@ VALUES
   (@option_group_id_languages, 0, 1, 'et_EE', 'et', 'Estoniano', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ee_GH', 'ee', 'Ewe', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'fo_FO', 'fo', 'Feróica', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'fj_FJ', 'fj', 'Fijiano', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'fj_FJ', 'fj', 'Fijian', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'fi_FI', 'fi', 'Finlandês', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'fr_CA', 'fr', 'Francês (Canadá)', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'fr_FR', 'fr', 'Francês (França)', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'ff_SN', 'ff', 'Fula, Fulani, Peul', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'ff_SN', 'ff', 'Fula; Fulah; Pulaar; Pular', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'gl_ES', 'gl', 'Galego', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ka_GE', 'ka', 'Georgiano', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'de_DE', 'de', 'Alemão', @counter := @counter + 1),
@@ -5380,9 +5380,9 @@ VALUES
   (@option_group_id_languages, 0, 0, 'gn_PY', 'gn', 'Guaraní', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'gu_IN', 'gu', 'Gujarati', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ht_HT', 'ht', 'Haitiano; Haitiano Criolo', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'ha_NG', 'ha', 'Hausa, Hauça', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'ha_NG', 'ha', 'Hausa', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'he_IL', 'he', 'Hebraico (moderno)', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'hz_NA', 'hz', 'Hereró', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'hz_NA', 'hz', 'Herero', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'hi_IN', 'hi', 'Hindi', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ho_PG', 'ho', 'Hiri Motu', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'hu_HU', 'hu', 'Húngaro', @counter := @counter + 1),
@@ -5391,124 +5391,124 @@ VALUES
   (@option_group_id_languages, 0, 0, 'ie_XX', 'ie', 'Interlíngua', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ga_IE', 'ga', 'Irlandês', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ig_NG', 'ig', 'Igbo', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'ik_US', 'ik', 'Inupiaq, inupiat', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'ik_US', 'ik', 'Inupiaq', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'io_XX', 'io', 'Ido', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'is_IS', 'is', 'Islandês', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'it_IT', 'it', 'Italiano', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'iu_CA', 'iu', 'Inuktitut', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'ja_JP', 'ja', 'Japonês', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'jv_ID', 'jv', 'Javanês', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'kl_GL', 'kl', 'Groenlandês', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'kn_IN', 'kn', 'Canará', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'kl_GL', 'kl', 'Kalaallisut, Greenlandic', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'kn_IN', 'kn', 'Kannada', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'kr_NE', 'kr', 'Kanuri', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'ks_IN', 'ks', 'Caxemira', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'kk_KZ', 'kk', 'Cazaque', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'ks_IN', 'ks', 'Kashmiri', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'kk_KZ', 'kk', 'Kazakh', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'km_KH', 'km', 'Khmer', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'ki_KE', 'ki', 'Kikuyu', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'rw_RW', 'rw', 'Kinyarwanda, Ruanda', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'ky_KG', 'ky', 'Quirguiz', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'ki_KE', 'ki', 'Kikuyu, Gikuyu', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'rw_RW', 'rw', 'Kinyarwanda', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'ky_KG', 'ky', 'Kirghiz, Kyrgyz', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'kv_RU', 'kv', 'Komi', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'kg_CD', 'kg', 'Kongo, Kikongo', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'kg_CD', 'kg', 'Kongo', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ko_KR', 'ko', 'Coreano', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ku_IQ', 'ku', 'Curdo', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'kj_NA', 'kj', 'Oshikwanyama, Cuanhama', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'kj_NA', 'kj', 'Kwanyama, Kuanyama', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'la_VA', 'la', 'Latino', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'lb_LU', 'lb', 'Luxemburguês', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'lg_UG', 'lg', 'Luganda, Ganda', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'li_NL', 'li', 'Limburguês', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'lb_LU', 'lb', 'Luxembourgish, Letzeburgesch', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'lg_UG', 'lg', 'Luganda', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'li_NL', 'li', 'Limburgish, Limburgan, Limburger', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ln_CD', 'ln', 'Lingala', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'lo_LA', 'lo', 'Laociano, Laosiano', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'lt_LT', 'lt', 'Lituano', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'lo_LA', 'lo', 'Lao', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'lt_LT', 'lt', 'Lithuanian', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'lu_CD', 'lu', 'Luba-Katanga', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'lv_LV', 'lv', 'Letão', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'gv_IM', 'gv', 'Manx, Manês', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'mk_MK', 'mk', 'Macedônio', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'mg_MG', 'mg', 'Malgaxe', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'ms_MY', 'ms', 'Malaio', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'ml_IN', 'ml', 'Malaialo', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'mt_MT', 'mt', 'Maltês', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'mi_NZ', 'mi', 'Maori', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'mr_IN', 'mr', 'Marati', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'mh_MH', 'mh', 'Marshalês', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'mn_MN', 'mn', 'Mongol', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'na_NR', 'na', 'Nauruense', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'nv_US', 'nv', 'Navajo, Navaja', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'nb_NO', 'nb', 'Norueguês Escrito', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'nd_ZW', 'nd', 'Ndebele do norte', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'ne_NP', 'ne', 'Nepali, Nepalês', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'lv_LV', 'lv', 'Latvian', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'gv_IM', 'gv', 'Manx', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'mk_MK', 'mk', 'Macedonian', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'mg_MG', 'mg', 'Malagasy', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'ms_MY', 'ms', 'Malay', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'ml_IN', 'ml', 'Malayalam', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'mt_MT', 'mt', 'Maltese', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'mi_NZ', 'mi', 'Māori', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'mr_IN', 'mr', 'Marathi', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'mh_MH', 'mh', 'Marshallese', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'mn_MN', 'mn', 'Mongolian', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'na_NR', 'na', 'Nauru', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'nv_US', 'nv', 'Navajo, Navaho', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'nb_NO', 'nb', 'Norwegian Bokmål', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'nd_ZW', 'nd', 'North Ndebele', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'ne_NP', 'ne', 'Nepali', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ng_NA', 'ng', 'Ndonga', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'nn_NO', 'nn', 'Novo Norueguês', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'no_NO', 'no', 'Norueguês', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'nn_NO', 'nn', 'Norwegian Nynorsk', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'no_NO', 'no', 'Norwegian', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ii_CN', 'ii', 'Nuosu', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'nr_ZA', 'nr', 'Ndebele do Sul', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'oc_FR', 'oc', 'Ocitano, Provençal (após 1500)', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'oj_CA', 'oj', 'Ojibua', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'cu_BG', 'cu', 'Antigo eslavo eclesiástico', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'nr_ZA', 'nr', 'South Ndebele', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'oc_FR', 'oc', 'Occitan (after 1500)', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'oj_CA', 'oj', 'Ojibwa', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'cu_BG', 'cu', 'Old Church Slavonic, Church Slavic, Church Slavonic, Old Bulgarian, Old Slavonic', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'om_ET', 'om', 'Oromo', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'or_IN', 'or', 'Oriá', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'os_GE', 'os', 'Osseto, osseta', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'pa_IN', 'pa', 'Punjabi', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'pi_KH', 'pi', 'Páli', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'fa_IR', 'fa', 'Persa, farsi (Irã)', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'pl_PL', 'pl', 'Polonês', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'ps_AF', 'ps', 'Afegane, Pachto', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'or_IN', 'or', 'Oriya', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'os_GE', 'os', 'Ossetian, Ossetic', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'pa_IN', 'pa', 'Panjabi, Punjabi', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'pi_KH', 'pi', 'Pāli', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'fa_IR', 'fa', 'Persian (Iran)', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'pl_PL', 'pl', 'Polish', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'ps_AF', 'ps', 'Pashto, Pushto', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'pt_BR', 'pt', 'Português (Brasil)', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'pt_PT', 'pt', 'Português (Portugal)', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'qu_PE', 'qu', 'Quíchua', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'rm_CH', 'rm', 'Romanche, Reto-romano', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'qu_PE', 'qu', 'Quechua', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'rm_CH', 'rm', 'Romansh', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'rn_BI', 'rn', 'Kirundi', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'ro_RO', 'ro', 'Romeno, Moldavo', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'ro_RO', 'ro', 'Romanian, Moldavian, Moldovan', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'ru_RU', 'ru', 'Russo', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'sa_IN', 'sa', 'Sânscrito', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'sc_IT', 'sc', 'Sardo', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'sd_IN', 'sd', 'Sindi', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'se_NO', 'se', 'Sami do Norte', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'sm_WS', 'sm', 'Samoano', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'sc_IT', 'sc', 'Sardinian', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'sd_IN', 'sd', 'Sindhi', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'se_NO', 'se', 'Northern Sami', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'sm_WS', 'sm', 'Samoan', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'sg_CF', 'sg', 'Sango', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'sr_RS', 'sr', 'Sérvio', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'gd_GB', 'gd', 'Gaélico escocês, Gaélico', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'sn_ZW', 'sn', 'Chixona, Chona', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'sr_RS', 'sr', 'Serbian', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'gd_GB', 'gd', 'Scottish Gaelic; Gaelic', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'sn_ZW', 'sn', 'Shona', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'si_LK', 'si', 'Cingalês', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'sk_SK', 'sk', 'Eslovaco', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'sl_SI', 'sl', 'Esloveno', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'so_SO', 'so', 'Somali', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'st_ZA', 'st', 'Soto do sul', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'es_ES', 'es', 'Espanhol, Castelhano (Espanha)', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'es_MX', 'es', 'Espanhol, Castelhano (México)', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'es_PR', 'es', 'Espanhol, Castelhano (Porto Rico)', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'st_ZA', 'st', 'Southern Sotho', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'es_ES', 'es', 'Spanish; Castilian (Spain)', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'es_MX', 'es', 'Spanish; Castilian (Mexico)', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'es_PR', 'es', 'Spanish; Castilian (Puerto Rico)', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'su_ID', 'su', 'Sundanês', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'sw_TZ', 'sw', 'Suaíli', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'ss_ZA', 'ss', 'Suázi', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'sw_TZ', 'sw', 'Swahili', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'ss_ZA', 'ss', 'Swati', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'sv_SE', 'sv', 'Sueco', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ta_IN', 'ta', 'Tâmil', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'te_IN', 'te', 'Telugu', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'tg_TJ', 'tg', 'Tajique', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'th_TH', 'th', 'Tailandês', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'ti_ET', 'ti', 'Tigrínia', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'bo_CN', 'bo', 'Tibetano Padrão, Tibetano Central', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'tk_TM', 'tk', 'Turcomano', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'tl_PH', 'tl', 'Tagalo', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'tg_TJ', 'tg', 'Tajik', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'th_TH', 'th', 'Thai', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'ti_ET', 'ti', 'Tigrinya', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'bo_CN', 'bo', 'Tibetan Standard, Tibetan, Central', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'tk_TM', 'tk', 'Turkmen', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'tl_PH', 'tl', 'Tagalog', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'tn_ZA', 'tn', 'Tswana', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'to_TO', 'to', 'Tonganês (Ilhas Tonga)', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'to_TO', 'to', 'Tonga (Tonga Islands)', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'tr_TR', 'tr', 'Turco', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ts_ZA', 'ts', 'Tsonga', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'tt_RU', 'tt', 'Tatarça', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'tt_RU', 'tt', 'Tatar', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'tw_GH', 'tw', 'Twi', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'ty_PF', 'ty', 'Taitiano', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'ug_CN', 'ug', 'Uigur', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'ty_PF', 'ty', 'Tahitian', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'ug_CN', 'ug', 'Uighur, Uyghur', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'uk_UA', 'uk', 'Ucraniano', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ur_PK', 'ur', 'Urdu', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'uz_UZ', 'uz', 'Uzbeque', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'uz_UZ', 'uz', 'Uzbek', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 've_ZA', 've', 'Venda', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'vi_VN', 'vi', 'Vietnamita', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'vo_XX', 'vo', 'Volapuque', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'wa_BE', 'wa', 'Valão', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'cy_GB', 'cy', 'Galês', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'vo_XX', 'vo', 'Volapük', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'wa_BE', 'wa', 'Walloon', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'cy_GB', 'cy', 'Welsh', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'wo_SN', 'wo', 'Wolof', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'fy_NL', 'fy', 'Frísio Ocidental', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'fy_NL', 'fy', 'Western Frisian', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'xh_ZA', 'xh', 'Xhosa', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'yi_US', 'yi', 'Iídiche', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'yo_NG', 'yo', 'Iorubá', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'yi_US', 'yi', 'Yiddish', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'yo_NG', 'yo', 'Yoruba', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'za_CN', 'za', 'Zhuang, Chuang', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'zu_ZA', 'zu', 'Zulu', @counter := @counter + 1);
 -- /*******************************************************
@@ -10040,7 +10040,7 @@ registration process.{/ts}
 {foreach from=$location.phone item=phone}
 {if $phone.phone}
 
-{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if}
+{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if} {if $phone.phone_ext} {ts}ext.{/ts} {$phone.phone_ext}{/if}
 {/foreach}
 {foreach from=$location.email item=eventEmail}
 {if $eventEmail.email}
@@ -10354,7 +10354,7 @@ registration process.{/ts}</p>
           {/if}
          </td>
          <td {$valueStyle}>
-          {$phone.phone}
+          {$phone.phone} {if $phone.phone_ext}&nbsp;{ts}ext.{/ts} {$phone.phone_ext}{/if}
          </td>
         </tr>
        {/if}
@@ -10778,7 +10778,7 @@ registration process.{/ts}
 {foreach from=$location.phone item=phone}
 {if $phone.phone}
 
-{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if}
+{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if} {if $phone.phone_ext} {ts}ext.{/ts} {$phone.phone_ext}{/if}
 {/foreach}
 {foreach from=$location.email item=eventEmail}
 {if $eventEmail.email}
@@ -11092,7 +11092,7 @@ registration process.{/ts}</p>
           {/if}
          </td>
          <td {$valueStyle}>
-          {$phone.phone}
+          {$phone.phone} {if $phone.phone_ext}&nbsp;{ts}ext.{/ts} {$phone.phone_ext}{/if}
          </td>
         </tr>
        {/if}
@@ -11539,7 +11539,7 @@ registration process.{/ts}
 {foreach from=$location.phone item=phone}
 {if $phone.phone}
 
-{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if}
+{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if} {if $phone.phone_ext} {ts}ext.{/ts} {$phone.phone_ext}{/if}
 {/foreach}
 {foreach from=$location.email item=eventEmail}
 {if $eventEmail.email}
@@ -11862,7 +11862,7 @@ registration process.{/ts}</p>
           {/if}
          </td>
          <td {$valueStyle}>
-          {$phone.phone}
+          {$phone.phone} {if $phone.phone_ext}&nbsp;{ts}ext.{/ts} {$phone.phone_ext}{/if}
          </td>
         </tr>
        {/if}
@@ -12273,7 +12273,7 @@ registration process.{/ts}
 {foreach from=$location.phone item=phone}
 {if $phone.phone}
 
-{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if}
+{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if} {if $phone.phone_ext} {ts}ext.{/ts} {$phone.phone_ext}{/if}
 {/foreach}
 {foreach from=$location.email item=eventEmail}
 {if $eventEmail.email}
@@ -12596,7 +12596,7 @@ registration process.{/ts}</p>
           {/if}
          </td>
          <td {$valueStyle}>
-          {$phone.phone}
+          {$phone.phone} {if $phone.phone_ext}&nbsp;{ts}ext.{/ts} {$phone.phone_ext}{/if}
          </td>
         </tr>
        {/if}
@@ -19510,4 +19510,4 @@ INSERT INTO `civicrm_report_instance`
 VALUES
     (  @domainID, 'Survey Details', 'survey/detail', 'Detailed report for canvassing, phone-banking, walk lists or other surveys.', 'access CiviReport', 'a:39:{s:6:"fields";a:2:{s:9:"sort_name";s:1:"1";s:6:"result";s:1:"1";}s:22:"assignee_contact_id_op";s:2:"eq";s:25:"assignee_contact_id_value";s:0:"";s:12:"sort_name_op";s:3:"has";s:15:"sort_name_value";s:0:"";s:17:"street_number_min";s:0:"";s:17:"street_number_max";s:0:"";s:16:"street_number_op";s:3:"lte";s:19:"street_number_value";s:0:"";s:14:"street_name_op";s:3:"has";s:17:"street_name_value";s:0:"";s:15:"postal_code_min";s:0:"";s:15:"postal_code_max";s:0:"";s:14:"postal_code_op";s:3:"lte";s:17:"postal_code_value";s:0:"";s:7:"city_op";s:3:"has";s:10:"city_value";s:0:"";s:20:"state_province_id_op";s:2:"in";s:23:"state_province_id_value";a:0:{}s:13:"country_id_op";s:2:"in";s:16:"country_id_value";a:0:{}s:12:"survey_id_op";s:2:"in";s:15:"survey_id_value";a:0:{}s:12:"status_id_op";s:2:"eq";s:15:"status_id_value";s:1:"1";s:11:"custom_1_op";s:2:"in";s:14:"custom_1_value";a:0:{}s:11:"custom_2_op";s:2:"in";s:14:"custom_2_value";a:0:{}s:17:"custom_3_relative";s:1:"0";s:13:"custom_3_from";s:0:"";s:11:"custom_3_to";s:0:"";s:11:"description";s:75:"Detailed report for canvassing, phone-banking, walk lists or other surveys.";s:13:"email_subject";s:0:"";s:8:"email_to";s:0:"";s:8:"email_cc";s:0:"";s:10:"permission";s:17:"access CiviReport";s:6:"groups";s:0:"";s:9:"domain_id";i:1;}');
 
- UPDATE civicrm_domain SET version = '4.3.4';
+ UPDATE civicrm_domain SET version = '4.3.5';

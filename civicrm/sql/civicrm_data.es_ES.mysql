@@ -4460,14 +4460,14 @@ INSERT INTO civicrm_location_type( name, display_name, vcard_name, description, 
 
 -- Sample relationship types
 INSERT INTO civicrm_relationship_type( name_a_b,label_a_b, name_b_a,label_b_a, description, contact_type_a, contact_type_b, is_reserved )
-    VALUES( 'Child of', 'Hijo/a de', 'Parent of', 'Padre de', 'Relación padre/hijo.', 'Individual', 'Individual', 0 ),
+    VALUES( 'Child of', 'Hijo/a de', 'Parent of', 'Padre de', 'Relación padre / hijo.', 'Individual', 'Individual', 0 ),
           ( 'Spouse of', 'Cónyuge de', 'Spouse of', 'Cónyuge de', 'Relación conyugal.', 'Individual', 'Individual', 0 ),
           ( 'Partner of', 'Partner of', 'Partner of', 'Partner of', 'Partner relationship.', 'Individual', 'Individual', 0 ),
           ( 'Sibling of', 'Hermano de', 'Sibling of', 'Hermano de', 'Relación de hermanos.', 'Individual','Individual', 0 ),
-          ( 'Employee of', 'Trabajador/a de', 'Employer of', 'Empleador/a de', 'Relación laboral.','Individual','Organization', 1 ),
+          ( 'Employee of', 'Empleado de', 'Employer of', 'Empresa de', 'Relación laboral.','Individual','Organization', 1 ),
           ( 'Volunteer for', 'Voluntario/a de', 'Volunteer is', 'Voluntario es', 'Relación de voluntariado.','Individual','Organization', 0 ),
-          ( 'Head of Household for', 'Cabeza de la Familia para', 'Head of Household is', 'Cabeza de la Familia es', 'Cabeza de familia.','Individual','Household', 1 ),
-          ( 'Household Member of', 'Miembro de Familia de', 'Household Member is', 'Miembro de Familia es', 'Membresía de Familia.','Individual','Household', 1 );
+          ( 'Head of Household for', 'Cabeza de la familia para', 'Head of Household is', 'Cabeza de familia es', 'Cabeza de familia.','Individual','Household', 1 ),
+          ( 'Household Member of', 'Miembro de familia de', 'Household Member is', 'Miembro de familia es', 'Membresía de familia.','Individual','Household', 1 );
 
 -- Relationship Types for CiviCase
 INSERT INTO civicrm_relationship_type( name_a_b,label_a_b, name_b_a,label_b_a, description, contact_type_a, contact_type_b, is_reserved )
@@ -4479,11 +4479,11 @@ INSERT INTO civicrm_relationship_type( name_a_b,label_a_b, name_b_a,label_b_a, d
 -- Sample Tags
 INSERT INTO civicrm_tag( name, description, parent_id,used_for )
     VALUES
-    ( 'Sin ánimo de lucro', 'Cualquier organización sin fines de lucro', NULL,'civicrm_contact'),
+    ( 'Sin fines de lucro', 'Cualquier organización sin fines de lucro', NULL,'civicrm_contact'),
     ( 'Compañía', 'Para organización con fines de lucro.', NULL,'civicrm_contact'),
     ( 'Entidad gubernamental', 'Cualquier entidad gubernamental.', NULL,'civicrm_contact'),
-    ( 'Gran donante', 'Alto valor de colaboración de nuestra organización.', NULL,'civicrm_contact'),
-    ( 'Voluntario/a', 'Voluntarios/as en activo.', NULL,'civicrm_contact' );
+    ( 'Gran donante', 'Colaborador de gran valor de nuestra organización.', NULL,'civicrm_contact'),
+    ( 'Voluntario/a', 'Voluntarios/as activos.', NULL,'civicrm_contact' );
 
 
 -- sample CiviCRM mailing components
@@ -4491,13 +4491,13 @@ INSERT INTO civicrm_mailing_component
     (name,component_type,subject,body_html,body_text,is_default,is_active)
 VALUES
     ('Cabecera del mailing','Header','Título descriptivo para esta cabecera','Ejemplo de cabecera para contenido con formato HTML.','Ejemplo de cabecera para contenido con formato de texto.',1,1),
-    ('Pie de página del mailing','Footer','Título descriptivo para este pie de página','Sample Footer for HTML formatted content<br/><a href=\"{action.optOutUrl}\">Unsubscribe</a>  <br/> {domain.address}','to unsubscribe: {action.optOutUrl}\n{domain.address}',1,1),
-    ('Suscribir mensaje','Subscribe','Petición de confirmación de la inscripción','Usted tiene una suscripción pendiente a la lista de mailing {subscribe.group}. Para confirmar esta suscripción, responda a este correo electrónico o haga clic <a href=\"{subscribe.url}\">aquí</a>','Usted tiene una suscripción pendiente a la lista de mailing {subscribe.group}. Para confirmar esta suscripción, responda a este correo electrónico o haga clic en este enlace: {subscribe.url}',1,1),
-    ('Mensaje de Bienvenida','Welcome','Tu subscripción ha sido activada','Bienvenido/a. Tu suscripción a la lista de correo {welcome.group} ha sido activada.','Bienvenido/a. Tu suscripción a la lista de correo {welcome.group} ha sido activada.',1,1),
-    ('Desubscribir mensaje','Unsubscribe','Confirmación de baja de la suscripción','Se ha cancelado su suscripción a los siguientes grupos: {unsubscribe.group}. Usted puede dar de alta su suscripción nuevamente, enviando un correo a {action.resubscribe} o haciendo clic <a href=\"{action.resubscribeUrl}\">aquí</a>.','Se ha cancelado su suscripción a los siguientes grupos: {unsubscribe.group}. Usted puede dar de alta su suscripción nuevamente, enviando un correo a {action.resubscribe} o haciendo clic en %3',1,1),
-    ('Resubscribir mensaje','Resubscribe','Confirmación de Re-Suscripción','Su suscripción ha sido dada de alta nuevamente a los siguientes grupos: {resubscribe.group}. Usted puede dar de baja su suscripción, enviando un correo a {action.unsubscribe} o haciendo clic <a href=\"{action.unsubscribeUrl}\">aquí</a>.','Su suscripción ha sido dada de alta nuevamente a los siguientes grupos: {resubscribe.group}. Usted puede dar de baja su suscripción, enviando un correo a {action.unsubscribe} o haciendo clic en {action.unsubscribeUrl}',1,1),
-    ('mensaje opcional de salida','OptOut','Confirmación de Opt-out','Su dirección de correo electrónico ha sido removida de las listas de mailing {domain.name}.','Su dirección de correo electrónico ha sido removida de las listas de mailing {domain.name}.',1,1),
-    ('Auto-respuesta','Reply','Por favor, Envíe sus Preguntas a Nuestra Dirección de Correo Electrónico de Contacto','Esta es una respuesta automática a un buzón desatendido. Por favor, envié cualquier pregunta a la dirección de correo electrónico de contacto listada en nuestro sitio web.','Esta es una respuesta automática a un buzón desatendido. Por favor, envié cualquier pregunta a la dirección de correo electrónico de contacto listada en nuestro sitio web.',1,1);
+    ('Pie de página del correo','Footer','Título descriptivo para este pie de página','Sample Footer for HTML formatted content<br/><a href=\"{action.optOutUrl}\">Unsubscribe</a>  <br/> {domain.address}','to unsubscribe: {action.optOutUrl}\n{domain.address}',1,1),
+    ('Suscribir mensaje','Subscribe','Requerimiento de confirmación de suscripción ','Usted tiene una suscripción pendiente a la lista de mailing {subscribe.group}. Para confirmar esta suscripción, responda a este correo electrónico o haga clic <a href=\"{subscribe.url}\">aquí</a>','Usted tiene una suscripción pendiente a la lista de mailing {subscribe.group}. Para confirmar esta suscripción, responda a este correo electrónico o haga clic en este enlace: {subscribe.url}',1,1),
+    ('Mensaje de bienvenida','Welcome','Su suscripción ha sido activada','Bienvenido. Su suscripción a la lista de correo {welcome.group} ha sido activada.','Bienvenido. Su suscripción a la lista de correo {welcome.group} ha sido activada.',1,1),
+    ('Dar de baja mensaje','Unsubscribe','Confirmación de baja de la suscripción','Se ha cancelado su suscripción a los siguientes grupos: {unsubscribe.group}. Usted puede dar de alta su suscripción nuevamente, enviando un correo {action.resubscribe} o haciendo clic <a href=\"{action.resubscribeUrl}\">aquí</a>.','Se ha cancelado su suscripción a los siguientes grupos: {unsubscribe.group}. Usted puede dar de alta su suscripción nuevamente, enviando un correo {action.resubscribe} o haciendo clic en %3',1,1),
+    ('Dra de alta mensaje','Resubscribe','Confirmación de Re-suscripción','Su suscripción ha sido dada de alta nuevamente a los siguientes grupos: {resubscribe.group}. Usted puede dar de baja su suscripción, enviando un correo {action.unsubscribe} o haciendo clic <a href=\"{action.unsubscribeUrl}\">aquí</a>.','Su suscripción ha sido dada de alta nuevamente a los siguientes grupos: {resubscribe.group}. Usted puede dar de baja su suscripción, enviando un correo {action.unsubscribe} o haciendo clic en {action.unsubscribeUrl}',1,1),
+    ('Mensaje opcional de salida','OptOut','Confirmación de Opt-out','Su dirección de correo electrónico ha sido removida de las listas de mailing {domain.name}.','Su dirección de correo electrónico ha sido removida de las listas de mailing {domain.name}.',1,1),
+    ('Auto-respuesta','Reply','Por favor, envíe sus preguntas a nuestra dirección de correo electrónico de contacto','Esta es una respuesta automática a un buzón desatendido. Por favor, envié cualquier pregunta a la dirección de correo electrónico de contacto listada en nuestro sitio web.','Esta es una respuesta automática a un buzón desatendido. Por favor, envié cualquier pregunta a la dirección de correo electrónico de contacto listada en nuestro sitio web.',1,1);
 
 
 -- contribution types
@@ -4506,8 +4506,8 @@ INSERT INTO
 VALUES
   ( 'Donación'             , 0, 1, 1 ),
   ( 'Cuotas de Miembro'          , 0, 1, 1 ),
-  ( 'Contribución de Campaña', 0, 1, 0 ),
-  ( 'Tarifa del Evento'            , 0, 1, 0 );
+  ( 'Contribución de campaña', 0, 1, 0 ),
+  ( 'Precio del evento'            , 0, 1, 0 );
 
 -- option groups and values for 'preferred communication methods' , 'activity types', 'gender', etc.
 
@@ -4517,14 +4517,14 @@ VALUES
    ('preferred_communication_method', 'Medio preferido de comunicación'     , 1, 1),
    ('activity_type'                 , 'Tipo de actividad'                      , 1, 1),
    ('gender'                        , 'Sexo'                             , 1, 1),
-   ('instant_messenger_service'     , 'Mensajería Instantánea (MI) nombres de pantalla', 1, 1),
+   ('instant_messenger_service'     , 'Mensajería instantánea (MI) nombres de pantalla', 1, 1),
    ('mobile_provider'               , 'Proveedores de telefonía móvil'             , 1, 1),
-   ('individual_prefix'             , 'Prefijos de Contacto de Individuo'        , 1, 1),
-   ('individual_suffix'             , 'Sufijos de Contacto de Individuo'        , 1, 1),
+   ('individual_prefix'             , 'Prefijos de contacto de individuo'        , 1, 1),
+   ('individual_suffix'             , 'Sufijos de contacto de individuo'        , 1, 1),
    ('acl_role'                      , 'Rol ACL'                           , 1, 1),
    ('accept_creditcard'             , 'Tarjetas de crédito aceptadas'              , 1, 1),
-   ('payment_instrument'            , 'Instrumentos de Pago'                , 1, 1),
-   ('contribution_status'           , 'Estado de la Contribución'                , 1, 1),
+   ('payment_instrument'            , 'Instrumentos de pago'                , 1, 1),
+   ('contribution_status'           , 'Estado de contribución'                , 1, 1),
    ('pcp_status'                    , 'Estados PCP'                         , 1, 1),
    ('participant_role'              , 'Rol de participante'                   , 1, 1),
    ('event_type'                    , 'Tipo de Evento'                         , 1, 1),
@@ -4535,55 +4535,55 @@ VALUES
    ('user_dashboard_options'        , 'Opciones del panel de control de usuario'             , 1, 1),
    ('address_options'               , 'Opciones de dirección'                 , 1, 1),
    ('group_type'                    , 'Tipo de grupo'                         , 1, 1),
-   ('grant_status'                  , 'Estado de la Beca'                       , 1, 1),
-   ('grant_type'                    , 'Tipo de Beca'                         , 1, 1),
-   ('honor_type'                    , 'Tipo de Honor'                         , 1, 1),
+   ('grant_status'                  , 'Estado de la donación '                       , 1, 1),
+   ('grant_type'                    , 'Tipo de donación '                         , 1, 1),
+   ('honor_type'                    , 'Tipo de honor'                         , 1, 1),
    ('custom_search'                 , 'Búsqueda personalizada'                      , 1, 1),
    ('activity_status'               , 'Estado de actividad'                    , 1, 1),
    ('case_type'                     , 'Tipo de caso'                          , 1, 1),
    ('case_status'                   , 'Estado del caso'                        , 1, 1),
    ('participant_listing'           , 'Listado de participantes'                , 1, 1),
    ('safe_file_extension'           , 'Extensión de archivo segura'                , 1, 1),
-   ('from_email_address'            , 'Desde Dirección de Correo Electrónico'                 , 1, 1),
+   ('from_email_address'            , 'Dirección de correo electrónico Desde'                 , 1, 1),
    ('mapping_type'                  , 'Tipo de mapeo'                       , 1, 1),
    ('wysiwyg_editor'                , 'Editor WYSIWYG'                     , 1, 1),
-   ('recur_frequency_units'         , 'Unidades de Frecuencia Recurrente'          , 1, 1),
-   ('phone_type'                    , 'Tipo de Teléfono'                         , 1, 1),
+   ('recur_frequency_units'         , 'Unidades de frecuencia recurrente'          , 1, 1),
+   ('phone_type'                    , 'Tipo de teléfono'                         , 1, 1),
    ('custom_data_type'              , 'Tipo de dato personalizado'                   , 1, 1),
    ('visibility'                    , 'Visibilidad'                         , 1, 1),
    ('mail_protocol'                 , 'Protocolo de correo'                      , 1, 1),
    ('priority'                      , 'Prioridad'                           , 1, 1),
-   ('redaction_rule'                , 'Regla de Redacción'                     , 1, 1),
+   ('redaction_rule'                , 'Regla de redacción'                     , 1, 1),
    ('report_template'               , 'Plantilla de informe'                    , 1, 1),
    ('email_greeting'                , 'Tipo de saludo de correo electrónico'                , 1, 1),
    ('postal_greeting'               , 'Tipo de saludo de correo postal'               , 1, 1),
-   ('addressee'                     , 'Tipo de dirección'                     , 1, 1),
-   ('contact_autocomplete_options'  , 'Autocompletar Búsqueda de Contacto '        , 1, 1),
-   ('contact_reference_options'     , 'Opciones para Autocompletar la Referencia de Contacto', 1, 1),
+   ('addressee'                     , 'Tipo de destinatario'                     , 1, 1),
+   ('contact_autocomplete_options'  , 'Autocompletar búsqueda de contacto '        , 1, 1),
+   ('contact_reference_options'     , 'Opciones para autocompletar la referencia de contacto', 1, 1),
    ('website_type'                  , 'Tipo de web'                       , 1, 1),
    ('tag_used_for'                  , 'Etiqueta usada para'                       , 1, 1),
    ('currencies_enabled'            , 'Currencies Enabled'                 , 1, 1),
-   ('event_badge'                   , 'Insignia de Nombre de Evento'                   , 1, 1),
+   ('event_badge'                   , 'Insignia de nombre de evento'                   , 1, 1),
    ('note_privacy'                  , 'Niveles de privacidad para notas'           , 1, 1),
    ('campaign_type'                 , 'Tipo de campaña'                      , 1, 1),
    ('campaign_status'               , 'Estado de la campaña'                    , 1, 1),
    ('system_extensions'             , 'Extensiones de CiviCRM'                 , 1, 1),
-   ('mail_approval_status'          , 'Estado de Aprobación de CiviMail'           , 1, 1),
+   ('mail_approval_status'          , 'Estado de aprobación de CiviMail'           , 1, 1),
    ('engagement_index'              , 'Índice de compromiso'                   , 1, 1),
-   ('cg_extend_objects'             , 'Objetos a los que un grupo personalizado se extiende'  , 1, 1),
+   ('cg_extend_objects'             , 'Objetos para los se extiende un grupo personalizado'  , 1, 1),
    ('paper_size'                    , 'Tamaño de papel'                         , 1, 1),
    ('pdf_format'                    , 'Formáto de página PDF'                    , 1, 1),
-   ('label_format'                  , 'Formato de la etiqueta de correo'               , 1, 1),
-   ('activity_contacts'             , 'Contactos de Actividad'                  , 1, 1),
+   ('label_format'                  , 'Formato de etiqueta de correo'               , 1, 1),
+   ('activity_contacts'             , 'Contactos de actividad'                  , 1, 1),
    ('account_relationship'          , 'Account Relationship'               , 1, 1),
-   ('event_contacts'                , 'Receptores del Evento'                   , 1, 1),
-   ('conference_slot'               , 'Ubicación de la Conferencia'                    , 1, 1),
-   ('batch_type'                    , 'Tipo de Lote'                         , 1, 1),
+   ('event_contacts'                , 'Receptores del evento'                   , 1, 1),
+   ('conference_slot'               , 'Ubicación de la conferencia'                    , 1, 1),
+   ('batch_type'                    , 'Tipo de lote'                         , 1, 1),
    ('batch_mode'                    , 'Batch Mode'                         , 1, 1),
-   ('batch_status'                  , 'Estado de Lote'                       , 1, 1),
+   ('batch_status'                  , 'Estado de lote'                       , 1, 1),
    ('sms_api_type'                  , 'Tipo de Api'                           , 1, 1),
-   ('sms_provider_name'             , 'Nombre Interno de Proveedor de Sms'         , 1, 1),
-   ('auto_renew_options'            , 'Opciones de Renovación Automática'         	       , 1, 1),
+   ('sms_provider_name'             , 'Nombre interno del proveedor de Sms'         , 1, 1),
+   ('auto_renew_options'            , 'Opciones de renovación automática'         	       , 1, 1),
    ('financial_account_type'        , 'Financial Account Type'             , 1, 1),
    ('financial_item_status'         , 'Financial Item Status'              , 1, 1);
 
@@ -4682,13 +4682,13 @@ VALUES
    (@option_group_id_act, 'Llamada telefónica',                         2, 'Phone Call',          NULL, 0, NULL, 2, NULL,                                                          				0, 1, 1, NULL, NULL),
    (@option_group_id_act, 'Correo electrónico',                              3, 'Email',               NULL, 1, NULL, 3, 'Correo electrónico enviado.',                                                          0, 1, 1, NULL, NULL),
    (@option_group_id_act, 'Mensaje de texto (SMS)',                 4, 'SMS',                 NULL, 1, NULL, 4, 'Mensaje de texto (SMS) enviado.',                                             0, 1, 1, NULL, NULL),
-   (@option_group_id_act, 'Registro de Evento',                 5, 'Event Registration',  NULL, 1, NULL, 5, 'Registro de evento online u offline',                                0, 1, 1, @eventCompId, NULL),
+   (@option_group_id_act, 'Registro de evento',                 5, 'Event Registration',  NULL, 1, NULL, 5, 'Registro de evento online u offline',                                0, 1, 1, @eventCompId, NULL),
    (@option_group_id_act, 'Contribución',                       6, 'Contribution',        NULL, 1, NULL, 6, 'Contribución online u offline',                                      0, 1, 1, @contributeCompId, NULL),
-   (@option_group_id_act, 'Alta de socios/as',                  7, 'Membership Signup',   NULL, 1, NULL, 7, 'Registrarse en Membresía online y offline.',                                 0, 1, 1, @memberCompId, NULL),
-   (@option_group_id_act, 'Renovación de Membresía',                 8, 'Membership Renewal',  NULL, 1, NULL, 8, 'Renovación de Membresía online u offline.',                                0, 1, 1, @memberCompId, NULL),
+   (@option_group_id_act, 'Alta de socios / as',                  7, 'Membership Signup',   NULL, 1, NULL, 7, 'Registrarse en membresía online u offline.',                                 0, 1, 1, @memberCompId, NULL),
+   (@option_group_id_act, 'Renovación de membresía',                 8, 'Membership Renewal',  NULL, 1, NULL, 8, 'Renovación de membresía online u offline.',                                0, 1, 1, @memberCompId, NULL),
    (@option_group_id_act, 'Envíeselo a un amigo',                      9, 'Tell a Friend',       NULL, 1, NULL, 9, 'Enviar información sobre una campaña de contribución o un evento a un amigo.', 0, 1, 1, NULL, NULL),
-   (@option_group_id_act, 'Reconocimiento de Compromiso',              10, 'Pledge Acknowledgment',  NULL, 1, NULL, 10, 'Enviar Reconocimiento de Compromiso',                                     0, 1, 1, @pledgeCompId, NULL),
-   (@option_group_id_act, 'Recordatorio de Compromiso',                    11, 'Pledge Reminder',    NULL, 1, NULL, 11, 'Enviar Recordatorio de Compromiso',                                               0, 1, 1, @pledgeCompId, NULL),
+   (@option_group_id_act, 'Reconocimiento de compromiso',              10, 'Pledge Acknowledgment',  NULL, 1, NULL, 10, 'Enviar reconocimiento de compromiso',                                     0, 1, 1, @pledgeCompId, NULL),
+   (@option_group_id_act, 'Recordatorio de compromiso',                    11, 'Pledge Reminder',    NULL, 1, NULL, 11, 'Enviar recordatorio de compromiso',                                               0, 1, 1, @pledgeCompId, NULL),
    (@option_group_id_act, 'Correo electrónico entrante',                      12, 'Inbound Email',      NULL, 1, NULL, 12, 'Correo electrónico entrante.',                                                      0, 1, 1, NULL, NULL),
 
 -- Activity Types for case activities
@@ -4697,43 +4697,43 @@ VALUES
    (@option_group_id_act, 'Cambiar tipo de caso',   15, 'Change Case Type',   NULL, 0,  0, 15, '', 0, 0, 1, @caseCompId, NULL ),
    (@option_group_id_act, 'Cambiar estado del caso', 16, 'Change Case Status', NULL, 0,  0, 16, '', 0, 0, 1, @caseCompId, NULL ),
 
-   (@option_group_id_act, 'Recordatorio de Renovación de Membresía',        17, 'Membership Renewal Reminder',  NULL, 1, NULL, 17, 'recordatorio de renovación de membresía offline.',                      0, 1, 1, @memberCompId, NULL),
-   (@option_group_id_act, 'Modificar Fecha de Inicio de Caso',             18, 'Change Case Start Date',         NULL, 0,  0, 18, '', 0, 0, 1, @caseCompId, NULL ),
-   (@option_group_id_act, 'Correo Electrónico Masivo',                         19, 'Bulk Email',         NULL, 1, NULL, 19, 'Correo Electrónico Masivo Enviado.',                                                    0, 1, 1, NULL, NULL),
-   (@option_group_id_act, 'Asignar Rol de Caso',                   20, 'Assign Case Role', NULL,0, 0, 20, '', 0, 0, 1, @caseCompId, NULL),
-   (@option_group_id_act, 'Remover Rol de Caso',                   21, 'Remove Case Role', NULL,0, 0, 21, '', 0, 0, 1, @caseCompId, NULL),
-   (@option_group_id_act, 'Imprimir Carta PDF',                   22, 'Print PDF Letter',    NULL, 0, NULL, 22, 'Imprimir Carta PDF.',                                                  0, 1, 1, NULL, NULL),
-   (@option_group_id_act, 'Fundir Caso',                         23, 'Merge Case', NULL, 0,  NULL, 23, '', 0, 1, 1, @caseCompId, NULL ),
-   (@option_group_id_act, 'Reasignar Caso',                    24, 'Reassigned Case', NULL, 0,  NULL, 24, '', 0, 1, 1, @caseCompId, NULL ),
-   (@option_group_id_act, 'Enlace de Casos',                         25, 'Link Cases', NULL, 0,  NULL, 25, '', 0, 1, 1, @caseCompId, NULL ),
+   (@option_group_id_act, 'Recordatorio de renovación de membresía',        17, 'Membership Renewal Reminder',  NULL, 1, NULL, 17, 'recordatorio de renovación de membresía offline.',                      0, 1, 1, @memberCompId, NULL),
+   (@option_group_id_act, 'Modificar Fecha de inicio de caso',             18, 'Change Case Start Date',         NULL, 0,  0, 18, '', 0, 0, 1, @caseCompId, NULL ),
+   (@option_group_id_act, 'Correo electrónico masivo',                         19, 'Bulk Email',         NULL, 1, NULL, 19, 'Correo electrónico masivo enviado.',                                                    0, 1, 1, NULL, NULL),
+   (@option_group_id_act, 'Asignar rol de caso',                   20, 'Assign Case Role', NULL,0, 0, 20, '', 0, 0, 1, @caseCompId, NULL),
+   (@option_group_id_act, 'Remover rol de caso',                   21, 'Remove Case Role', NULL,0, 0, 21, '', 0, 0, 1, @caseCompId, NULL),
+   (@option_group_id_act, 'Imprimir carta PDF',                   22, 'Print PDF Letter',    NULL, 0, NULL, 22, 'Imprimir carta PDF.',                                                  0, 1, 1, NULL, NULL),
+   (@option_group_id_act, 'Unificar caso',                         23, 'Merge Case', NULL, 0,  NULL, 23, '', 0, 1, 1, @caseCompId, NULL ),
+   (@option_group_id_act, 'Caso reasignado',                    24, 'Reassigned Case', NULL, 0,  NULL, 24, '', 0, 1, 1, @caseCompId, NULL ),
+   (@option_group_id_act, 'Enlace de casos',                         25, 'Link Cases', NULL, 0,  NULL, 25, '', 0, 1, 1, @caseCompId, NULL ),
    (@option_group_id_act, 'Cambiar etiquetas de casos',                   26, 'Change Case Tags', NULL,0, 0, 26, '', 0, 1, 1, @caseCompId, NULL),
-   (@option_group_id_act, 'Añadir Cliente al Caso',                 27, 'Add Client To Case', NULL,0, 0, 26, '', 0, 1, 1, @caseCompId, NULL),
+   (@option_group_id_act, 'Añadir cliente al caso',                 27, 'Add Client To Case', NULL,0, 0, 26, '', 0, 1, 1, @caseCompId, NULL),
 
 -- Activity Types for CiviCampaign
    (@option_group_id_act, 'Encuesta',                             28, 'Survey', NULL,0, 0, 27, '', 0, 1, 1, @campaignCompId, NULL),
    (@option_group_id_act, 'Sondeo',                            29, 'Canvass', NULL,0, 0, 28, '', 0, 1, 1, @campaignCompId, NULL),
-   (@option_group_id_act, 'Teléfono de Banco',                          30, 'PhoneBank', NULL,0, 0, 29, '', 0, 1, 1, @campaignCompId, NULL),
+   (@option_group_id_act, 'Teléfono de banco',                          30, 'PhoneBank', NULL,0, 0, 29, '', 0, 1, 1, @campaignCompId, NULL),
    (@option_group_id_act, 'Recorrido',                           31, 'WalkList', NULL,0, 0, 30, '', 0, 1, 1, @campaignCompId, NULL),
-   (@option_group_id_act, 'Firma de Petición',                           32, 'Petition', NULL,0, 0, 31, '', 0, 1, 1, @campaignCompId, NULL),
+   (@option_group_id_act, 'Firma de petición',                           32, 'Petition', NULL,0, 0, 31, '', 0, 1, 1, @campaignCompId, NULL),
    (@option_group_id_act, 'SMS masivo',                           34, 'Mass SMS',         NULL, 1, NULL, 34, 'SMS masivo',                                                    0, 1, 1, NULL, NULL),
 
 -- Activity Types for CiviCampaign CiviCase
-   (@option_group_id_act, 'Cambiar Datos Personalizados',                 33, 'Change Custom Data', NULL,0, 0, 33, '', 0, 1, 1, @caseCompId, NULL),
+   (@option_group_id_act, 'Cambiar datos personalizados',                 33, 'Change Custom Data', NULL,0, 0, 33, '', 0, 1, 1, @caseCompId, NULL),
 
 -- Additional Membership-related Activity Types
-   (@option_group_id_act, 'Cambiar Estado de Membresía',           35, 'Change Membership Status',   NULL, 1, NULL, 35, 'Cambiar Estado de Membresía.',                         0, 1, 1, @memberCompId, NULL),
-   (@option_group_id_act, 'Cambiar Tipo de Membresía',             36, 'Change Membership Type',     NULL, 1, NULL, 36, 'Cambiar Tipo de Membresía.',                           0, 1, 1, @memberCompId, NULL),
+   (@option_group_id_act, 'Cambiar estado de membresía',           35, 'Change Membership Status',   NULL, 1, NULL, 35, 'Cambiar estado de membresía.',                         0, 1, 1, @memberCompId, NULL),
+   (@option_group_id_act, 'Cambiar tipo de membresía',             36, 'Change Membership Type',     NULL, 1, NULL, 36, 'Cambiar tipo de membresía.',                           0, 1, 1, @memberCompId, NULL),
 
-   (@option_group_id_act, 'Cancelar Contribución Periódica',      37, 'Cancel Recurring Contribution', NULL,1, 0, 37, '', 0, 1, 1, NULL, NULL),
-   (@option_group_id_act, 'Actualizar Detalles de Facturación de Contribución Periódica',      38, 'Update Recurring Contribution Billing Details', NULL,1, 0, 38, '', 0, 1, 1, NULL, NULL),
-   (@option_group_id_act, 'Actualizar Contribución Periódica',      39, 'Update Recurring Contribution', NULL,1, 0, 39, '', 0, 1, 1, NULL, NULL),
+   (@option_group_id_act, 'Cancelar contribución periódica',      37, 'Cancel Recurring Contribution', NULL,1, 0, 37, '', 0, 1, 1, NULL, NULL),
+   (@option_group_id_act, 'Actualizar detalles de facturación de contribución periódica',      38, 'Update Recurring Contribution Billing Details', NULL,1, 0, 38, '', 0, 1, 1, NULL, NULL),
+   (@option_group_id_act, 'Actualizar contribución periódica',      39, 'Update Recurring Contribution', NULL,1, 0, 39, '', 0, 1, 1, NULL, NULL),
 
-   (@option_group_id_act, 'Recordatorio Enviado',      		      40, 'Reminder Sent', NULL, 1, 0, 40, '', 0, 1, 1, NULL, NULL),
+   (@option_group_id_act, 'Recordatorio enviado',      		      40, 'Reminder Sent', NULL, 1, 0, 40, '', 0, 1, 1, NULL, NULL),
 
  -- Activity Types for Financial Transactions Batch
    (@option_group_id_act, 'Export Accounting Batch', 41, 'Export Accounting Batch', NULL, 1, 0, 41, 'Export Accounting Batch', 0, 1, 1, @contributeCompId, NULL),
    (@option_group_id_act, 'Create Batch', 42, 'Create Batch', NULL, 1, 0, 42, 'Create Batch', 0, 1, 1, @contributeCompId, NULL),
-   (@option_group_id_act, 'Editar Lote', 43, 'Edit Batch', NULL, 1, 0, 43, 'Edit Batch', 0, 1, 1, @contributeCompId, NULL),
+   (@option_group_id_act, 'Editar lote', 43, 'Edit Batch', NULL, 1, 0, 43, 'Edit Batch', 0, 1, 1, @contributeCompId, NULL),
 
    (@option_group_id_gender, 'Femenino',      1, 'Female',      NULL, 0, NULL, 1, NULL, 0, 0, 1, NULL, NULL),
    (@option_group_id_gender, 'Masculino',        2, 'Male',        NULL, 0, NULL, 2, NULL, 0, 0, 1, NULL, NULL),
@@ -4793,11 +4793,11 @@ VALUES
   (@option_group_id_pRole, 'Asistente',  1, 'Attendee',  NULL, 1, NULL, 1, NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_pRole, 'Voluntario/a', 2, 'Volunteer', NULL, 1, NULL, 2, NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_pRole, 'Anfitrión',      3, 'Host',      NULL, 1, NULL, 3, NULL, 0, 0, 1, NULL, NULL),
-  (@option_group_id_pRole, 'Ponente',   4, 'Speaker',   NULL, 1, NULL, 4, NULL, 0, 0, 1, NULL, NULL),
+  (@option_group_id_pRole, 'Disertante',   4, 'Speaker',   NULL, 1, NULL, 4, NULL, 0, 0, 1, NULL, NULL),
 
   (@option_group_id_etype, 'Conferencia', 1, 'Conference',  NULL, 0, NULL, 1, NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_etype, 'Exposición', 2, 'Exhibition',  NULL, 0, NULL, 2, NULL, 0, 0, 1, NULL, NULL),
-  (@option_group_id_etype, 'Recaudación de Fondos', 3, 'Fundraiser',  NULL, 0, NULL, 3, NULL, 0, 0, 1, NULL, NULL),
+  (@option_group_id_etype, 'Recaudador de fondos', 3, 'Fundraiser',  NULL, 0, NULL, 3, NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_etype, 'Reunión',    4, 'Meeting',     NULL, 0, NULL, 4, NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_etype, 'Desempeño',5, 'Performance', NULL, 0, NULL, 5, NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_etype, 'Taller',   6, 'Workshop',    NULL, 0, NULL, 6, NULL, 0, 0, 1, NULL, NULL),
@@ -4814,7 +4814,7 @@ VALUES
   (@option_group_id_cvOpt, 'Membresías'  ,   8, 'CiviMember', NULL, 0, NULL,  8,  NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_cvOpt, 'Eventos'       ,   9, 'CiviEvent', NULL, 0, NULL,  9,  NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_cvOpt, 'Casos'        ,  10, 'CiviCase', NULL, 0, NULL,  10, NULL, 0, 0, 1, NULL, NULL),
-  (@option_group_id_cvOpt, 'Subvención'       ,  11, 'CiviGrant', NULL, 0, NULL,  11, NULL, 0, 0, 1, NULL, NULL),
+  (@option_group_id_cvOpt, 'Donaciones'       ,  11, 'CiviGrant', NULL, 0, NULL,  11, NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_cvOpt, 'Promesas'      ,  13, 'CiviPledge', NULL, 0, NULL,  13, NULL, 0, 0, 1, NULL, NULL),
 
 
@@ -4859,7 +4859,7 @@ VALUES
   (@option_group_id_udOpt, 'Mis contactos / organizaciones', 5, 'Permissioned Orgs', NULL, 0, NULL, 5, NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_udOpt, 'Promesas'                    , 7, 'CiviPledge', NULL, 0, NULL, 7, NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_udOpt, 'Páginas de campañas personales'    , 8, 'PCP', NULL, 0, NULL, 8, NULL, 0, 0, 1, NULL, NULL),
-  (@option_group_id_udOpt, 'Actividades Asignadas'        , 9, 'Assigned Activities', NULL, 0, NULL, 9, NULL, 0, 0, 1, NULL, NULL),
+  (@option_group_id_udOpt, 'Actividades asignadas'        , 9, 'Assigned Activities', NULL, 0, NULL, 9, NULL, 0, 0, 1, NULL, NULL),
 
   (@option_group_id_acsOpt, 'Dirección de correo electrónico'   , 2, 'email'         , NULL, 0, NULL, 2, NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_acsOpt, 'Teléfono'           , 3, 'phone'         , NULL, 0, NULL, 3, NULL, 0, 0, 1, NULL, NULL),
@@ -4902,85 +4902,85 @@ VALUES
   (@option_group_id_honorTyp, 'En recuerdo de'       , 2, 'In Memory of'      , NULL, 0, NULL, 2, NULL, 0, 1, 1, NULL, NULL),
 
   (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_Sample'               , 1, 'CRM_Contact_Form_Search_Custom_Sample'      , NULL, 0, NULL, 1, 'Nombre y Estado de Familia', 0, 0, 1, NULL, NULL),
-  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_ContributionAggregate', 2, 'CRM_Contact_Form_Search_Custom_ContributionAggregate', NULL, 0, NULL, 2, 'Contribución Agregada', 0, 0, 1, NULL, NULL),
+  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_ContributionAggregate', 2, 'CRM_Contact_Form_Search_Custom_ContributionAggregate', NULL, 0, NULL, 2, 'Contribución agregada', 0, 0, 1, NULL, NULL),
   (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_Basic'                , 3, 'CRM_Contact_Form_Search_Custom_Basic'       , NULL, 0, NULL, 3, 'Búsqueda básica', 0, 0, 1, NULL, NULL),
-  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_Group'                , 4, 'CRM_Contact_Form_Search_Custom_Group'       , NULL, 0, NULL, 4, 'Incluir / Excluir de Busqueda', 0, 0, 1, NULL, NULL),
-  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_PostalMailing'        , 5, 'CRM_Contact_Form_Search_Custom_PostalMailing', NULL, 0, NULL, 5, 'Mailing postal', 0, 0, 1, NULL, NULL),
+  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_Group'                , 4, 'CRM_Contact_Form_Search_Custom_Group'       , NULL, 0, NULL, 4, 'Incluir / excluir búsqueda', 0, 0, 1, NULL, NULL),
+  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_PostalMailing'        , 5, 'CRM_Contact_Form_Search_Custom_PostalMailing', NULL, 0, NULL, 5, 'Envío postal', 0, 0, 1, NULL, NULL),
   (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_Proximity'            , 6, 'CRM_Contact_Form_Search_Custom_Proximity', NULL, 0, NULL, 6, 'Búsqueda de proximidad', 0, 0, 1, NULL, NULL),
-  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_EventAggregate'       , 7, 'CRM_Contact_Form_Search_Custom_EventAggregate', NULL, 0, NULL, 7, 'Evento Agregado', 0, 0, 1, NULL, NULL),
-  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_ActivitySearch'       , 8, 'CRM_Contact_Form_Search_Custom_ActivitySearch', NULL, 0, NULL, 8, 'Búsqueda de actividades', 0, 0, 1, NULL, NULL),
-  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_PriceSet'             , 9, 'CRM_Contact_Form_Search_Custom_PriceSet', NULL, 0, NULL, 9, 'Detalles de Grupo de Precio para Participantes del Evento', 0, 0, 1, NULL, NULL),
+  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_EventAggregate'       , 7, 'CRM_Contact_Form_Search_Custom_EventAggregate', NULL, 0, NULL, 7, 'Evento agregado', 0, 0, 1, NULL, NULL),
+  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_ActivitySearch'       , 8, 'CRM_Contact_Form_Search_Custom_ActivitySearch', NULL, 0, NULL, 8, 'Búsqueda de actividad', 0, 0, 1, NULL, NULL),
+  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_PriceSet'             , 9, 'CRM_Contact_Form_Search_Custom_PriceSet', NULL, 0, NULL, 9, 'Detalles del listado de precios para participantes del evento', 0, 0, 1, NULL, NULL),
   (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_ZipCodeRange'         ,10, 'CRM_Contact_Form_Search_Custom_ZipCodeRange', NULL, 0, NULL, 10, 'Rango de códigos postales', 0, 0, 1, NULL, NULL),
-  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_DateAdded'            ,11, 'CRM_Contact_Form_Search_Custom_DateAdded', NULL, 0, NULL, 11, 'Fecha de creación en CiviCRM', 0, 0, 1, NULL, NULL),
-  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_MultipleValues'       ,12, 'CRM_Contact_Form_Search_Custom_MultipleValues', NULL, 0, NULL, 12, 'Listado de Valores Múltiples de Grupo Personalizado', 0, 0, 1, NULL, NULL),
+  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_DateAdded'            ,11, 'CRM_Contact_Form_Search_Custom_DateAdded', NULL, 0, NULL, 11, 'Fecha agregada a CiviCRM', 0, 0, 1, NULL, NULL),
+  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_MultipleValues'       ,12, 'CRM_Contact_Form_Search_Custom_MultipleValues', NULL, 0, NULL, 12, 'Listado de valores múltiples de grupo personalizado', 0, 0, 1, NULL, NULL),
   (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_ContribSYBNT'         ,13, 'CRM_Contact_Form_Search_Custom_ContribSYBNT', NULL, 0, NULL, 13, 'Contribuciones hechas en el Año X y no en el Año Y', 0, 0, 1, NULL, NULL),
-  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_TagContributions'     ,14, 'CRM_Contact_Form_Search_Custom_TagContributions', NULL, 0, NULL, 14, 'Buscar contribuciones por etiqueta', 0, 0, 1, NULL, NULL),
+  (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_TagContributions'     ,14, 'CRM_Contact_Form_Search_Custom_TagContributions', NULL, 0, NULL, 14, 'Buscar cantidades de contribuciones por etiqueta', 0, 0, 1, NULL, NULL),
   (@option_group_id_csearch , 'CRM_Contact_Form_Search_Custom_FullText'             ,15, 'CRM_Contact_Form_Search_Custom_FullText', NULL, 0, NULL, 15, 'Buscar texto completo', 0, 0, 1, NULL, NULL),
 
 -- report templates
-  (@option_group_id_report , 'Reporte de Contacto (Resumen)',            'contact/summary',                'CRM_Report_Form_Contact_Summary',                NULL, 0, NULL, 1,  'Provee una lista de información telefónica y de direcciones del registro de contacto en su sistema.', 0, 0, 1, NULL, NULL),
-  (@option_group_id_report , 'Reporte de Contacto (Detalle)',             'contact/detail',                 'CRM_Report_Form_Contact_Detail',                 NULL, 0, NULL, 2,  'Provee información relacionada al contacto sobre contribuciones, memebresía, eventos y actividades.',   0, 0, 1, NULL, NULL),
-  (@option_group_id_report , 'Informe de actividades',                         'activity',                       'CRM_Report_Form_Activity',                       NULL, 0, NULL, 3,  'Provee una lista de actividad de contacto, incluyendo estadísticas de actividad para uno/todos los contactos durante el rango de fecha dado (requerido)', 0, 0, 1, NULL, NULL),
-  (@option_group_id_report , 'Reporte de teléfonos y recorrido',                'walklist',                       'CRM_Report_Form_Walklist_Walklist',                       NULL, 0, NULL, 4,  'Provee un reporte detallado de la lista de telefono/recorrido para los contactos seleccionados', 0, 0, 0, NULL, NULL),
-  (@option_group_id_report , 'Reporte de Empleador Actual',                 'contact/currentEmployer',        'CRM_Report_Form_Contact_CurrentEmployer',        NULL, 0, NULL, 5,  'Provee una lista detallada de las relaciones entre empleador y empleado junto con detalles del empleo EJ Fecha de Ingreso', 0, 0, 1, NULL, NULL),
-  (@option_group_id_report , 'Reporte de Resumen de Contribución',             'contribute/summary',             'CRM_Report_Form_Contribute_Summary',             NULL, 0, NULL, 6,  'Groups and totals contributions by criteria including contact, time period, financial type, contributor location, etc.', 0, 0, 1, @contributeCompId, NULL),
-  (@option_group_id_report , 'Reporte de Detalle de Contribución',              'contribute/detail',              'CRM_Report_Form_Contribute_Detail',              NULL, 0, NULL, 7,  'Lists specific contributions by criteria including contact, time period, financial type, contributor location, etc. Contribution summary report points to this report for contribution details.', 0, 0, 1, @contributeCompId, NULL),
-  (@option_group_id_report , 'Repetir Reportes de Contribuciones',             'contribute/repeat',              'CRM_Report_Form_Contribute_Repeat',              NULL, 0, NULL, 8,  'Dado dos rangos de fechas, muestra los contactos que contribuyeron en ambos rangos con el monto de contribución correspondiente y el porcentaje de incremento / decremento respectivo', 0, 0, 1, @contributeCompId, NULL),
-  (@option_group_id_report , 'Contribuciones por Reporte de Organización',    'contribute/organizationSummary', 'CRM_Report_Form_Contribute_OrganizationSummary', NULL, 0, NULL, 9,  'Muestra una lista detallada de contribuciones agrupadas por organización, lo que incluye contribuciones realizadas por los empleados de la organización.', 0, 0, 1, @contributeCompId, NULL),
-  (@option_group_id_report , 'Contribuciones por Reporte de Familia',       'contribute/householdSummary',    'CRM_Report_Form_Contribute_HouseholdSummary',    NULL, 0, NULL, 10, 'Muestra una lista detallada de contribuciones agrupadas por familia, lo que incluye contribuciones realizadas por miembros de la familia.', 0, 0, 1, @contributeCompId, NULL),
-  (@option_group_id_report , 'Reporte de Principales Donantes',                       'contribute/topDonor',            'CRM_Report_Form_Contribute_TopDonor',            NULL, 0, NULL, 11, 'Provee una lista de los principales donantes durante un periodo de tiempo que usted define. Puede incluir tantos donantes como usted desee (por ejemplo, los principales 100 de sus donantes)', 0, 0, 1, @contributeCompId, NULL),
-  (@option_group_id_report , 'Reporte SYBUNT',                           'contribute/sybunt',              'CRM_Report_Form_Contribute_Sybunt',              NULL, 0, NULL, 12, 'SYBUNT incluye algunos año(s) pero no el presente año. Provee una lista de componentes que han donado alguna vez en la historia de tu organización pero que no han donado durante el periodo que especificado. ', 0, 0, 1, @contributeCompId, NULL),
-  (@option_group_id_report , 'Reporte LYBUNT',                           'contribute/lybunt',              'CRM_Report_Form_Contribute_Lybunt',              NULL, 0, NULL, 13, 'LYBUNT incluye el año anterior pero no el presente. Provee una lista de contribuyentes que donaron el año pasado pero que no donaron durante el periodo de tiempo especificado como año corriente.', 0, 0, 1, @contributeCompId, NULL),
-  (@option_group_id_report , 'Reporte de Crédito Soft.',                      'contribute/softcredit',          'CRM_Report_Form_Contribute_SoftCredit',          NULL, 0, NULL, 14, 'Muestra las contribuciones hechas por contactos que les han concedido el crédito por una contribución hecha por otros contactos.', 0, 0, 1,@contributeCompId, NULL),
-  (@option_group_id_report , 'Reporte de Membresía (Resumen)',             'member/summary',                 'CRM_Report_Form_Member_Summary',                 NULL, 0, NULL, 15, 'Provee un resumen de membresía por tipo y fecha de inscripción', 0, 0, 1, @memberCompId, NULL),
-  (@option_group_id_report , 'Reporte de Membresía (Detalle)',              'member/detail',                  'CRM_Report_Form_Member_Detail',                  NULL, 0, NULL, 16, 'Proporciona una lista de los miembros, junto con su estado  y los detalles de membresía (Fecha, Fecha de inicio, Fecha de finalización). También puede mostrar las contribuciones (pagos) asociados a cada membresía.', 0, 0, 1, @memberCompId, NULL),
-  (@option_group_id_report , 'Reporte de Membresía (Expirado)',              'member/lapse',                   'CRM_Report_Form_Member_Lapse',                   NULL, 0, NULL, 17, 'Provee una lista de las membresías que han expirado o lo harán antes de la fecha que usted especifique.', 0, 0, 1, @memberCompId, NULL),
-  (@option_group_id_report , 'Reporte de Participante a Evento (Lista)',         'event/participantListing',       'CRM_Report_Form_Event_ParticipantListing',       NULL, 0, NULL, 18, 'Provee listas de participantes para un evento.', 0, 0, 1, @eventCompId, NULL),
-  (@option_group_id_report , 'Reporte de Ingresos del Evento (Resumen)',           'event/summary',                  'CRM_Report_Form_Event_Summary',                  NULL, 0, NULL, 19, 'Provee una visión general de los ingresos del evento. Puede incluir información clave, como el ID del evento, el registro, asistencia, y los ingresos generados para ayudar a determinar el éxito de un evento.', 0, 0, 1, @eventCompId, NULL),
-  (@option_group_id_report , 'Reporte de Ingresos del Evento (Detalle)',            'event/income',                   'CRM_Report_Form_Event_Income',                   NULL, 0, NULL, 20, 'Lo ayuda a analizar los ingresos generados por un evento. Este reporte puede incluir detalles por tipo de participante, estado y métodos de pago.', 0, 0, 1, @eventCompId, NULL),
-  (@option_group_id_report , 'Reporte de Compromiso',                           'pledge/detail',                 'CRM_Report_Form_Pledge_Detail',                 NULL, 0, NULL, 21,   'Reporte de Compromiso', 0, 0, 1, @pledgeCompId, NULL),
-  (@option_group_id_report , 'Reporte de Compromisos no Pagos',             'pledge/pbnp',                    'CRM_Report_Form_Pledge_Pbnp',                    NULL, 0, NULL, 22, 'Reporte de Compromisos no Pagos', 0, 0, 1, @pledgeCompId, NULL),
-  (@option_group_id_report , 'Reporte de Relaciones',                     'contact/relationship',           'CRM_Report_Form_Contact_Relationship',           NULL, 0, NULL, 23, 'Reporte de Relaciones', 0, 0, 1, NULL, NULL),
-  (@option_group_id_report , 'Reporte de Resumen de Caso',                     'case/summary',                   'CRM_Report_Form_Case_Summary',                   NULL, 0, NULL, 24, 'Provee un resumen de los casos y su duración por rango de fechas, estado, miembros del personal y/o rol del caso.', 0, 0, 1, @caseCompId, NULL),
-  (@option_group_id_report , 'Reporte del Tiempo Invertido en el Caso',                  'case/timespent',                 'CRM_Report_Form_Case_TimeSpent',                 NULL, 0, NULL, 25, 'Agrega tiempo invertido en un caso y / o  o actividades no-caso a cada tipo de actividad y contacto.', 0, 0, 1, @caseCompId, NULL),
-  (@option_group_id_report , 'Reporte de la Demografía de Contacto',             'case/demographics',              'CRM_Report_Form_Case_Demographics',              NULL, 0, NULL, 26, 'Desglose demográfico para clientes - caso ( y / o contactos - no caso) en tu base de datos. Incluir campos de contacto. ', 0, 0, 1, @caseCompId, NULL),
-  (@option_group_id_report , 'Reporte de Bitacora de Base de Datos',                     'contact/log',                    'CRM_Report_Form_Contact_Log',                    NULL, 0, NULL, 27, 'Bitacora de contacto y registros de actividad creados o actualizados in un rango de tiempo dado.', 0, 0, 1, NULL, NULL),
-  (@option_group_id_report , 'Reporte de Actividad (Resumen)',               'activitySummary',                'CRM_Report_Form_ActivitySummary',                NULL, 0, NULL, 28, 'Muestra estadísticas de actividades por tipo/ fecha', 0, 0, 1, NULL, NULL),
-  (@option_group_id_report, 'Reporte de Transacciones de Contabilidad',          'contribute/bookkeeping',         'CRM_Report_Form_Contribute_Bookkeeping',         NULL, 0, 0, 29,    'Muestra el Reporte de Transacciones de Contabilidad', 0, 0, 1, 2, NULL),
-  (@option_group_id_report , 'Reporte de Beca (Detalle)', 'grant/detail', 'CRM_Report_Form_Grant_Detail', NULL, 0, 0, 30, 'Detalle de Reporte de Beca', 0, 0, 1, @grantCompId, NULL),
-  (@option_group_id_report, 'Reporte de Lista de Conteo de Participante', 'event/participantlist', 'CRM_Report_Form_Event_ParticipantListCount', NULL, 0, 0, 31, 'Muestra la Lista de Participante con el Conteo de Participante', 0, 0, 1, @eventCompId, NULL),
-  (@option_group_id_report, 'Reporte de Resumen de Conteo de Ingresos', 'event/incomesummary', 'CRM_Report_Form_Event_IncomeCountSummary', NULL, 0, 0, 32, 'Muestra el Resumen de Ingresos de este evento con el Conteo.', 0, 0, 1, @eventCompId, NULL),
-  (@option_group_id_report, 'Reporte de Detalles de Caso', 'case/detail', 'CRM_Report_Form_Case_Detail', NULL, 0, 0, 33, 'Detalles de Caso', 0, 0, 1, @caseCompId, NULL),
-  (@option_group_id_report, 'Reporte de Mail de Rebote', 'Mailing/bounce', 'CRM_Report_Form_Mailing_Bounce', NULL, 0, NULL, 34, 'Reporte de Rebote para mailings', 0, 0, 1, @mailCompId, NULL),
-  (@option_group_id_report, 'Reporte de Resumen del Mail', 'Mailing/summary', 'CRM_Report_Form_Mailing_Summary', NULL, 0, NULL, 35, 'Resumen de estadísticas para mailings', 0, 0, 1, @mailCompId, NULL),
-  (@option_group_id_report, 'Reporte de Mail Abierto', 'Mailing/opened', 'CRM_Report_Form_Mailing_Opened', NULL, 0, NULL, 36, 'Mostrar contactos que abren los emails desde un mailing', 0, 0, 1, @mailCompId, NULL),
-  (@option_group_id_report, 'Reporte de Enlaces visitados por Correo', 'Mailing/clicks', 'CRM_Report_Form_Mailing_Clicks', NULL, 0, NULL, 37, 'Mostrar clics de cada correo', 0, 0, 1, @mailCompId, NULL),
-  (@option_group_id_report, 'Informe de Registro de Contactos (Resumen)', 'logging/contact/summary', 'CRM_Report_Form_Contact_LoggingSummary', NULL, 0, NULL, 38, 'Reporte de modificacion de contacto para la infraestructura de bitacora (Resumen).', 0, 0, 0, NULL, NULL),
-  (@option_group_id_report, 'Informe de Registro de Contactos (Detalle)', 'logging/contact/detail', 'CRM_Report_Form_Contact_LoggingDetail', NULL, 0, NULL, 39, 'Reporte de modificación de contacto para la infraestructura de bitacoras (detalle).', 0, 0, 0, NULL, NULL),
-  (@option_group_id_report, 'Reporte historial de Contribución (Resumen)', 'logging/contribute/summary', 'CRM_Report_Form_Contribute_LoggingSummary', NULL, 0, NULL, 40, 'Reporte de modificación de contribuciones para la infraestructura de bitacora (Resumen).', 0, 0, 0, @contributeCompId, NULL),
-  (@option_group_id_report, 'Reporte historial de Contribución (Detalle)', 'logging/contribute/detail', 'CRM_Report_Form_Contribute_LoggingDetail', NULL, 0, NULL, 41, 'Reporte de modificación de contribuciones para la infraestructura de bitacora (Detalle).', 0, 0, 0, @contributeCompId, NULL),
-  (@option_group_id_report, 'Reporte de Beca (Estadísticas)', 'grant/statistics', 'CRM_Report_Form_Grant_Statistics', NULL, 0, NULL, 42, 'Mostrar estadísticas para Becas.', 0, 0, 1, @grantCompId, NULL),
-  (@option_group_id_report, 'Reporte de Encuesta (Detalle)',    'survey/detail', 'CRM_Report_Form_Campaign_SurveyDetails',  NULL, 0, NULL, 43, 'Reporte detallado de planos, llamadas a bancos, listas de recorrido u otras encuestas.', 0, 0, 1, @campaignCompId, NULL),
-  (@option_group_id_report, 'Reporte de la Página de Campaña Personal', 'contribute/pcp', 'CRM_Report_Form_Contribute_PCP', NULL, 0, NULL, 44, 'Resume las cantidades recolectadas y el numero de contribuciones por cada Página de Campaña Personal.', 0, 0, 1, @contributeCompId, NULL),
-  (@option_group_id_report , 'Reporte de Resumen de Compromiso', 'pledge/summary', 'CRM_Report_Form_Pledge_Summary', NULL, 0, NULL, 45, 'Resume las promesas, incluyendo el monto prometido, estado de la promesa, siguiente fecha de pago, hoja de balance, total pagado, etc.', 0, 0, 1, @pledgeCompId, NULL),
-  (@option_group_id_report , 'Contribution Aggregate by Relationship',                   'contribute/history',              'CRM_Report_Form_Contribute_History',              NULL, 0, NULL, 46,  'Lista el historial de donación de un contacto, agrupado por año, asi como las contribuciones atribuidas a alguno de sus contactos de referencia. ', 0, 0, 1, @contributeCompId, NULL),
-  (@option_group_id_report,  'Reporte de Detalle de Mail',                                            'mailing/detail',     'CRM_Report_Form_Mailing_Detail',          NULL, 0, NULL, 47,  'Provee reportes de intentos y exitos de: Envios, Dadas de Baja, Opciones de confirmación, Respuestas y Reenvios.',   0, 0, 1, @mailCompId, NULL),
-  (@option_group_id_report, 'Detalles de Contribución y Membresía', 'member/contributionDetail', 'CRM_Report_Form_Member_ContributionDetail', NULL, 0, NULL, 48, 'Detalles de las contribuciones para cada tipo de contribución, más información de las memebresías asociadas para contribuciones las cuales estan registradas como pago por membresía.', 0, 0, 1, @memberCompId, NULL),
+  (@option_group_id_report , 'Reporte de contacto (Resumen)',            'contact/summary',                'CRM_Report_Form_Contact_Summary',                NULL, 0, NULL, 1,  'Provee una lista de información telefónica y de direcciones del registro de contacto en su sistema.', 0, 0, 1, NULL, NULL),
+  (@option_group_id_report , 'Reporte de contacto (Detalle)',             'contact/detail',                 'CRM_Report_Form_Contact_Detail',                 NULL, 0, NULL, 2,  'Provee información relacionada al contacto sobre contribuciones, membresías, eventos y actividades.',   0, 0, 1, NULL, NULL),
+  (@option_group_id_report , 'Informe de actividades',                         'activity',                       'CRM_Report_Form_Activity',                       NULL, 0, NULL, 3,  'Provee una lista de actividad de contacto, incluyendo estadísticas de actividad para uno / todos los contactos durante el rango de fecha dado (requerido)', 0, 0, 1, NULL, NULL),
+  (@option_group_id_report , 'Reporte de teléfonos y recorrido',                'walklist',                       'CRM_Report_Form_Walklist_Walklist',                       NULL, 0, NULL, 4,  'Provee un reporte detallado de la lista su teléfono / recorrido para los contactos seleccionados', 0, 0, 0, NULL, NULL),
+  (@option_group_id_report , 'Reporte de la empresa actual',                 'contact/currentEmployer',        'CRM_Report_Form_Contact_CurrentEmployer',        NULL, 0, NULL, 5,  'Provee una lista detallada de las relaciones entre empresa y empleado junto con detalles del empleo EJ Fecha de ingreso', 0, 0, 1, NULL, NULL),
+  (@option_group_id_report , 'Resumen sumario de contribución',             'contribute/summary',             'CRM_Report_Form_Contribute_Summary',             NULL, 0, NULL, 6,  'Groups and totals contributions by criteria including contact, time period, financial type, contributor location, etc.', 0, 0, 1, @contributeCompId, NULL),
+  (@option_group_id_report , 'Resumen detallado de contribución',              'contribute/detail',              'CRM_Report_Form_Contribute_Detail',              NULL, 0, NULL, 7,  'Lists specific contributions by criteria including contact, time period, financial type, contributor location, etc. Contribution summary report points to this report for contribution details.', 0, 0, 1, @contributeCompId, NULL),
+  (@option_group_id_report , 'Repetir resumen de contribuciones',             'contribute/repeat',              'CRM_Report_Form_Contribute_Repeat',              NULL, 0, NULL, 8,  'Dados dos rangos de fechas, muestra los contactos que contribuyeron en ambos rangos con el monto de contribución en cada uno y el porcentaje de incremento / decremento respectivo', 0, 0, 1, @contributeCompId, NULL),
+  (@option_group_id_report , 'Resumen de contribuciones por organización',    'contribute/organizationSummary', 'CRM_Report_Form_Contribute_OrganizationSummary', NULL, 0, NULL, 9,  'Muestra una lista detallada de contribuciones agrupadas por organización, incluyendo contribuciones realizadas por los empleados de la organización.', 0, 0, 1, @contributeCompId, NULL),
+  (@option_group_id_report , 'Resumen de contribuciones por familia',       'contribute/householdSummary',    'CRM_Report_Form_Contribute_HouseholdSummary',    NULL, 0, NULL, 10, 'Muestra una lista detallada de contribuciones agrupadas por familia, incluyendo contribuciones realizadas por miembros de la familia.', 0, 0, 1, @contributeCompId, NULL),
+  (@option_group_id_report , 'Informe de principales donantes',                       'contribute/topDonor',            'CRM_Report_Form_Contribute_TopDonor',            NULL, 0, NULL, 11, 'Provee una lista de los principales donantes durante un periodo de tiempo que usted define. Puede incluir tantos donantes como usted desee (P ej. los principales 100 de sus donantes).', 0, 0, 1, @contributeCompId, NULL),
+  (@option_group_id_report , 'Informe SYBUNT',                           'contribute/sybunt',              'CRM_Report_Form_Contribute_Sybunt',              NULL, 0, NULL, 12, 'SYBUNT significa algunos año(s) pero no el presente año. Provee una lista de contactos que han donado alguna vez en la historia de su organización pero que no han donado durante el periodo que Usted ha especificado. ', 0, 0, 1, @contributeCompId, NULL),
+  (@option_group_id_report , 'Informe LYBUNT',                           'contribute/lybunt',              'CRM_Report_Form_Contribute_Lybunt',              NULL, 0, NULL, 13, 'LYBUNT significa el año anterior pero no el presente. Provee una lista de contactos que donaron el año pasado pero que no donaron durante el año especificado como corriente.', 0, 0, 1, @contributeCompId, NULL),
+  (@option_group_id_report , 'Informe de crédito blando',                      'contribute/softcredit',          'CRM_Report_Form_Contribute_SoftCredit',          NULL, 0, NULL, 14, 'Muestra las contribuciones hechas por contactos que se han acreditado a otros contactos.', 0, 0, 1,@contributeCompId, NULL),
+  (@option_group_id_report , 'Reporte de membresía (Resumen)',             'member/summary',                 'CRM_Report_Form_Member_Summary',                 NULL, 0, NULL, 15, 'Provee un resumen de membresía por tipo y fecha de inscripción', 0, 0, 1, @memberCompId, NULL),
+  (@option_group_id_report , 'Informe de membresía (Detalle)',              'member/detail',                  'CRM_Report_Form_Member_Detail',                  NULL, 0, NULL, 16, 'Proporciona una lista de miembros, junto con su estado y detalles de membresía (Fecha, fecha de inicio, fecha de finalización). También puede mostrar las contribuciones (pagos) asociados a cada membresía.', 0, 0, 1, @memberCompId, NULL),
+  (@option_group_id_report , 'Informe de membresía (Expirado)',              'member/lapse',                   'CRM_Report_Form_Member_Lapse',                   NULL, 0, NULL, 17, 'Provee una lista de las membresías que han expirado o lo harán antes de la fecha que usted especifique.', 0, 0, 1, @memberCompId, NULL),
+  (@option_group_id_report , 'Informe de participante a evento (Lista)',         'event/participantListing',       'CRM_Report_Form_Event_ParticipantListing',       NULL, 0, NULL, 18, 'Provee listas de participantes para un evento.', 0, 0, 1, @eventCompId, NULL),
+  (@option_group_id_report , 'Informe de ingresos del evento (Resumen)',           'event/summary',                  'CRM_Report_Form_Event_Summary',                  NULL, 0, NULL, 19, 'Provee una visión general de los ingresos del evento. Puede incluir información clave, como el identificador del evento, el registro, asistencia, y los ingresos generados para ayudar a determinar el éxito de un evento.', 0, 0, 1, @eventCompId, NULL),
+  (@option_group_id_report , 'Informe de ingresos del evento (Detalle)',            'event/income',                   'CRM_Report_Form_Event_Income',                   NULL, 0, NULL, 20, 'Lo ayuda a analizar los ingresos generados por un evento. El reporte puede incluir detalles por tipo de participante, estado y métodos de pago.', 0, 0, 1, @eventCompId, NULL),
+  (@option_group_id_report , 'Informe de compromiso',                           'pledge/detail',                 'CRM_Report_Form_Pledge_Detail',                 NULL, 0, NULL, 21,   'Informe de compromiso', 0, 0, 1, @pledgeCompId, NULL),
+  (@option_group_id_report , 'Informe de compromisos no pagos',             'pledge/pbnp',                    'CRM_Report_Form_Pledge_Pbnp',                    NULL, 0, NULL, 22, 'Informe de compromisos no pagos', 0, 0, 1, @pledgeCompId, NULL),
+  (@option_group_id_report , 'Informe de relaciones',                     'contact/relationship',           'CRM_Report_Form_Contact_Relationship',           NULL, 0, NULL, 23, 'Informe de relaciones', 0, 0, 1, NULL, NULL),
+  (@option_group_id_report , 'Informe resumen de caso',                     'case/summary',                   'CRM_Report_Form_Case_Summary',                   NULL, 0, NULL, 24, 'Provee un resumen de los casos y su duración por rango de fechas, estado, miembros del personal y / o rol del caso.', 0, 0, 1, @caseCompId, NULL),
+  (@option_group_id_report , 'Informe del tiempo invertido en el caso',                  'case/timespent',                 'CRM_Report_Form_Case_TimeSpent',                 NULL, 0, NULL, 25, 'Agrega tiempo invertido en un caso y / o  actividades no-caso por tipo de actividad y contacto.', 0, 0, 1, @caseCompId, NULL),
+  (@option_group_id_report , 'Informe de la demografía de contacto',             'case/demographics',              'CRM_Report_Form_Case_Demographics',              NULL, 0, NULL, 26, 'Desglose demográfico para clientes - caso ( y / o contactos - no caso) en su base de datos. Incluir campos de contacto. ', 0, 0, 1, @caseCompId, NULL),
+  (@option_group_id_report , 'Informe de bitácora de base de datos',                     'contact/log',                    'CRM_Report_Form_Contact_Log',                    NULL, 0, NULL, 27, 'Bitácora de contacto y registros de actividad creados o actualizados en un rango de tiempo dado.', 0, 0, 1, NULL, NULL),
+  (@option_group_id_report , 'Informe de actividad (Resumen)',               'activitySummary',                'CRM_Report_Form_ActivitySummary',                NULL, 0, NULL, 28, 'Muestra estadísticas de actividad por tipo / fecha', 0, 0, 1, NULL, NULL),
+  (@option_group_id_report, 'Informe de transacciones de contabilidad',          'contribute/bookkeeping',         'CRM_Report_Form_Contribute_Bookkeeping',         NULL, 0, 0, 29,    'Muestra el informe de transacciones de contabilidad', 0, 0, 1, 2, NULL),
+  (@option_group_id_report , 'Informe de donaciones (Detalle)', 'grant/detail', 'CRM_Report_Form_Grant_Detail', NULL, 0, 0, 30, 'Detalle de informe de donaciones ', 0, 0, 1, @grantCompId, NULL),
+  (@option_group_id_report, 'Informe de cantidad de lista de participante', 'event/participantlist', 'CRM_Report_Form_Event_ParticipantListCount', NULL, 0, 0, 31, 'Muestra la lista de participante con la cantidad de participante', 0, 0, 1, @eventCompId, NULL),
+  (@option_group_id_report, 'Informe resumen de cantidad de ingresos', 'event/incomesummary', 'CRM_Report_Form_Event_IncomeCountSummary', NULL, 0, 0, 32, 'Muestra el resumen de ingresos de este evento con la cantidad', 0, 0, 1, @eventCompId, NULL),
+  (@option_group_id_report, 'Informe de detalles de caso', 'case/detail', 'CRM_Report_Form_Case_Detail', NULL, 0, 0, 33, 'Detalles de caso', 0, 0, 1, @caseCompId, NULL),
+  (@option_group_id_report, 'Informe de correos rechazados', 'Mailing/bounce', 'CRM_Report_Form_Mailing_Bounce', NULL, 0, NULL, 34, 'Informe de rechazos para correos', 0, 0, 1, @mailCompId, NULL),
+  (@option_group_id_report, 'Informe resumen de correo', 'Mailing/summary', 'CRM_Report_Form_Mailing_Summary', NULL, 0, NULL, 35, 'Resumen de estadísticas para correos', 0, 0, 1, @mailCompId, NULL),
+  (@option_group_id_report, 'Informe de correos abiertos', 'Mailing/opened', 'CRM_Report_Form_Mailing_Opened', NULL, 0, NULL, 36, 'Mostrar contactos que abren los correos electrónicos desde un correo', 0, 0, 1, @mailCompId, NULL),
+  (@option_group_id_report, 'Informe de enlaces visitados por correo', 'Mailing/clicks', 'CRM_Report_Form_Mailing_Clicks', NULL, 0, NULL, 37, 'Mostrar clics de cada correo', 0, 0, 1, @mailCompId, NULL),
+  (@option_group_id_report, 'Informe de registro de contactos (Resumen)', 'logging/contact/summary', 'CRM_Report_Form_Contact_LoggingSummary', NULL, 0, NULL, 38, 'Informe de modificación de contacto para la infraestructura de bitácora (Resumen).', 0, 0, 0, NULL, NULL),
+  (@option_group_id_report, 'Informe de registro de contactos (Detalle)', 'logging/contact/detail', 'CRM_Report_Form_Contact_LoggingDetail', NULL, 0, NULL, 39, 'Reporte de modificación de contacto para la infraestructura de bitácoras (detalle).', 0, 0, 0, NULL, NULL),
+  (@option_group_id_report, 'Reporte de registros de contribución (Resumen)', 'logging/contribute/summary', 'CRM_Report_Form_Contribute_LoggingSummary', NULL, 0, NULL, 40, 'Reporte de modificación de contribuciones para la infraestructura de registros (Resumen).', 0, 0, 0, @contributeCompId, NULL),
+  (@option_group_id_report, 'Reporte de registros de contribución (Detalle)', 'logging/contribute/detail', 'CRM_Report_Form_Contribute_LoggingDetail', NULL, 0, NULL, 41, 'Reporte de modificación de contribuciones para la infraestructura de registros (Detalle).', 0, 0, 0, @contributeCompId, NULL),
+  (@option_group_id_report, 'Reporte de donación (Estadísticas)', 'grant/statistics', 'CRM_Report_Form_Grant_Statistics', NULL, 0, NULL, 42, 'Mostrar estadísticas para donaciones.', 0, 0, 1, @grantCompId, NULL),
+  (@option_group_id_report, 'Reporte de encuesta (Detalle)',    'survey/detail', 'CRM_Report_Form_Campaign_SurveyDetails',  NULL, 0, NULL, 43, 'Reporte detallado de prospectos, llamadas a bancos, listas de recorrido u otras encuestas.', 0, 0, 1, @campaignCompId, NULL),
+  (@option_group_id_report, 'Reporte de la página de campaña personal', 'contribute/pcp', 'CRM_Report_Form_Contribute_PCP', NULL, 0, NULL, 44, 'Resume las cantidades recolectadas y el numero de contribuyentes por cada página de campaña personal.', 0, 0, 1, @contributeCompId, NULL),
+  (@option_group_id_report , 'Reporte de resumen de compromiso', 'pledge/summary', 'CRM_Report_Form_Pledge_Summary', NULL, 0, NULL, 45, 'Resume las promesas, incluyendo el monto prometido, estado de la promesa, siguiente fecha de pago, balance restante, total pagado, etc.', 0, 0, 1, @pledgeCompId, NULL),
+  (@option_group_id_report , 'Contribution Aggregate by Relationship',                   'contribute/history',              'CRM_Report_Form_Contribute_History',              NULL, 0, NULL, 46,  'Liste el historial de donación de contactos, agrupado por año, asi como las contribuciones atribuidas a contactos relativos a esos contactos. ', 0, 0, 1, @contributeCompId, NULL),
+  (@option_group_id_report,  'Reporte de detalle de correo',                                            'mailing/detail',     'CRM_Report_Form_Mailing_Detail',          NULL, 0, NULL, 47,  'Provee reportes de envíos intentados y cumplidos exitósamente, bajas, confirmaciones, respuestas y reenvios.',   0, 0, 1, @mailCompId, NULL),
+  (@option_group_id_report, 'Detalles de contribución y membresía', 'member/contributionDetail', 'CRM_Report_Form_Member_ContributionDetail', NULL, 0, NULL, 48, 'Detalles de contribuciones por tipo de contribución, más información de membresías asociadas a contribuciones registradas como pagos por membresías.', 0, 0, 1, @memberCompId, NULL),
 
   (@option_group_id_acs, 'Programado',  1, 'Scheduled',  NULL, 0, 1,    1, NULL, 0, 1, 1, NULL, NULL),
   (@option_group_id_acs, 'Completo',  2, 'Completed',  NULL, 0, NULL, 2, NULL, 0, 1, 1, NULL, NULL),
   (@option_group_id_acs, 'Cancelado',  3, 'Cancelled',  NULL, 0, NULL, 3, NULL, 0, 1, 1, NULL, NULL),
   (@option_group_id_acs, 'Dejar mensaje', 4, 'Left Message', NULL, 0, NULL, 4, NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_acs, 'Inalcanzable', 5, 'Unreachable', NULL, 0, NULL, 5, NULL, 0, 0, 1, NULL, NULL),
-  (@option_group_id_acs, 'Opcional',  6, 'Not Required',  NULL, 0, NULL, 6, NULL, 0, 0, 1, NULL, NULL),
+  (@option_group_id_acs, 'No requerido',  6, 'Not Required',  NULL, 0, NULL, 6, NULL, 0, 0, 1, NULL, NULL),
 
   (@option_group_id_cas, 'En Marcha' , 1, 'Open'  ,  'Opened', 0, 1,    1, NULL, 0, 1, 1, NULL, NULL),
   (@option_group_id_cas, 'Resuelto', 2, 'Closed',  'Closed', 0, NULL, 2, NULL, 0, 1, 1, NULL, NULL),
   (@option_group_id_cas, 'Urgente'  , 3, 'Urgent',  'Opened', 0, NULL, 3, NULL, 0, 0, 1, NULL, NULL),
 
   (@option_group_id_pl, 'Sólo nombre'     , 1, 'Name Only'      ,  NULL, 0, 0, 1, 'CRM_Event_Page_ParticipantListing_Name', 0, 1, 1, NULL, NULL),
-  (@option_group_id_pl, 'Nombre y Correo Electrónico', 2, 'Name and Email' ,  NULL, 0, 0, 2, 'CRM_Event_Page_ParticipantListing_NameAndEmail', 0, 1, 1, NULL, NULL),
-  (@option_group_id_pl, 'Nombre, Estado y Fecha de Registro' , 3, 'Name, Status and Register Date',  NULL, 0, 0, 3, 'CRM_Event_Page_ParticipantListing_NameStatusAndDate', 0, 1, 1, NULL, NULL),
+  (@option_group_id_pl, 'Nombre y correo electrónico', 2, 'Name and Email' ,  NULL, 0, 0, 2, 'CRM_Event_Page_ParticipantListing_NameAndEmail', 0, 1, 1, NULL, NULL),
+  (@option_group_id_pl, 'Nombre, estado y fecha de registro' , 3, 'Name, Status and Register Date',  NULL, 0, 0, 3, 'CRM_Event_Page_ParticipantListing_NameStatusAndDate', 0, 1, 1, NULL, NULL),
 
   (@option_group_id_sfe, 'jpg'      ,  1, NULL   ,  NULL, 0, 0,  1, NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_sfe, 'jpeg'     ,  2, NULL   ,  NULL, 0, 0,  2, NULL, 0, 0, 1, NULL, NULL),
@@ -5003,18 +5003,18 @@ VALUES
   (@option_group_id_we, 'Drupal Default Editor',  4, NULL, NULL, 0, NULL, 4, NULL, 0, 1, 1, NULL, NULL),
 
   (@option_group_id_mt, 'Generador de búsquedas',      1, 'Search Builder',      NULL, 0, 0,    1, NULL, 0, 1, 1, NULL, NULL),
-  (@option_group_id_mt, 'Importar Contacto',      2, 'Import Contact',      NULL, 0, 0,    2, NULL, 0, 1, 1, NULL, NULL),
-  (@option_group_id_mt, 'Importar Actividad',     3, 'Import Activity',     NULL, 0, 0,    3, NULL, 0, 1, 1, NULL, NULL),
-  (@option_group_id_mt, 'Importar Contribución', 4, 'Import Contribution', NULL, 0, 0,    4, NULL, 0, 1, 1, NULL, NULL),
-  (@option_group_id_mt, 'Importar Membresía',   5, 'Import Membership',   NULL, 0, 0,    5, NULL, 0, 1, 1, NULL, NULL),
+  (@option_group_id_mt, 'Importar contacto',      2, 'Import Contact',      NULL, 0, 0,    2, NULL, 0, 1, 1, NULL, NULL),
+  (@option_group_id_mt, 'Importar actividad',     3, 'Import Activity',     NULL, 0, 0,    3, NULL, 0, 1, 1, NULL, NULL),
+  (@option_group_id_mt, 'Importar contribución', 4, 'Import Contribution', NULL, 0, 0,    4, NULL, 0, 1, 1, NULL, NULL),
+  (@option_group_id_mt, 'Importar membresía',   5, 'Import Membership',   NULL, 0, 0,    5, NULL, 0, 1, 1, NULL, NULL),
   (@option_group_id_mt, 'Importar participante',  6, 'Import Participant',  NULL, 0, 0,    6, NULL, 0, 1, 1, NULL, NULL),
   (@option_group_id_mt, 'Exportar contacto',      7, 'Export Contact',      NULL, 0, 0,    7, NULL, 0, 1, 1, NULL, NULL),
   (@option_group_id_mt, 'Exportar contribución', 8, 'Export Contribution', NULL, 0, 0,    8, NULL, 0, 1, 1, NULL, NULL),
-  (@option_group_id_mt, 'Exportar Membresía',   9, 'Export Membership',   NULL, 0, 0,    9, NULL, 0, 1, 1, NULL, NULL),
+  (@option_group_id_mt, 'Exportar membresía',   9, 'Export Membership',   NULL, 0, 0,    9, NULL, 0, 1, 1, NULL, NULL),
   (@option_group_id_mt, 'Exportar participante', 10, 'Export Participant',  NULL, 0, 0,   10, NULL, 0, 1, 1, NULL, NULL),
-  (@option_group_id_mt, 'Exportar Compromiso',      11, 'Export Pledge',       NULL, 0, 0,   11, NULL, 0, 1, 1, NULL, NULL),
+  (@option_group_id_mt, 'Exportar compromiso',      11, 'Export Pledge',       NULL, 0, 0,   11, NULL, 0, 1, 1, NULL, NULL),
   (@option_group_id_mt, 'Exportar caso',        12, 'Export Case',         NULL, 0, 0,   12, NULL, 0, 1, 1, NULL, NULL),
-  (@option_group_id_mt, 'Exportar Beca',       13, 'Export Grant',        NULL, 0, 0,   13, NULL, 0, 1, 1, NULL, NULL),
+  (@option_group_id_mt, 'Exportar donación',       13, 'Export Grant',        NULL, 0, 0,   13, NULL, 0, 1, 1, NULL, NULL),
   (@option_group_id_mt, 'Exportar actividad',    14, 'Export Activity',     NULL, 0, 0,   14, NULL, 0, 1, 1, NULL, NULL),
 
   (@option_group_id_fu, 'día'    , 'day'  ,    'day',  NULL, 0, NULL, 1, NULL, 0, 1, 1, NULL, NULL),
@@ -5027,7 +5027,7 @@ VALUES
   (@option_group_id_pht, 'Móvil',        2, 'Mobile'     , NULL, 0, NULL, 2, NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_pht, 'Fax'   ,        3, 'Fax'        , NULL, 0, NULL, 3, NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_pht, 'Buscador de personas' ,        4, 'Pager'      , NULL, 0, NULL, 4, NULL, 0, 0, 1, NULL, NULL),
-  (@option_group_id_pht, 'Correo de Voz' ,    5, 'Voicemail'  , NULL, 0, NULL, 5, NULL, 0, 0, 1, NULL, NULL),
+  (@option_group_id_pht, 'Correo de voz' ,    5, 'Voicemail'  , NULL, 0, NULL, 5, NULL, 0, 0, 1, NULL, NULL),
 
 -- custom data types.
   (@option_group_id_cdt, 'Participant Role',       '1', 'ParticipantRole',      NULL, 0, NULL, 1, NULL, 0, 0, 1, NULL, NULL ),
@@ -5089,19 +5089,19 @@ VALUES
    (@option_group_id_currency, 'USD ($)',      'USD',     'USD',       NULL, 0, 1, 1, NULL, 0, 0, 1, NULL, NULL),
 
 -- event name badges
-  (@option_group_id_eventBadge,  'Sólo nombre'     , 1, 'CRM_Event_Badge_Simple'  ,  NULL, 0, 0, 1, 'Nombre de Divisa para Evento  Simple', 0, 1, 1, NULL, NULL),
-  (@option_group_id_eventBadge,  'Nombre Tienda '     , 2, 'CRM_Event_Badge_NameTent',  NULL, 0, 0, 2, 'Nombre Tienda ', 0, 1, 1, NULL, NULL),
-  (@option_group_id_eventBadge , 'Con logo'     , 3, 'CRM_Event_Badge_Logo'    ,  NULL, 0, 0, 3, 'Puedes establecer tu propia imagen de fondo',                               0, 1, 1, NULL, NULL ),
-  (@option_group_id_eventBadge , '5395 con Logo', 4, 'CRM_Event_Badge_Logo5395',  NULL, 0, 0, 4, 'Etiquetas compatibles Avery 5395 con logo (4 up by 2, 59.2mm x 85.7mm)', 0, 1, 1, NULL, NULL ),
+  (@option_group_id_eventBadge,  'Sólo nombre'     , 1, 'CRM_Event_Badge_Simple'  ,  NULL, 0, 0, 1, 'Insigna de nombre para evento simple', 0, 1, 1, NULL, NULL),
+  (@option_group_id_eventBadge,  'Nombre tienda '     , 2, 'CRM_Event_Badge_NameTent',  NULL, 0, 0, 2, 'Nombre tienda ', 0, 1, 1, NULL, NULL),
+  (@option_group_id_eventBadge , 'Con logo'     , 3, 'CRM_Event_Badge_Logo'    ,  NULL, 0, 0, 3, 'Puede establecer su propia imagen de fondo',                               0, 1, 1, NULL, NULL ),
+  (@option_group_id_eventBadge , '5395 con logo', 4, 'CRM_Event_Badge_Logo5395',  NULL, 0, 0, 4, 'Etiquetas compatibles Avery 5395 con logo (4 up by 2, 59.2mm x 85.7mm)', 0, 1, 1, NULL, NULL ),
 
 -- note privacy levels
   (@option_group_id_notePrivacy, 'Ninguno'           , 0, '',  NULL, 0, 1, 1, NULL, 0, 1, 1, NULL, NULL),
-  (@option_group_id_notePrivacy, 'Sólo Autor'    , 1, '',  NULL, 0, 0, 2, NULL, 0, 1, 1, NULL, NULL),
+  (@option_group_id_notePrivacy, 'Sólo autor'    , 1, '',  NULL, 0, 0, 2, NULL, 0, 1, 1, NULL, NULL),
 
 -- Compaign Types
-  (@option_group_id_campaignType, 'Correo Directo', 1, 'Direct Mail',  NULL, 0, NULL, 1, NULL, 0, 0, 1, NULL, NULL),
+  (@option_group_id_campaignType, 'Correo directo', 1, 'Direct Mail',  NULL, 0, NULL, 1, NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_campaignType, 'Programa de referencia', 2, 'Referral Program',  NULL, 0, NULL, 1, NULL, 0, 0, 1, NULL, NULL),
-  (@option_group_id_campaignType, 'Interaccion con personas', 3, 'Constituent Engagement',  NULL, 0, NULL, 1, NULL, 0, 0, 1, NULL, NULL),
+  (@option_group_id_campaignType, 'Interaccion con contactos', 3, 'Constituent Engagement',  NULL, 0, NULL, 1, NULL, 0, 0, 1, NULL, NULL),
 
 -- Campaign Status
   (@option_group_id_campaignStatus, 'Planeado', 1, 'Planned',  NULL, 0, NULL, 1, NULL, 0, 0, 1, NULL, NULL),
@@ -5119,7 +5119,7 @@ VALUES
 -- Paper Sizes
   (@option_group_id_paperSize, 'Carta',          '{"metric":"in","width":8.5,"height":11}',          'letter',      NULL, NULL, 1, 1,  NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_paperSize, 'Legal',           '{"metric":"in","width":8.5,"height":14}',          'legal',       NULL, NULL, 0, 2,  NULL, 0, 0, 1, NULL, NULL),
-  (@option_group_id_paperSize, 'Libro Mayor',          '{"metric":"in","width":17,"height":11}',           'ledger',      NULL, NULL, 0, 3,  NULL, 0, 0, 1, NULL, NULL),
+  (@option_group_id_paperSize, 'Libro mayor',          '{"metric":"in","width":17,"height":11}',           'ledger',      NULL, NULL, 0, 3,  NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_paperSize, 'Tabloide',         '{"metric":"in","width":11,"height":17}',           'tabloid',     NULL, NULL, 0, 4,  NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_paperSize, 'Ejecutivo',       '{"metric":"in","width":7.25,"height":10.5}',       'executive',   NULL, NULL, 0, 5,  NULL, 0, 0, 1, NULL, NULL),
   (@option_group_id_paperSize, 'Folio',           '{"metric":"in","width":8.5,"height":13}',          'folio',       NULL, NULL, 0, 6,  NULL, 0, 0, 1, NULL, NULL),
@@ -5181,15 +5181,15 @@ VALUES
   (@option_group_id_paperSize, 'ISO SRA4',        '{"metric":"pt","width":637.8,"height":907.09}',    'sra4',        NULL, NULL, 0, 62, NULL, 0, 0, 1, NULL, NULL),
 
 -- activity_contacts
-   (@option_group_id_aco, 'Resposables de Actividad', 1, 'Activity Assignees', NULL, 0, NULL, 1, NULL, 0, 0, 1, NULL, NULL),
+   (@option_group_id_aco, 'Resposables de actividad', 1, 'Activity Assignees', NULL, 0, NULL, 1, NULL, 0, 0, 1, NULL, NULL),
    (@option_group_id_aco, 'Origen de la actividad', 2, 'Activity Source', NULL, 0, NULL, 2, NULL, 0, 0, 1, NULL, NULL),
-   (@option_group_id_aco, 'Objetivos de Actividad', 3, 'Activity Targets', NULL, 0, NULL, 3, NULL, 0, 0, 1, NULL, NULL),
+   (@option_group_id_aco, 'Objetivos de actividad', 3, 'Activity Targets', NULL, 0, NULL, 3, NULL, 0, 0, 1, NULL, NULL),
 
 -- financial_account_type
 -- grouping field is specific to Quickbooks for mapping to .iif format
    (@option_group_id_fat, 'Activos', 1, 'Asset', NULL, 0, 0, 1, 'Things you own', 0, 1, 1, 2, NULL),
    (@option_group_id_fat, 'Responsabilidad', 2, 'Liability', NULL, 0, 0, 2, 'Things you own, like a grant still to be disbursed', 0, 1, 1, 2, NULL),
-   (@option_group_id_fat, 'Revenue', 3, 'Revenue', NULL, 0, 1, 3, 'Income from contributions and sales of tickets and memberships', 0, 1, 1, 2, NULL),
+   (@option_group_id_fat, 'Ganancias', 3, 'Revenue', NULL, 0, 1, 3, 'Income from contributions and sales of tickets and memberships', 0, 1, 1, 2, NULL),
    (@option_group_id_fat, 'Cost of Sales', 4, 'Cost of Sales', NULL, 0, 0, 4, 'Costs incurred to get revenue, e.g. premiums for donations, dinner for a fundraising dinner ticket', 0, 1, 1, 2, NULL),
    (@option_group_id_fat, 'Expenses', 5, 'Expenses', NULL, 0, 0, 5, 'Things that are paid for that are consumable, e.g. grants disbursed', 0, 1, 1, 2, NULL),
 
@@ -5208,8 +5208,8 @@ VALUES
    (@option_group_id_ere, 'Rol de participante', 1, 'participant_role', NULL, 0, NULL, 1, NULL, 0, 0, 1, NULL, NULL),
 
 -- default conference slots
-   (@option_group_id_conference_slot, 'Sesiones en la Mañana', 1, 'Sesiones en la Mañana', NULL, 0, NULL, 1, NULL, 0, 0, 1, NULL, NULL),
-   (@option_group_id_conference_slot, 'Sesiones en la Tarde', 2, 'Sesiones en la Tarde', NULL, 0, NULL, 2, NULL, 0, 0, 1, NULL, NULL),
+   (@option_group_id_conference_slot, 'Sesiones en la mañana', 1, 'Sesiones en la mañana', NULL, 0, NULL, 1, NULL, 0, 0, 1, NULL, NULL),
+   (@option_group_id_conference_slot, 'Sesiones en la tarde', 2, 'Sesiones en la tarde', NULL, 0, NULL, 2, NULL, 0, 0, 1, NULL, NULL),
 
 -- default batch type
    (@option_group_id_batch_type, 'Contribución', 1, 'Contribución', NULL, 0, NULL, 1, NULL, 0, 0, 1, NULL, NULL),
@@ -5266,13 +5266,13 @@ INSERT INTO
 VALUES
   ( 'Donación'            , @contactID, @opval, 'Default account for donations', '4200', 'INC', 0, 1, 1, 1 ),
   ( 'Cuotas de Miembro'          , @contactID, @opval, 'Default account for membership sales', '4400', 'INC', 0, 1, 1, 0 ),
-  ( 'Contribución de Campaña', @contactID, @opval, 'Sample account for recording payments to a campaign', '4100', 'INC', 0, 1, 0, 0 ),
-  ( 'Tarifa del Evento'            , @contactID, @opval, 'Default account for event ticket sales', '4300', 'INC', 0, 1, 0, 0 ),
+  ( 'Contribución de campaña', @contactID, @opval, 'Sample account for recording payments to a campaign', '4100', 'INC', 0, 1, 0, 0 ),
+  ( 'Precio del evento'            , @contactID, @opval, 'Default account for event ticket sales', '4300', 'INC', 0, 1, 0, 0 ),
   ( 'Banking Fees'         , @contactID, @opexp, 'Payment processor fees and manually recorded banking fees', '5200', 'EXP', 0, 1, 0, 1 ),
   ( 'Deposit Bank Account' , @contactID, @opAsset, 'All manually recorded cash and cheques go to this account', '1100', 'BANK', 0, 1, 0, 1 ),
   ( 'Accounts Receivable'  , @contactID, @opAsset, 'Amounts to be received later (eg pay later event revenues)', '1200', 'AR', 0, 1, 0, 0 ),
   ( 'Accounts Payable'     , @contactID, @opLiability, 'Amounts to be paid out such as grants and refunds', '2200', 'AP', 0, 1, 0, 1 ),
-  ( 'Premio'             , @contactID, @opCost, 'Account to record cost of premiums provided to payors', '5100', 'COGS', 0, 1, 0, 1 ),
+  ( 'Premios'             , @contactID, @opCost, 'Account to record cost of premiums provided to payors', '5100', 'COGS', 0, 1, 0, 1 ),
   ( 'Premiums inventory'   , @contactID, @opAsset, 'Account representing value of premiums inventory', '1375', 'OCASSET', 0, 1, 0, 0 ),
   ( 'Discounts'            , @contactID, @opval, 'Contra-revenue account for amounts discounted from sales', '4900', 'INC', 0, 1, 0, 0 ),
   ( 'Payment Processor Account', @contactID, @opAsset, 'Account to record payments into a payment processor merchant account', '1150', 'BANK', 0, 1, 0, 0
@@ -5285,12 +5285,12 @@ INSERT INTO
    `civicrm_option_value` (`option_group_id`, `label`, `value`, `name`, `grouping`, `filter`, `is_default`, `weight`, `description`, `is_optgroup`, `is_reserved`, `is_active`, `component_id`, `domain_id`, `visibility_id`)
 VALUES
 -- from email address.
-  (@option_group_id_fma, '"FIXME" <info@EXAMPLE.ORG>', '1', '"FIXME" <info@EXAMPLE.ORG>', NULL, 0, 1, 1, 'Domino de correo estandar y remitente', 0, 0, 1, NULL, @domainID, NULL ),
+  (@option_group_id_fma, '"FIXME" <info@EXAMPLE.ORG>', '1', '"FIXME" <info@EXAMPLE.ORG>', NULL, 0, 1, 1, 'Dirección de domino de correo electrónico y remitente, por defecto', 0, 0, 1, NULL, @domainID, NULL ),
 
 -- grant types
   (@option_group_id_grantTyp, 'Emergencia'          , 1, 'Emergency'         , NULL, 0, 1,    1, NULL, 0, 0, 1, NULL, @domainID, NULL),
-  (@option_group_id_grantTyp, 'Apoyo Familiar'     , 2, 'Family Support'    , NULL, 0, NULL, 2, NULL, 0, 0, 1, NULL, @domainID, NULL),
-  (@option_group_id_grantTyp, 'Protección General' , 3, 'General Protection', NULL, 0, NULL, 3, NULL, 0, 0, 1, NULL, @domainID, NULL),
+  (@option_group_id_grantTyp, 'Apoyo familiar'     , 2, 'Family Support'    , NULL, 0, NULL, 2, NULL, 0, 0, 1, NULL, @domainID, NULL),
+  (@option_group_id_grantTyp, 'Protección general' , 3, 'General Protection', NULL, 0, NULL, 3, NULL, 0, 0, 1, NULL, @domainID, NULL),
   (@option_group_id_grantTyp, 'Impunidad'           , 4, 'Impunity'          , NULL, 0, NULL, 4, NULL, 0, 0, 1, NULL, @domainID, NULL),
 
 -- Mail Approval Status Preferences
@@ -5325,7 +5325,7 @@ VALUES
   (@option_group_id_languages, 0, 1, 'sq_AL', 'sq', 'Albano', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'am_ET', 'am', 'Amárico', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'ar_EG', 'ar', 'Arábico', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'an_ES', 'an', 'Aragones', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'an_ES', 'an', 'Aragonés', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'hy_AM', 'hy', 'Armenio', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'as_IN', 'as', 'Asamense', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'av_RU', 'av', 'Avárico', @counter := @counter + 1),
@@ -5335,57 +5335,57 @@ VALUES
   (@option_group_id_languages, 0, 0, 'bm_ML', 'bm', 'Bambara', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ba_RU', 'ba', 'Bachir', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'eu_ES', 'eu', 'Vasco', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'be_BY', 'be', 'Beloruso', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'be_BY', 'be', 'Bieloruso', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'bn_BD', 'bn', 'Bengalí', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'bh_IN', 'bh', 'Bihari', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'bi_VU', 'bi', 'Bislama', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'bs_BA', 'bs', 'Bosnio', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'br_FR', 'br', 'Bretón', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'bg_BG', 'bg', 'Búlgaro', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'my_MM', 'my', 'Burmes', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'ca_ES', 'ca', 'Catalán, Valenciago', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'my_MM', 'my', 'Burmés', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'ca_ES', 'ca', 'Catalán, Valenciano', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ch_GU', 'ch', 'Chamorro', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ce_RU', 'ce', 'Checheno', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ny_MW', 'ny', 'Chicheva', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'zh_CN', 'zh', 'Chino (China continental)', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'zh_TW', 'zh', 'Chino (Taiwan)', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'zh_TW', 'zh', 'Chino (Taiwán)', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'cv_RU', 'cv', 'Chuvo', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'kw_GB', 'kw', 'Cornualles', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'co_FR', 'co', 'Corsega', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'co_FR', 'co', 'Córsega', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'cr_CA', 'cr', 'Creense', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'hr_HR', 'hr', 'Croata', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'cs_CZ', 'cs', 'Checo', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'da_DK', 'da', 'Danes', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'da_DK', 'da', 'Danés', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'dv_MV', 'dv', 'Maldivo', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'nl_NL', 'nl', 'Holandes', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'nl_NL', 'nl', 'Holandés', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'dz_BT', 'dz', 'Donca', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'en_AU', 'en', 'Ingles (Australia)', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'en_CA', 'en', '(Ingles Canadá)', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'en_GB', 'en', 'Ingles (Reino Unido)', @counter := @counter + 1),
-  (@option_group_id_languages, 1, 1, 'en_US', 'en', 'Ingles (Estados Unidos)', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'en_AU', 'en', 'Inglés (Australia)', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'en_CA', 'en', 'Inglés (Canadá)', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'en_GB', 'en', 'Inglés (Reino Unido)', @counter := @counter + 1),
+  (@option_group_id_languages, 1, 1, 'en_US', 'en', 'Inglés (Estados Unidos)', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'eo_XX', 'eo', 'Esperanto', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'et_EE', 'et', 'Estonio', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ee_GH', 'ee', 'Evo', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'fo_FO', 'fo', 'Faroense', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'fj_FJ', 'fj', 'Fiji', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'fi_FI', 'fi', 'Finlandes', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'fr_CA', 'fr', 'Frances (Canada)', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'fr_FR', 'fr', 'Frances (Francia)', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'fi_FI', 'fi', 'Finlandés', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'fr_CA', 'fr', 'Francés (Canadá)', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'fr_FR', 'fr', 'Francés (Francia)', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ff_SN', 'ff', 'Fula', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'gl_ES', 'gl', 'Gallego', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ka_GE', 'ka', 'Georgiano', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'de_DE', 'de', 'Alemán', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'de_CH', 'de', 'Alemán (Suiza)', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'el_GR', 'el', 'Griego Moderno', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'el_GR', 'el', 'Griego moderno', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'gn_PY', 'gn', 'Guaraní', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'gu_IN', 'gu', 'Gujarati', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ht_HT', 'ht', 'Haitiano Creole', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ha_NG', 'ha', 'Hausa', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'he_IL', 'he', 'Hebreo (Moderno)', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'he_IL', 'he', 'Hebreo (moderno)', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'hz_NA', 'hz', 'Herero', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'hi_IN', 'hi', 'Indú', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ho_PG', 'ho', 'Hiri Motu', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'hu_HU', 'hu', 'Hungaro', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'hu_HU', 'hu', 'Húngaro', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ia_XX', 'ia', 'Interlingua', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'id_ID', 'id', 'Indonesio', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ie_XX', 'ie', 'Interlingüe', @counter := @counter + 1),
@@ -5396,9 +5396,9 @@ VALUES
   (@option_group_id_languages, 0, 0, 'is_IS', 'is', 'Islandes', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'it_IT', 'it', 'Italiano', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'iu_CA', 'iu', 'Inuctio', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'ja_JP', 'ja', 'Japones', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'jv_ID', 'jv', 'Javanes', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'kl_GL', 'kl', 'Groenlandes', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'ja_JP', 'ja', 'Japonés', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'jv_ID', 'jv', 'Javanés', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'kl_GL', 'kl', 'Groenlandés', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'kn_IN', 'kn', 'Kanado', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'kr_NE', 'kr', 'Kanuri', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ks_IN', 'ks', 'Kashmiri', @counter := @counter + 1),
@@ -5413,7 +5413,7 @@ VALUES
   (@option_group_id_languages, 0, 0, 'ku_IQ', 'ku', 'Curdo', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'kj_NA', 'kj', 'Cuanyama', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'la_VA', 'la', 'Latín', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'lb_LU', 'lb', 'Luxemburgues', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'lb_LU', 'lb', 'Luxemburgués', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'lg_UG', 'lg', 'Lugando', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'li_NL', 'li', 'Limburgo', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ln_CD', 'ln', 'Lingala', @counter := @counter + 1),
@@ -5426,7 +5426,7 @@ VALUES
   (@option_group_id_languages, 0, 0, 'mg_MG', 'mg', 'Malagaso', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ms_MY', 'ms', 'Malai', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ml_IN', 'ml', 'Malayo', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'mt_MT', 'mt', 'Maltes', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'mt_MT', 'mt', 'Maltés', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'mi_NZ', 'mi', 'Maorí', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'mr_IN', 'mr', 'Marati', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'mh_MH', 'mh', 'Marchalense', @counter := @counter + 1),
@@ -5434,14 +5434,14 @@ VALUES
   (@option_group_id_languages, 0, 0, 'na_NR', 'na', 'Nauru', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'nv_US', 'nv', 'Navajo', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'nb_NO', 'nb', 'Noruego Bokmal', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'nd_ZW', 'nd', 'Nebele Norte', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'ne_NP', 'ne', 'Nepali', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'nd_ZW', 'nd', 'Nebele norte', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'ne_NP', 'ne', 'Nepalí', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ng_NA', 'ng', 'Nonga', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'nn_NO', 'nn', 'Noruego Ninorsk', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'no_NO', 'no', 'Noruego', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ii_CN', 'ii', 'Nouso', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'nr_ZA', 'nr', 'Nebele Sur', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'oc_FR', 'oc', 'Occitano (despues de 1500)', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'nr_ZA', 'nr', 'Nebele sur', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'oc_FR', 'oc', 'Occitano (después de 1500)', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'oj_CA', 'oj', 'Ojibo', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'cu_BG', 'cu', 'Antigua iglesia Eslavona', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'om_ET', 'om', 'Oromo', @counter := @counter + 1),
@@ -5449,24 +5449,24 @@ VALUES
   (@option_group_id_languages, 0, 0, 'os_GE', 'os', 'Osetiano', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'pa_IN', 'pa', 'Punyabi', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'pi_KH', 'pi', 'Palí', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'fa_IR', 'fa', 'Persa (Iran)', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'fa_IR', 'fa', 'Persa (Irán)', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'pl_PL', 'pl', 'Polaco', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ps_AF', 'ps', 'Pasto', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'pt_BR', 'pt', 'Portugues (Brasil)', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 1, 'pt_PT', 'pt', 'Portugues (Portugal)', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'pt_BR', 'pt', 'Portugués (Brasil)', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 1, 'pt_PT', 'pt', 'Portugués (Portugal)', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'qu_PE', 'qu', 'Quechua', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'rm_CH', 'rm', 'Rumano', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'rn_BI', 'rn', 'Kirundi', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'ro_RO', 'ro', 'Rumano, Moldavo, Moldovo', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'ru_RU', 'ru', 'Ruso', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'sa_IN', 'sa', 'Sanscrito', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'sa_IN', 'sa', 'Sánscrito', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'sc_IT', 'sc', 'Sardo', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'sd_IN', 'sd', 'Sindi', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'se_NO', 'se', 'Sami norteño', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'sm_WS', 'sm', 'Samoano', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'sg_CF', 'sg', 'Sango', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'sr_RS', 'sr', 'Serbio', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'gd_GB', 'gd', 'Galo', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'gd_GB', 'gd', 'Escocés Galo', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'sn_ZW', 'sn', 'Chona', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'si_LK', 'si', 'Sinjalense', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'sk_SK', 'sk', 'Eslovaco', @counter := @counter + 1),
@@ -5476,7 +5476,7 @@ VALUES
   (@option_group_id_languages, 0, 1, 'es_ES', 'es', 'Español Castellano (España)', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'es_MX', 'es', 'Español Catellano (Méjico)', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'es_PR', 'es', 'Español Castellano (Puerto Rico)', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'su_ID', 'su', 'Sundanes', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'su_ID', 'su', 'Sundanés', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'sw_TZ', 'sw', 'Suajili', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ss_ZA', 'ss', 'Suati', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'sv_SE', 'sv', 'Sueco', @counter := @counter + 1),
@@ -5489,7 +5489,7 @@ VALUES
   (@option_group_id_languages, 0, 0, 'tk_TM', 'tk', 'Turkmenistano', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'tl_PH', 'tl', 'Tagalogo', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'tn_ZA', 'tn', 'Tuana', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'to_TO', 'to', 'Tongo (Listas Tonga)', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'to_TO', 'to', 'Tongo (Islas Tongo)', @counter := @counter + 1),
   (@option_group_id_languages, 0, 1, 'tr_TR', 'tr', 'Turco', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'ts_ZA', 'ts', 'Tsonga', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'tt_RU', 'tt', 'Tataro', @counter := @counter + 1),
@@ -5507,7 +5507,7 @@ VALUES
   (@option_group_id_languages, 0, 0, 'wo_SN', 'wo', 'Volofo', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'fy_NL', 'fy', 'Frisiano del Oeste', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'xh_ZA', 'xh', 'Xhosa', @counter := @counter + 1),
-  (@option_group_id_languages, 0, 0, 'yi_US', 'yi', 'Yidish - Judio', @counter := @counter + 1),
+  (@option_group_id_languages, 0, 0, 'yi_US', 'yi', 'Yidish - Judío', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'yo_NG', 'yo', 'Yoruba', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'za_CN', 'za', 'Zhuang, Chuang', @counter := @counter + 1),
   (@option_group_id_languages, 0, 0, 'zu_ZA', 'zu', 'Zulu', @counter := @counter + 1);
@@ -5526,7 +5526,7 @@ VALUES
     (@option_group_id_medium, 'Teléfono',  2, 'phone', NULL, 0,  1, 2, NULL, 0, 1, 1),
     (@option_group_id_medium, 'Correo electrónico',  3, 'email', NULL, 0,  0, 3, NULL, 0, 1, 1),
     (@option_group_id_medium, 'Fax',  4, 'fax', NULL, 0,  0, 4, NULL, 0, 1, 1),
-    (@option_group_id_medium, 'Correo postal',  5, 'letter_mail', NULL, 0,  0, 5, NULL, 0, 1, 1);
+    (@option_group_id_medium, 'Correspondencia',  5, 'letter_mail', NULL, 0,  0, 5, NULL, 0, 1, 1);
 
 -- sample membership status entries
 INSERT INTO
@@ -5534,8 +5534,8 @@ INSERT INTO
 VALUES
     ('New',       'Nuevo', 'join_date', null, null,'join_date','month',3, 1, 0, 1, 0, 1, 0),
     ('Current',   'Actual', 'start_date', null, null,'end_date', null, null, 1, 0, 2, 1, 1, 0),
-    ('Grace',     'Periodo de Gracia', 'end_date', null, null,'end_date','month', 1, 1, 0, 3, 0, 1, 0),
-    ('Expired',   'Expiración', 'end_date', 'month', 1, null, null, null, 0, 0, 4, 0, 1, 0),
+    ('Grace',     'Periodo de gracia', 'end_date', null, null,'end_date','month', 1, 1, 0, 3, 0, 1, 0),
+    ('Expired',   'Expirado', 'end_date', 'month', 1, null, null, null, 0, 0, 4, 0, 1, 0),
     ('Pending',   'Pendiente', 'join_date', null, null,'join_date',null,null, 0, 0, 5, 0, 1, 1),
     ('Cancelled', 'Cancelado', 'join_date', null, null,'join_date',null,null, 0, 0, 6, 0, 1, 0),
     ('Deceased',  'Fallecido', null, null, null, null, null, null, 0, 1, 7, 0, 1, 1);
@@ -5561,17 +5561,17 @@ VALUES
 INSERT INTO `civicrm_payment_processor_type`
  (name, title, description, is_active, is_default, user_name_label, password_label, signature_label, subject_label, class_name, url_site_default, url_api_default, url_recur_default, url_button_default, url_site_test_default, url_api_test_default, url_recur_test_default, url_button_test_default, billing_mode, is_recur )
 VALUES
- ('PayPal_Standard',    'Página para pagos estandar - PayPal', NULL,1,0,'Correo Electrónico empresarial',NULL,NULL,NULL,'Payment_PayPalImpl','https://www.paypal.com/',NULL,'https://www.paypal.com/',NULL,'https://www.sandbox.paypal.com/',NULL,'https://www.sandbox.paypal.com/',NULL,4,1),
- ('PayPal',             'PayPal - Sitios web de Pagos Pro',      NULL,1,0,'Nombre de usuario','Contraseña','Firma',NULL,'Payment_PayPalImpl','https://www.paypal.com/','https://api-3t.paypal.com/','https://www.paypal.com/','https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif','https://www.sandbox.paypal.com/','https://api-3t.sandbox.paypal.com/','https://www.sandbox.paypal.com/','https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif',3, 1 ),
+ ('PayPal_Standard',    'Página para pagos estándar - PayPal', NULL,1,0,'Correo Electrónico empresarial',NULL,NULL,NULL,'Payment_PayPalImpl','https://www.paypal.com/',NULL,'https://www.paypal.com/',NULL,'https://www.sandbox.paypal.com/',NULL,'https://www.sandbox.paypal.com/',NULL,4,1),
+ ('PayPal',             'PayPal - Sitios web de pagos pro',      NULL,1,0,'Nombre de usuario','Contraseña','Firma',NULL,'Payment_PayPalImpl','https://www.paypal.com/','https://api-3t.paypal.com/','https://www.paypal.com/','https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif','https://www.sandbox.paypal.com/','https://api-3t.sandbox.paypal.com/','https://www.sandbox.paypal.com/','https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif',3, 1 ),
  ('PayPal_Express',     'PayPal - Express',       NULL,1,0,'Nombre de usuario','Contraseña','Firma',NULL,'Payment_PayPalImpl','https://www.paypal.com/','https://api-3t.paypal.com/',NULL,'https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif','https://www.sandbox.paypal.com/','https://api-3t.sandbox.paypal.com/',NULL,'https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif',2,NULL),
- ('Google_Checkout',    'Google Checkout',        NULL,1,0,'ID de Comerciante','Clave',NULL,NULL,'Payment_Google','https://checkout.google.com/',NULL,'https://checkout.google.com/','https://checkout.google.com/buttons/checkout.gif?merchant_id=YOURMERCHANTIDHERE&w=160&h=43&style=white&variant=text&loc=en_US','https://sandbox.google.com/checkout/',NULL,'https://sandbox.google.com/checkout/','https://sandbox.google.com/checkout/buttons/checkout.gif?merchant_id=YOURMERCHANTIDHERE&w=160&h=43&style=white&variant=text&loc=en_US',4,1),
- ('Moneris',            'Dinero',                NULL,1,0,'Nombre de usuario','Contraseña','ID de Almacén',NULL,'Payment_Moneris','https://www3.moneris.com/',NULL,NULL,NULL,'https://esqa.moneris.com/',NULL,NULL,NULL,1,1),
- ('AuthNet',            'Authorize.Net',          NULL,1,0,'Iniciar Sesión API','Clave de Pago','Hash MD5',NULL,'Payment_AuthorizeNet','https://secure.authorize.net/gateway/transact.dll',NULL,'https://api.authorize.net/xml/v1/request.api',NULL,'https://test.authorize.net/gateway/transact.dll',NULL,'https://apitest.authorize.net/xml/v1/request.api',NULL,1,1),
+ ('Google_Checkout',    'Google Checkout',        NULL,1,0,'Identificador de comerciante','Clave',NULL,NULL,'Payment_Google','https://checkout.google.com/',NULL,'https://checkout.google.com/','https://checkout.google.com/buttons/checkout.gif?merchant_id=YOURMERCHANTIDHERE&w=160&h=43&style=white&variant=text&loc=en_US','https://sandbox.google.com/checkout/',NULL,'https://sandbox.google.com/checkout/','https://sandbox.google.com/checkout/buttons/checkout.gif?merchant_id=YOURMERCHANTIDHERE&w=160&h=43&style=white&variant=text&loc=en_US',4,1),
+ ('Moneris',            'Dinero',                NULL,1,0,'Nombre de usuario','Contraseña','Identificador de almacén',NULL,'Payment_Moneris','https://www3.moneris.com/',NULL,NULL,NULL,'https://esqa.moneris.com/',NULL,NULL,NULL,1,1),
+ ('AuthNet',            'Authorize.Net',          NULL,1,0,'Iniciar sesión API','Clave de pago','Hash MD5',NULL,'Payment_AuthorizeNet','https://secure.authorize.net/gateway/transact.dll',NULL,'https://api.authorize.net/xml/v1/request.api',NULL,'https://test.authorize.net/gateway/transact.dll',NULL,'https://apitest.authorize.net/xml/v1/request.api',NULL,1,1),
  ('PayJunction',        'PayJunction',            NULL,1,0,'User Name','Password',NULL,NULL,'Payment_PayJunction','https://payjunction.com/quick_link',NULL,NULL,NULL,'https://www.payjunctionlabs.com/quick_link',NULL,NULL,NULL,1,1),
- ('eWAY',               'eWAY (moneda sencilla)', NULL,1,0,'Customer ID',NULL,NULL,NULL,'Payment_eWAY','https://www.eway.com.au/gateway_cvn/xmlpayment.asp',NULL,NULL,NULL,'https://www.eway.com.au/gateway_cvn/xmltest/testpage.asp',NULL,NULL,NULL,1,0),
+ ('eWAY',               'eWAY (moneda única)', NULL,1,0,'Customer ID',NULL,NULL,NULL,'Payment_eWAY','https://www.eway.com.au/gateway_cvn/xmlpayment.asp',NULL,NULL,NULL,'https://www.eway.com.au/gateway_cvn/xmltest/testpage.asp',NULL,NULL,NULL,1,0),
  ('Payment_Express',    'Pago Express DPS ',    NULL,1,0,'User ID','Key','Mac Key - pxaccess only',NULL,'Payment_PaymentExpress','https://www.paymentexpress.com/pleaseenteraurl',NULL,NULL,NULL,'https://www.paymentexpress.com/pleaseenteratesturl',NULL,NULL,NULL,4,0),
- ('Dummy',              'Procesador de Pago Dummy',NULL,1,1,'Nombre de usuario',NULL,NULL,NULL,'Payment_Dummy',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,1),
- ('Elavon',             'Procesador de Pago Elavon','Comerciante Virtual Elavon/ Nova',1,0,'ID de Comerciante SSL','Identificación Usuario SSL','PIN SSL',NULL,'Payment_Elavon','https://www.myvirtualmerchant.com/VirtualMerchant/processxml.do',NULL,NULL,NULL,'https://www.myvirtualmerchant.com/VirtualMerchant/processxml.do',NULL,NULL,NULL,1,0),
+ ('Dummy',              'Procesador de pago ficticio',NULL,1,1,'Nombre de usuario',NULL,NULL,NULL,'Payment_Dummy',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,1),
+ ('Elavon',             'Procesador de pago Elavon','Comerciante virtual Elavon / Nova',1,0,'Identificador de comerciante SSL','Identificación de usuario SSL','PIN SSL',NULL,'Payment_Elavon','https://www.myvirtualmerchant.com/VirtualMerchant/processxml.do',NULL,NULL,NULL,'https://www.myvirtualmerchant.com/VirtualMerchant/processxml.do',NULL,NULL,NULL,1,0),
  ('Realex',             'Pago via Realex',         NULL,1,0,'Merchant ID', 'Password', NULL, 'Account', 'Payment_Realex', 'https://epage.payandshop.com/epage.cgi', NULL, NULL, NULL, 'https://epage.payandshop.com/epage-remote.cgi', NULL, NULL, NULL, 1, 0 ),
  ('PayflowPro',         'PayflowPro',             NULL,1,0,'Vendor ID', 'Password', 'Partner (merchant)', 'User', 'Payment_PayflowPro', 'https://Payflowpro.paypal.com', NULL, NULL, NULL, 'https://pilot-Payflowpro.paypal.com', NULL, NULL, NULL, 1, 0 ),
  ('FirstData',          'FirstData (también conocido como linkpoint)', 'FirstData (también conocido como linkpoint)', 1, 0, 'Store name', 'certificate path', NULL, NULL, 'Payment_FirstData', 'https://secure.linkpt.net', NULL, NULL, NULL, 'https://staging.linkpt.net', NULL, NULL, NULL, 1, NULL);
@@ -5589,7 +5589,7 @@ VALUES (@drgid, 'civicrm_contact', 'first_name', 5),
        (@drgid, 'civicrm_email'  , 'email',     10);
 
 INSERT INTO civicrm_dedupe_rule_group (contact_type, threshold, used, name, title, is_reserved)
-VALUES ('Organization', 10, 'Supervised', 'OrganizationSupervised', 'Nombre y Correo Electrónico', 0);
+VALUES ('Organization', 10, 'Supervised', 'OrganizationSupervised', 'Nombre y correo electrónico', 0);
 
 SELECT @drgid := MAX(id) FROM civicrm_dedupe_rule_group;
 INSERT INTO civicrm_dedupe_rule (dedupe_rule_group_id, rule_table, rule_field, rule_weight)
@@ -5597,7 +5597,7 @@ VALUES (@drgid, 'civicrm_contact', 'organization_name', 10),
        (@drgid, 'civicrm_email'  , 'email',             10);
 
 INSERT INTO civicrm_dedupe_rule_group (contact_type, threshold, used, name, title, is_reserved)
-VALUES ('Household', 10, 'Supervised', 'HouseholdSupervised', 'Nombre y Correo Electrónico', 0);
+VALUES ('Household', 10, 'Supervised', 'HouseholdSupervised', 'Nombre y correo electrónico', 0);
 
 SELECT @drgid := MAX(id) FROM civicrm_dedupe_rule_group;
 INSERT INTO civicrm_dedupe_rule (dedupe_rule_group_id, rule_table, rule_field, rule_weight)
@@ -5614,7 +5614,7 @@ INSERT INTO civicrm_dedupe_rule (dedupe_rule_group_id, rule_table, rule_field, r
 VALUES (@drgid, 'civicrm_email', 'email', 10);
 
 INSERT INTO civicrm_dedupe_rule_group (contact_type, threshold, used, name, title, is_reserved)
-VALUES ('Organization', 10,  'Unsupervised', 'OrganizationUnsupervised', 'Nombre y Correo Electrónico', 0);
+VALUES ('Organization', 10,  'Unsupervised', 'OrganizationUnsupervised', 'Nombre y correo electrónico', 0);
 
 SELECT @drgid := MAX(id) FROM civicrm_dedupe_rule_group;
 INSERT INTO civicrm_dedupe_rule (dedupe_rule_group_id, rule_table, rule_field, rule_weight)
@@ -5622,7 +5622,7 @@ VALUES (@drgid, 'civicrm_contact', 'organization_name', 10),
        (@drgid, 'civicrm_email'  , 'email',             10);
 
 INSERT INTO civicrm_dedupe_rule_group (contact_type, threshold, used, name, title, is_reserved)
-VALUES ('Household', 10, 'Unsupervised', 'HouseholdUnsupervised', 'Nombre y Correo Electrónico', 0);
+VALUES ('Household', 10, 'Unsupervised', 'HouseholdUnsupervised', 'Nombre y correo electrónico', 0);
 
 SELECT @drgid := MAX(id) FROM civicrm_dedupe_rule_group;
 INSERT INTO civicrm_dedupe_rule (dedupe_rule_group_id, rule_table, rule_field, rule_weight)
@@ -5652,7 +5652,7 @@ INSERT INTO civicrm_county (name, state_province_id) VALUES ('Santa Clara', 1004
 -- Bounce classification patterns
 INSERT INTO civicrm_mailing_bounce_type
         (name, description, hold_threshold)
-        VALUES ('AOL', 'Queja de Términos de Servicio AOL', 1);
+        VALUES ('AOL', 'Queja de términos de servicio AOL', 1);
 
 SELECT @bounceTypeID := max(id) FROM civicrm_mailing_bounce_type WHERE name = 'AOL';
 INSERT INTO civicrm_mailing_bounce_pattern
@@ -5686,7 +5686,7 @@ INSERT INTO civicrm_mailing_bounce_pattern
 
 INSERT INTO civicrm_mailing_bounce_type
         (name, description, hold_threshold)
-        VALUES ('Host', 'No se puede enviar el servidor de correo de destino', 3);
+        VALUES ('Host', 'No se puede enviar al servidor de correo de destino', 3);
 
 SELECT @bounceTypeID := max(id) FROM civicrm_mailing_bounce_type WHERE name = 'Host';
 INSERT INTO civicrm_mailing_bounce_pattern
@@ -5737,7 +5737,7 @@ INSERT INTO civicrm_mailing_bounce_pattern
 
 INSERT INTO civicrm_mailing_bounce_type
         (name, description, hold_threshold)
-        VALUES ('Invalid', 'La dirección de email no es válida', 1);
+        VALUES ('Invalid', 'Dirección de correo electrónico no válida', 1);
 
 SELECT @bounceTypeID := max(id) FROM civicrm_mailing_bounce_type WHERE name = 'Invalid';
 INSERT INTO civicrm_mailing_bounce_pattern
@@ -5786,7 +5786,7 @@ INSERT INTO civicrm_mailing_bounce_pattern
 
 INSERT INTO civicrm_mailing_bounce_type
         (name, description, hold_threshold)
-        VALUES ('Loop', 'Error de routing del correo', 3);
+        VALUES ('Loop', 'Error de ruteo del correo', 3);
 
 SELECT @bounceTypeID := max(id) FROM civicrm_mailing_bounce_type WHERE name = 'Loop';
 INSERT INTO civicrm_mailing_bounce_pattern
@@ -5883,17 +5883,17 @@ INSERT INTO civicrm_mailing_bounce_pattern
 INSERT INTO civicrm_uf_group
     (id, name,                 group_type,           title,                                      is_cms_user, is_reserved, help_post) VALUES
     (1,  'name_and_address',   'Individual,Contact',  'Nombre y dirección',   0,           0,           NULL),
-    (2,  'supporter_profile',  'Individual,Contact',  'Perfil de Colaborador',  2,           0,           '<p><strong>Esta información que usted provee NO será compartida con ninguna organización de terceros.</strong></p><p>¡Gracias por involucrarse con nuestra campaña!</p>'),
-    (3,  'participant_status', 'Participant',         'Estado de Participante',             0,      1,           NULL),
-    (4,  'new_individual',     'Individual,Contact',  'Nueva persona'    ,             0,      1,           NULL),
+    (2,  'supporter_profile',  'Individual,Contact',  'Perfil de colaborador',  2,           0,           '<p><strong>Esta información que usted provee NO será compartida con ninguna organización de terceros.</strong></p><p>¡Gracias por involucrarse con nuestra campaña!</p>'),
+    (3,  'participant_status', 'Participant',         'Estado de participante',             0,      1,           NULL),
+    (4,  'new_individual',     'Individual,Contact',  'Nuevo individuo'    ,             0,      1,           NULL),
     (5,  'new_organization',   'Organization,Contact','Nueva organización'  ,             0,      1,           NULL),
-    (6,  'new_household',      'Household,Contact',   'Nueva Familia'     ,             0,      1,           NULL),
-    (7,  'summary_overlay',    'Contact',   		      'Resumen de Superposición'   ,             0,      1,           NULL),
+    (6,  'new_household',      'Household,Contact',   'Nueva familia'     ,             0,      1,           NULL),
+    (7,  'summary_overlay',    'Contact',   		      'Resumen de superposición'   ,             0,      1,           NULL),
     (8,  'shared_address',     'Contact',   		      'Dirección compartida'                , 0,      1,           NULL),
-    (9,  'on_behalf_organization', 'Contact,Organization','En Nombre de una Organización',  0,      1,           NULL),
-    (10,  'contribution_batch_entry', 'Contribution', 'Entrada por Lotes de Contribuciones' ,       0,      1,           NULL),
-    (11,  'membership_batch_entry', 'Membership',     'Entrada por Lotes Membresías' ,         0,      1,           NULL),
-    (12, 'event_registration', 'Individual, Contact', 'Su Información de Registro',         0,      0,           NULL);
+    (9,  'on_behalf_organization', 'Contact,Organization','En nombre de una organización',  0,      1,           NULL),
+    (10,  'contribution_batch_entry', 'Contribution', 'Entrada masiva de contribuciones' ,       0,      1,           NULL),
+    (11,  'membership_batch_entry', 'Membership',     'Entrada masiva de membresías' ,         0,      1,           NULL),
+    (12, 'event_registration', 'Individual, Contact', 'Su información de registro',         0,      0,           NULL);
 
 INSERT INTO civicrm_uf_join
    (is_active,module,entity_table,entity_id,weight,uf_group_id)
@@ -5919,12 +5919,12 @@ INSERT INTO civicrm_uf_field
        (  1,           'street_address',        0,           0,           3,      'User and User Admin Only',  0,           0,             1,                'Dirección (hogar)', 		'Contact',     NULL,  NULL),
        (  1,           'city',                  0,           0,           4,      'User and User Admin Only',  0,           0,             1,                'Ciudad (hogar)',           		'Contact',     NULL,  NULL),
        (  1,           'postal_code',           0,           0,           5,      'User and User Admin Only',  0,           0,             1,                'Código postal (hogar)',    		'Contact',     NULL,  NULL),
-       (  1,           'country',               0,           0,           6,      'User and User Admin Only', 0,           0,             1,                'Provincia (hogar)',        		'Contact',     NULL,  NULL),
-       (  1,           'state_province',        0,           0,           7,      'User and User Admin Only', 0,           0,             1,                'Estado (hogar)',          		'Contact',     NULL,  NULL),
+       (  1,           'country',               0,           0,           6,      'User and User Admin Only', 0,           0,             1,                'País (hogar)',        		'Contact',     NULL,  NULL),
+       (  1,           'state_province',        0,           0,           7,      'User and User Admin Only', 0,           0,             1,                'Provincia (hogar)',          		'Contact',     NULL,  NULL),
        (  2,           'first_name',            1,           0,           1,      'User and User Admin Only',  0,           0,             NULL,             'Nombre',            		'Individual',  NULL,  NULL),
        (  2,           'last_name',             1,           0,           2,      'User and User Admin Only',  0,           0,             NULL,             'Apellido',             		'Individual',  NULL,  NULL),
        ( 2,           'email',                 1,           0,           3,      'User and User Admin Only',  0,           0,             NULL,             'Dirección de correo electrónico',         		'Contact',     NULL,  NULL),
-       ( 3,           'participant_status', 1,           1,           1,      'User and User Admin Only',  0,           0,             NULL,             'Estado de Participante',    		'Participant', NULL,  NULL),
+       ( 3,           'participant_status', 1,           1,           1,      'User and User Admin Only',  0,           0,             NULL,             'Estado de participante',    		'Participant', NULL,  NULL),
        ( 4,           'first_name',            1,           0,           1,      'User and User Admin Only',  0,           0,             NULL,             'Nombre',            		'Individual',  NULL,  NULL),
        ( 4,           'last_name',             1,           0,           2,      'User and User Admin Only',  0,           0,             NULL,             'Apellido',             		'Individual',  NULL,  NULL),
        ( 4,           'email',                 0,           0,           3,      'User and User Admin Only',  0,           0,             NULL,             'Dirección de correo electrónico',         		'Contact',     NULL,  NULL),
@@ -5946,11 +5946,11 @@ INSERT INTO civicrm_uf_field
 	     (  8,           'street_address',        1,           1,           1,      'User and User Admin Only',  0,           0,             1,                'Dirección (hogar)', 		'Contact',     NULL,  NULL),
        (  8,           'city',                  1,           1,           2,      'User and User Admin Only',  0,           0,             1,                'Ciudad (hogar)',           		'Contact',     NULL,  NULL),
        (  8,           'postal_code',           0,           0,           3,      'User and User Admin Only',  0,           0,             1,                'Código postal (hogar)',    		'Contact',     NULL,  NULL),
-       (  8,           'country',               0,           0,           4,      'User and User Admin Only', 0,           0,             1,                'Provincia (hogar)',        		'Contact',     NULL,  NULL),
-       (  8,           'state_province',        0,           0,           5,      'User and User Admin Only', 0,           0,             1,                'Estado (hogar)',          		'Contact',     NULL,  NULL),
+       (  8,           'country',               0,           0,           4,      'User and User Admin Only', 0,           0,             1,                'País (hogar)',        		'Contact',     NULL,  NULL),
+       (  8,           'state_province',        0,           0,           5,      'User and User Admin Only', 0,           0,             1,                'Provincia (hogar)',          		'Contact',     NULL,  NULL),
        (  9,           'organization_name',     1,           0,           1,      'User and User Admin Only',  0,           0,             NULL,             'Nombre de la organización',              'Organization',NULL,  NULL),
-       (  9,           'phone',                 1,           0,           2,      'User and User Admin Only',  0,           0,             3,             'Teléfono (Principal)',                  'Contact',    NULL,   1),
-       (  9,           'email',                 1,           0,           3,      'User and User Admin Only',  0,           0,             3,             'Correo Electrónico (Principal)',                  'Contact',    NULL,   NULL),
+       (  9,           'phone',                 1,           0,           2,      'User and User Admin Only',  0,           0,             3,             'Teléfono (principal)',                  'Contact',    NULL,   1),
+       (  9,           'email',                 1,           0,           3,      'User and User Admin Only',  0,           0,             3,             'Correo electrónico (principal)',                  'Contact',    NULL,   NULL),
        (  9,           'street_address',        1,           0,           4,      'User and User Admin Only',  0,           0,             3,             'Calle',                 'Contact',    NULL,   NULL),
        (  9,           'city',                  1,           0,           5,      'User and User Admin Only',  0,           0,             3,             'Ciudad',                           'Contact',    NULL,   NULL),
        (  9,           'postal_code',           1,           0,           6,      'User and User Admin Only',  0,           0,             3,             'Código postal',                    'Contact',    NULL,   NULL),
@@ -5963,20 +5963,20 @@ INSERT INTO civicrm_uf_field
        ( 10,     'contribution_source',         0, 0, 5, 'User and User Admin Only', 0, 0, NULL, 'Origen', 'Contribution', NULL, NULL ),
        ( 10,     'payment_instrument',          0, 0, 6, 'User and User Admin Only', 0, 0, NULL, 'Pagado Por', 'Contribution', NULL, NULL ),
        ( 10,     'check_number',                0, 0, 7, 'User and User Admin Only', 0, 0, NULL, 'Cheque número', 'Contribution', NULL, NULL ),
-       ( 10,     'send_receipt',                0, 0, 8, 'User and User Admin Only', 0, 0, NULL, 'Enviar Recibo', 'Contribution', NULL, NULL ),
-       ( 10,     'invoice_id',                  0, 0, 9, 'User and User Admin Only', 0, 0, NULL, 'Identificador de Factura', 'Contribution', NULL, NULL ),
+       ( 10,     'send_receipt',                0, 0, 8, 'User and User Admin Only', 0, 0, NULL, 'Enviar recibo', 'Contribution', NULL, NULL ),
+       ( 10,     'invoice_id',                  0, 0, 9, 'User and User Admin Only', 0, 0, NULL, 'Identificador de factura', 'Contribution', NULL, NULL ),
        ( 11,     'membership_type',             1, 1, 1, 'User and User Admin Only', 0, 0, NULL, 'Tipo', 'Membership', NULL, NULL ),
-       ( 11,     'join_date',                   1, 1, 2, 'User and User Admin Only', 0, 0, NULL, 'Miembro Desde', 'Membership', NULL, NULL ),
+       ( 11,     'join_date',                   1, 1, 2, 'User and User Admin Only', 0, 0, NULL, 'Miembro desde', 'Membership', NULL, NULL ),
        ( 11,     'membership_start_date',       0, 1, 3, 'User and User Admin Only', 0, 0, NULL, 'Fecha Inicio', 'Membership', NULL, NULL ),
        ( 11,     'membership_end_date',         0, 1, 4, 'User and User Admin Only', 0, 0, NULL, 'Fecha finalización', 'Membership', NULL, NULL ),
        ( 11,     'membership_source',           0, 0, 5, 'User and User Admin Only', 0, 0, NULL, 'Origen', 'Membership', NULL, NULL ),
-       ( 11,     'send_receipt',                0, 0, 6, 'User and User Admin Only', 0, 0, NULL, 'Enviar Recibo', 'Membership', NULL, NULL ),
-       ( 11,     'financial_type',           1, 1, 7, 'User and User Admin Only', 0, 0, NULL, 'Financial Type', 'Membership', NULL, NULL ),
+       ( 11,     'send_receipt',                0, 0, 6, 'User and User Admin Only', 0, 0, NULL, 'Enviar recibo', 'Membership', NULL, NULL ),
+       ( 11,     'financial_type',           1, 1, 7, 'User and User Admin Only', 0, 0, NULL, 'Tipo de financiación', 'Membership', NULL, NULL ),
        ( 11,     'total_amount',                1, 1, 8, 'User and User Admin Only', 0, 0, NULL, 'Cantidad', 'Membership', NULL, NULL ),
        ( 11,     'receive_date',                1, 1, 9, 'User and User Admin Only', 0, 0, NULL, 'Recibido', 'Membership', NULL, NULL ),
        ( 11,     'payment_instrument',          0, 0, 10, 'User and User Admin Only', 0, 0, NULL, 'Pagado Por', 'Membership', NULL, NULL ),
        ( 11,     'check_number',                0, 0, 11, 'User and User Admin Only', 0, 0, NULL, 'Cheque número', 'Membership', NULL, NULL ),
-       ( 11,     'contribution_status_id',      1, 1, 12, 'User and User Admin Only', 0, 0, NULL, 'Estado de Pago', 'Membership', NULL, NULL ),
+       ( 11,     'contribution_status_id',      1, 1, 12, 'User and User Admin Only', 0, 0, NULL, 'Estado de pago', 'Membership', NULL, NULL ),
        ( 12,     'email',                       1, 0, 1, 'User and User Admin Only', 0, 0, NULL, 'Dirección de correo electrónico', 'Contact', NULL, NULL);
 
 
@@ -5984,17 +5984,17 @@ INSERT INTO civicrm_participant_status_type
   (id, name,                                  label,                                                       class,      is_reserved, is_active, is_counted, weight, visibility_id) VALUES
   (1,  'Registered',                          'Registrado',                          'Positive', 1,           1,         1,          1,      1            ),
   (2,  'Attended',                            'Atendido',                            'Positive', 0,           1,         1,          2,      2            ),
-  (3,  'No-show',                             'No mostrar',                             'Negative', 0,           1,         0,          3,      2            ),
+  (3,  'No-show',                             'No se presenta',                             'Negative', 0,           1,         0,          3,      2            ),
   (4,  'Cancelled',                           'Cancelado',                           'Negative', 1,           1,         0,          4,      2            ),
   (5,  'Pending from pay later',              'Pendiente de pago posterior',              'Pending',  1,           1,         1,          5,      2            ),
-  (6,  'Pending from incomplete transaction', 'Pendiente por transacción incompleta', 'Pending',  1,           1,         0,          6,      2            ),
+  (6,  'Pending from incomplete transaction', 'Pendiente de transacción incompleta', 'Pending',  1,           1,         0,          6,      2            ),
   (7,  'On waitlist',                         'En lista de espera',                         'Waiting',  1,           0,         0,          7,      2            ),
   (8,  'Awaiting approval',                   'Esperando aprobación',                   'Waiting',  1,           0,         1,          8,      2            ),
-  (9,  'Pending from waitlist',               'Pendiente por lista de espera',               'Pending',  1,           0,         1,          9,      2            ),
-  (10, 'Pending from approval',               'Pendiente por aprobación',               'Pending',  1,           0,         1,          10,     2            ),
+  (9,  'Pending from waitlist',               'Pendiente de lista de espera',               'Pending',  1,           0,         1,          9,      2            ),
+  (10, 'Pending from approval',               'Pendiente de aprobación',               'Pending',  1,           0,         1,          10,     2            ),
   (11, 'Rejected',                            'Rechazado',                            'Negative', 1,           0,         0,          11,     2            ),
-  (12, 'Expired',                             'Expiración',                             'Negative', 1,           1,         0,          12,     2            ),
-  (13, 'Pending in cart',                     'Carrito de Pendientes',                     'Pending',  1,           1,         0,          13,     2            );
+  (12, 'Expired',                             'Expirado',                             'Negative', 1,           1,         0,          12,     2            ),
+  (13, 'Pending in cart',                     'Carrito de pendientes',                     'Pending',  1,           1,         0,          13,     2            );
 
 
 -- CRM-8150
@@ -6010,7 +6010,7 @@ VALUES
 INSERT INTO `civicrm_contact_type`
   (`id`, `name`, `label`,`image_URL`, `parent_id`, `is_active`,`is_reserved`)
  VALUES
-  ( 1, 'Individual'  , 'Persona'  , NULL, NULL, 1, 1),
+  ( 1, 'Individual'  , 'Individual'  , NULL, NULL, 1, 1),
   ( 2, 'Household'   , 'Familia'   , NULL, NULL, 1, 1),
   ( 3, 'Organization', 'Organización', NULL, NULL, 1, 1);
 
@@ -6040,7 +6040,7 @@ INSERT INTO `civicrm_contact_type`
 
 INSERT INTO civicrm_option_group
   (name,                         title,            description,      is_reserved, is_active) VALUES
-    ('msg_tpl_workflow_case', 'Plantilla de Mensajes Workflow para Casos',               'Plantilla de Mensajes Workflow para Casos',                     1,           1) ,    ('msg_tpl_workflow_contribution', 'Plantilla de Mensajes Workflow para Contribuciones',               'Plantilla de Mensajes Workflow para Contribuciones',                     1,           1) ,    ('msg_tpl_workflow_event', 'Plantilla de Mensajes Workflow para Eventos',               'Plantilla de Mensajes Workflow para Eventos',                     1,           1) ,    ('msg_tpl_workflow_friend', 'Plantilla de Mensajes Workflow para Contarle a un Amigos',               'Plantilla de Mensajes Workflow para Contarle a un Amigos',                     1,           1) ,    ('msg_tpl_workflow_membership', 'Plantilla de Mensajes Workflow para Membresías',               'Plantilla de Mensajes Workflow para Membresías',                     1,           1) ,    ('msg_tpl_workflow_meta', 'Plantilla de Mensajes Workflow para Plantillas Meta',               'Plantilla de Mensajes Workflow para Plantillas Meta',                     1,           1) ,    ('msg_tpl_workflow_pledge', 'Plantilla de Mensajes Workflow para Compromisos',               'Plantilla de Mensajes Workflow para Compromisos',                     1,           1) ,    ('msg_tpl_workflow_uf', 'Plantilla de Mensajes Workflow para Perfiles',               'Plantilla de Mensajes Workflow para Perfiles',                     1,           1) ,    ('msg_tpl_workflow_petition', 'Plantilla de Mensajes Workflow para Petición',               'Plantilla de Mensajes Workflow para Petición',                     1,           1) ;
+    ('msg_tpl_workflow_case', 'Plantilla de flujo de mensajes para casos',               'Plantilla de flujo de mensajes para casos',                     1,           1) ,    ('msg_tpl_workflow_contribution', 'Plantilla de flujo de mensajes para contribuciones',               'Plantilla de flujo de mensajes para contribuciones',                     1,           1) ,    ('msg_tpl_workflow_event', 'Plantilla de flujo de mensajes para eventos',               'Plantilla de flujo de mensajes para eventos',                     1,           1) ,    ('msg_tpl_workflow_friend', 'Plantilla de flujo de mensajes para contar a un amigo',               'Plantilla de flujo de mensajes para contar a un amigo',                     1,           1) ,    ('msg_tpl_workflow_membership', 'Plantilla de flujo de mensajes para membresías',               'Plantilla de flujo de mensajes para membresías',                     1,           1) ,    ('msg_tpl_workflow_meta', 'Plantilla de flujo de mensajes para plantillas Meta',               'Plantilla de flujo de mensajes para plantillas Meta',                     1,           1) ,    ('msg_tpl_workflow_pledge', 'Plantilla de flujo de mensajes para donaciones',               'Plantilla de flujo de mensajes para donaciones',                     1,           1) ,    ('msg_tpl_workflow_uf', 'Plantilla de flujo de mensajes para perfiles',               'Plantilla de flujo de mensajes para perfiles',                     1,           1) ,    ('msg_tpl_workflow_petition', 'Plantilla de flujo de mensajes para petición',               'Plantilla de flujo de mensajes para petición',                     1,           1) ;
   SELECT @tpl_ogid_case := MAX(id) FROM civicrm_option_group WHERE name = 'msg_tpl_workflow_case';
   SELECT @tpl_ogid_contribution := MAX(id) FROM civicrm_option_group WHERE name = 'msg_tpl_workflow_contribution';
   SELECT @tpl_ogid_event := MAX(id) FROM civicrm_option_group WHERE name = 'msg_tpl_workflow_event';
@@ -6053,7 +6053,7 @@ INSERT INTO civicrm_option_group
 
 INSERT INTO civicrm_option_value
   (option_group_id,        name,       label,   value,                                  weight) VALUES
-      (@tpl_ogid_case, 'case_activity', 'Casos- Enviar Copia de una Actividad',            1, 1) ,      (@tpl_ogid_contribution, 'contribution_dupalert', 'Contribuciones- Alerta de Organización Duplicada',            1, 1) ,      (@tpl_ogid_contribution, 'contribution_offline_receipt', 'Contribuciones- Recibo (off-line)',            2, 2) ,      (@tpl_ogid_contribution, 'contribution_online_receipt', 'Contribuciones- Recibo (on-line)',            3, 3) ,      (@tpl_ogid_contribution, 'contribution_recurring_notify', 'Contribuciones- Notificación de Comienzo y Finalización Recurrente',            4, 4) ,      (@tpl_ogid_contribution, 'contribution_recurring_cancelled', 'Contribuciones- Notificación de Cancelación Periódica',            5, 5) ,      (@tpl_ogid_contribution, 'contribution_recurring_billing', 'Contribuciones- Actualizaciones de Facturación Periódica',            6, 6) ,      (@tpl_ogid_contribution, 'contribution_recurring_edit', 'Contribuciones- Actualizaciones Periódicas',            7, 7) ,      (@tpl_ogid_contribution, 'pcp_notify', 'Páginas de Campaña Personal- Notificación de Administración',            8, 8) ,      (@tpl_ogid_contribution, 'pcp_status_change', 'Páginas de Campaña Personal- Notificación de Cambio de Estado del Colaborador',            9, 9) ,      (@tpl_ogid_contribution, 'pcp_supporter_notify', 'Páginas de Campaña Personal- Bienvenida al Colaborador',            10, 10) ,      (@tpl_ogid_event, 'event_offline_receipt', 'Eventos- Recibo y Confirmación de Registro (off-line)',            1, 1) ,      (@tpl_ogid_event, 'event_online_receipt', 'Eventos- Recibo y Confirmación de Registro (on-line)',            2, 2) ,      (@tpl_ogid_event, 'event_registration_receipt', 'Eventos- Recibos únicamente',            3, 3) ,      (@tpl_ogid_event, 'participant_cancelled', 'Eventos - Noticia de Cancelación de Registro',            4, 4) ,      (@tpl_ogid_event, 'participant_confirm', 'Eventos - Invitación a Confirmación de Registro',            5, 5) ,      (@tpl_ogid_event, 'participant_expired', 'Eventos - Noticia de Expiración de Registro Pendiente',            6, 6) ,      (@tpl_ogid_friend, 'friend', 'Correo Electrónico para Contarle a un Amigo',            1, 1) ,      (@tpl_ogid_membership, 'membership_offline_receipt', 'Membresía- Recibos de Inscripción y Renovación (off-line)',            1, 1) ,      (@tpl_ogid_membership, 'membership_online_receipt', 'Membresía- Recibo (on-line)',            2, 2) ,      (@tpl_ogid_membership, 'membership_autorenew_cancelled', 'Membresía- Notificación de Cancelación de Renovación Automática',            3, 3) ,      (@tpl_ogid_membership, 'membership_autorenew_billing', 'Membresía- Actualizaciones de Facturación de Renovación Automática',            4, 4) ,      (@tpl_ogid_meta, 'test_preview', 'Prueba Piloto - Encabezado de Recibo',            1, 1) ,      (@tpl_ogid_pledge, 'pledge_acknowledge', 'Compromisos- Reconocimiento',            1, 1) ,      (@tpl_ogid_pledge, 'pledge_reminder', 'Compromisos- Recordatorio de Pago',            2, 2) ,      (@tpl_ogid_uf, 'uf_notify', 'Perfiles- Notificación de Administración',            1, 1) ,      (@tpl_ogid_petition, 'petition_sign', 'Petición - firma añadida',            1, 1) ,      (@tpl_ogid_petition, 'petition_confirmation_needed', 'Petición - se necesita verificación',            2, 2) ;
+      (@tpl_ogid_case, 'case_activity', 'Casos - Enviar copia de una actividad',            1, 1) ,      (@tpl_ogid_contribution, 'contribution_dupalert', 'Contribuciones- Alerta de organización duplicada',            1, 1) ,      (@tpl_ogid_contribution, 'contribution_offline_receipt', 'Contribuciones- Recibo (off-line)',            2, 2) ,      (@tpl_ogid_contribution, 'contribution_online_receipt', 'Contribuciones- Recibo (on-line)',            3, 3) ,      (@tpl_ogid_contribution, 'contribution_recurring_notify', 'Contribuciones- Notificación de comienzo y finalización recurrente',            4, 4) ,      (@tpl_ogid_contribution, 'contribution_recurring_cancelled', 'Contribuciones - Notificación de cancelación periódica',            5, 5) ,      (@tpl_ogid_contribution, 'contribution_recurring_billing', 'Contribuciones - Actualizaciones de facturación periódica',            6, 6) ,      (@tpl_ogid_contribution, 'contribution_recurring_edit', 'Contribuciones- Actualizaciones periódicas',            7, 7) ,      (@tpl_ogid_contribution, 'pcp_notify', 'Páginas de campaña personal- Notificación de administración',            8, 8) ,      (@tpl_ogid_contribution, 'pcp_status_change', 'Páginas de campaña personal- Notificación de cambio de estado de colaborador',            9, 9) ,      (@tpl_ogid_contribution, 'pcp_supporter_notify', 'Páginas de campaña personal- Bienvenida al colaborador',            10, 10) ,      (@tpl_ogid_event, 'event_offline_receipt', 'Eventos- Recibo y confirmación de registro (off-line)',            1, 1) ,      (@tpl_ogid_event, 'event_online_receipt', 'Eventos- Recibo y confirmación de registro (on-line)',            2, 2) ,      (@tpl_ogid_event, 'event_registration_receipt', 'Eventos- Recibos únicamente',            3, 3) ,      (@tpl_ogid_event, 'participant_cancelled', 'Eventos - Noticia de cancelación de registro',            4, 4) ,      (@tpl_ogid_event, 'participant_confirm', 'Eventos - Invitación a confirmación de registro',            5, 5) ,      (@tpl_ogid_event, 'participant_expired', 'Eventos - Noticia de expiración de registro pendiente',            6, 6) ,      (@tpl_ogid_friend, 'friend', 'Correo electrónico para contarle a un amigo',            1, 1) ,      (@tpl_ogid_membership, 'membership_offline_receipt', 'Membresía- Recibos de inscripción y renovación (off-line)',            1, 1) ,      (@tpl_ogid_membership, 'membership_online_receipt', 'Membresías - Recibo (on-line)',            2, 2) ,      (@tpl_ogid_membership, 'membership_autorenew_cancelled', 'Membresías - Notificación de cancelación de renovación automática',            3, 3) ,      (@tpl_ogid_membership, 'membership_autorenew_billing', 'Membresía- Actualizaciones de facturación de renovación automática',            4, 4) ,      (@tpl_ogid_meta, 'test_preview', 'Prueba piloto - Encabezado de recibo',            1, 1) ,      (@tpl_ogid_pledge, 'pledge_acknowledge', 'Promesas - reconocimiento',            1, 1) ,      (@tpl_ogid_pledge, 'pledge_reminder', 'Promesas - Recordatorio de pago',            2, 2) ,      (@tpl_ogid_uf, 'uf_notify', 'Perfiles- Administración de notificación',            1, 1) ,      (@tpl_ogid_petition, 'petition_sign', 'Petición - firma añadida',            1, 1) ,      (@tpl_ogid_petition, 'petition_confirmation_needed', 'Petición - se necesita verificación',            2, 2) ;
     SELECT @tpl_ovid_case_activity := MAX(id) FROM civicrm_option_value WHERE option_group_id = @tpl_ogid_case AND name = 'case_activity';
     SELECT @tpl_ovid_contribution_dupalert := MAX(id) FROM civicrm_option_value WHERE option_group_id = @tpl_ogid_contribution AND name = 'contribution_dupalert';
     SELECT @tpl_ovid_contribution_offline_receipt := MAX(id) FROM civicrm_option_value WHERE option_group_id = @tpl_ogid_contribution AND name = 'contribution_offline_receipt';
@@ -6088,7 +6088,7 @@ INSERT INTO civicrm_msg_template
       
       
       
-      ('Casos- Enviar Copia de una Actividad', '{if $idHash}[case #{$idHash}]{/if} {$activitySubject}
+      ('Casos - Enviar copia de una actividad', '{if $idHash}[case #{$idHash}]{/if} {$activitySubject}
 ', '===========================================================
 {ts}Activity Summary{/ts} - {$activityTypeName}
 ===========================================================
@@ -6232,7 +6232,7 @@ INSERT INTO civicrm_msg_template
 </body>
 </html>
 ', @tpl_ovid_case_activity, 1,          0),
-      ('Casos- Enviar Copia de una Actividad', '{if $idHash}[case #{$idHash}]{/if} {$activitySubject}
+      ('Casos - Enviar copia de una actividad', '{if $idHash}[case #{$idHash}]{/if} {$activitySubject}
 ', '===========================================================
 {ts}Activity Summary{/ts} - {$activityTypeName}
 ===========================================================
@@ -6378,7 +6378,7 @@ INSERT INTO civicrm_msg_template
 ', @tpl_ovid_case_activity, 0,          1) ,      
       
       
-      ('Contribuciones- Alerta de Organización Duplicada', '{ts}CiviContribute Alert: Possible Duplicate Contact Record{/ts}
+      ('Contribuciones- Alerta de organización duplicada', '{ts}CiviContribute Alert: Possible Duplicate Contact Record{/ts}
 ', '{ts}A contribution / membership signup was made on behalf of the organization listed below.{/ts}
 {ts}The information provided matched multiple existing database records based on the configured
 Duplicate Matching Rules for your site.{/ts}
@@ -6489,7 +6489,7 @@ rule for Organizations to find the potential duplicates and merge them if approp
 </body>
 </html>
 ', @tpl_ovid_contribution_dupalert, 1,          0),
-      ('Contribuciones- Alerta de Organización Duplicada', '{ts}CiviContribute Alert: Possible Duplicate Contact Record{/ts}
+      ('Contribuciones- Alerta de organización duplicada', '{ts}CiviContribute Alert: Possible Duplicate Contact Record{/ts}
 ', '{ts}A contribution / membership signup was made on behalf of the organization listed below.{/ts}
 {ts}The information provided matched multiple existing database records based on the configured
 Duplicate Matching Rules for your site.{/ts}
@@ -8484,7 +8484,7 @@ rule for Organizations to find the potential duplicates and merge them if approp
 ', @tpl_ovid_contribution_online_receipt, 0,          1) ,      
       
       
-      ('Contribuciones- Notificación de Comienzo y Finalización Recurrente', '{ts}Recurring Contribution Notification{/ts}
+      ('Contribuciones- Notificación de comienzo y finalización recurrente', '{ts}Recurring Contribution Notification{/ts}
 ', '{ts 1=$displayName}Dear %1{/ts},
 
 {if $recur_txnType eq \'START\'}
@@ -8661,7 +8661,7 @@ rule for Organizations to find the potential duplicates and merge them if approp
 </body>
 </html>
 ', @tpl_ovid_contribution_recurring_notify, 1,          0),
-      ('Contribuciones- Notificación de Comienzo y Finalización Recurrente', '{ts}Recurring Contribution Notification{/ts}
+      ('Contribuciones- Notificación de comienzo y finalización recurrente', '{ts}Recurring Contribution Notification{/ts}
 ', '{ts 1=$displayName}Dear %1{/ts},
 
 {if $recur_txnType eq \'START\'}
@@ -8840,7 +8840,7 @@ rule for Organizations to find the potential duplicates and merge them if approp
 ', @tpl_ovid_contribution_recurring_notify, 0,          1) ,      
       
       
-      ('Contribuciones- Notificación de Cancelación Periódica', '{ts}Recurring Contribution Cancellation Notification{/ts}
+      ('Contribuciones - Notificación de cancelación periódica', '{ts}Recurring Contribution Cancellation Notification{/ts}
 ', '{ts 1=$contact.display_name}Dear %1{/ts},
 
 {ts 1=$amount 2=$recur_frequency_interval 3=$recur_frequency_unit}Your recurring contribution of %1, every %2 %3 has been cancelled as requested.{/ts}
@@ -8878,7 +8878,7 @@ rule for Organizations to find the potential duplicates and merge them if approp
 </body>
 </html>
 ', @tpl_ovid_contribution_recurring_cancelled, 1,          0),
-      ('Contribuciones- Notificación de Cancelación Periódica', '{ts}Recurring Contribution Cancellation Notification{/ts}
+      ('Contribuciones - Notificación de cancelación periódica', '{ts}Recurring Contribution Cancellation Notification{/ts}
 ', '{ts 1=$contact.display_name}Dear %1{/ts},
 
 {ts 1=$amount 2=$recur_frequency_interval 3=$recur_frequency_unit}Your recurring contribution of %1, every %2 %3 has been cancelled as requested.{/ts}
@@ -8918,7 +8918,7 @@ rule for Organizations to find the potential duplicates and merge them if approp
 ', @tpl_ovid_contribution_recurring_cancelled, 0,          1) ,      
       
       
-      ('Contribuciones- Actualizaciones de Facturación Periódica', '{ts}Recurring Contribution Billing Updates{/ts}', '{ts 1=$contact.display_name}Dear %1{/ts},
+      ('Contribuciones - Actualizaciones de facturación periódica', '{ts}Recurring Contribution Billing Updates{/ts}', '{ts 1=$contact.display_name}Dear %1{/ts},
 
 {ts 1=$amount 2=$recur_frequency_interval 3=$recur_frequency_unit}Billing details for your recurring contribution of %1, every %2 %3 have been updated.{/ts}
 
@@ -9005,7 +9005,7 @@ rule for Organizations to find the potential duplicates and merge them if approp
 
 </body>
 </html>', @tpl_ovid_contribution_recurring_billing, 1,          0),
-      ('Contribuciones- Actualizaciones de Facturación Periódica', '{ts}Recurring Contribution Billing Updates{/ts}', '{ts 1=$contact.display_name}Dear %1{/ts},
+      ('Contribuciones - Actualizaciones de facturación periódica', '{ts}Recurring Contribution Billing Updates{/ts}', '{ts 1=$contact.display_name}Dear %1{/ts},
 
 {ts 1=$amount 2=$recur_frequency_interval 3=$recur_frequency_unit}Billing details for your recurring contribution of %1, every %2 %3 have been updated.{/ts}
 
@@ -9094,7 +9094,7 @@ rule for Organizations to find the potential duplicates and merge them if approp
 </html>', @tpl_ovid_contribution_recurring_billing, 0,          1) ,      
       
       
-      ('Contribuciones- Actualizaciones Periódicas', '{ts}Recurring Contribution Update Notification{/ts}', '{ts 1=$contact.display_name}Dear %1{/ts}, 
+      ('Contribuciones- Actualizaciones periódicas', '{ts}Recurring Contribution Update Notification{/ts}', '{ts 1=$contact.display_name}Dear %1{/ts}, 
 
 {ts}Your recurring contribution has been updated as requested:{/ts} 
 
@@ -9138,7 +9138,7 @@ rule for Organizations to find the potential duplicates and merge them if approp
 </body>
 </html>
 ', @tpl_ovid_contribution_recurring_edit, 1,          0),
-      ('Contribuciones- Actualizaciones Periódicas', '{ts}Recurring Contribution Update Notification{/ts}', '{ts 1=$contact.display_name}Dear %1{/ts}, 
+      ('Contribuciones- Actualizaciones periódicas', '{ts}Recurring Contribution Update Notification{/ts}', '{ts 1=$contact.display_name}Dear %1{/ts}, 
 
 {ts}Your recurring contribution has been updated as requested:{/ts} 
 
@@ -9184,7 +9184,7 @@ rule for Organizations to find the potential duplicates and merge them if approp
 ', @tpl_ovid_contribution_recurring_edit, 0,          1) ,      
       
       
-      ('Páginas de Campaña Personal- Notificación de Administración', '{ts}Personal Campaign Page Notification{/ts}
+      ('Páginas de campaña personal- Notificación de administración', '{ts}Personal Campaign Page Notification{/ts}
 ', '===========================================================
 {ts}Personal Campaign Page Notification{/ts}
 
@@ -9302,7 +9302,7 @@ rule for Organizations to find the potential duplicates and merge them if approp
 </body>
 </html>
 ', @tpl_ovid_pcp_notify, 1,          0),
-      ('Páginas de Campaña Personal- Notificación de Administración', '{ts}Personal Campaign Page Notification{/ts}
+      ('Páginas de campaña personal- Notificación de administración', '{ts}Personal Campaign Page Notification{/ts}
 ', '===========================================================
 {ts}Personal Campaign Page Notification{/ts}
 
@@ -9422,7 +9422,7 @@ rule for Organizations to find the potential duplicates and merge them if approp
 ', @tpl_ovid_pcp_notify, 0,          1) ,      
       
       
-      ('Páginas de Campaña Personal- Notificación de Cambio de Estado del Colaborador', '{ts 1=$contribPageTitle}Your Personal Campaign Page for %1{/ts}
+      ('Páginas de campaña personal- Notificación de cambio de estado de colaborador', '{ts 1=$contribPageTitle}Your Personal Campaign Page for %1{/ts}
 ', '{if $pcpStatus eq \'Approved\'}
 ============================
 {ts}Your Personal Campaign Page{/ts}
@@ -9530,7 +9530,7 @@ which prevented us from approving the page. We are sorry for any inconvenience.{
 </body>
 </html>
 ', @tpl_ovid_pcp_status_change, 1,          0),
-      ('Páginas de Campaña Personal- Notificación de Cambio de Estado del Colaborador', '{ts 1=$contribPageTitle}Your Personal Campaign Page for %1{/ts}
+      ('Páginas de campaña personal- Notificación de cambio de estado de colaborador', '{ts 1=$contribPageTitle}Your Personal Campaign Page for %1{/ts}
 ', '{if $pcpStatus eq \'Approved\'}
 ============================
 {ts}Your Personal Campaign Page{/ts}
@@ -9640,7 +9640,7 @@ which prevented us from approving the page. We are sorry for any inconvenience.{
 ', @tpl_ovid_pcp_status_change, 0,          1) ,      
       
       
-      ('Páginas de Campaña Personal- Bienvenida al Colaborador', '{ts 1=$contribPageTitle}Your Personal Campaign Page for %1{/ts}
+      ('Páginas de campaña personal- Bienvenida al colaborador', '{ts 1=$contribPageTitle}Your Personal Campaign Page for %1{/ts}
 ', '{ts}Dear supporter{/ts},
 {ts 1="$contribPageTitle"}Thanks for creating a personal campaign page in support of %1.{/ts}
 
@@ -9800,7 +9800,7 @@ your page, tell friends, and update your contact info.{/ts}</p>
 </body>
 </html>
 ', @tpl_ovid_pcp_supporter_notify, 1,          0),
-      ('Páginas de Campaña Personal- Bienvenida al Colaborador', '{ts 1=$contribPageTitle}Your Personal Campaign Page for %1{/ts}
+      ('Páginas de campaña personal- Bienvenida al colaborador', '{ts 1=$contribPageTitle}Your Personal Campaign Page for %1{/ts}
 ', '{ts}Dear supporter{/ts},
 {ts 1="$contribPageTitle"}Thanks for creating a personal campaign page in support of %1.{/ts}
 
@@ -9962,7 +9962,7 @@ your page, tell friends, and update your contact info.{/ts}</p>
 ', @tpl_ovid_pcp_supporter_notify, 0,          1) ,      
       
       
-      ('Eventos- Recibo y Confirmación de Registro (off-line)', '{ts}Event Confirmation{/ts} - {$event.title}
+      ('Eventos- Recibo y confirmación de registro (off-line)', '{ts}Event Confirmation{/ts} - {$event.title}
 ', '{if $event.confirm_email_text AND (not $isOnWaitlist AND not $isRequireApproval)}
 {$event.confirm_email_text}
 {/if}
@@ -10040,7 +10040,7 @@ registration process.{/ts}
 {foreach from=$location.phone item=phone}
 {if $phone.phone}
 
-{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if}
+{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if} {if $phone.phone_ext} {ts}ext.{/ts} {$phone.phone_ext}{/if}
 {/foreach}
 {foreach from=$location.email item=eventEmail}
 {if $eventEmail.email}
@@ -10354,7 +10354,7 @@ registration process.{/ts}</p>
           {/if}
          </td>
          <td {$valueStyle}>
-          {$phone.phone}
+          {$phone.phone} {if $phone.phone_ext}&nbsp;{ts}ext.{/ts} {$phone.phone_ext}{/if}
          </td>
         </tr>
        {/if}
@@ -10700,7 +10700,7 @@ registration process.{/ts}</p>
 </body>
 </html>
 ', @tpl_ovid_event_offline_receipt, 1,          0),
-      ('Eventos- Recibo y Confirmación de Registro (off-line)', '{ts}Event Confirmation{/ts} - {$event.title}
+      ('Eventos- Recibo y confirmación de registro (off-line)', '{ts}Event Confirmation{/ts} - {$event.title}
 ', '{if $event.confirm_email_text AND (not $isOnWaitlist AND not $isRequireApproval)}
 {$event.confirm_email_text}
 {/if}
@@ -10778,7 +10778,7 @@ registration process.{/ts}
 {foreach from=$location.phone item=phone}
 {if $phone.phone}
 
-{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if}
+{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if} {if $phone.phone_ext} {ts}ext.{/ts} {$phone.phone_ext}{/if}
 {/foreach}
 {foreach from=$location.email item=eventEmail}
 {if $eventEmail.email}
@@ -11092,7 +11092,7 @@ registration process.{/ts}</p>
           {/if}
          </td>
          <td {$valueStyle}>
-          {$phone.phone}
+          {$phone.phone} {if $phone.phone_ext}&nbsp;{ts}ext.{/ts} {$phone.phone_ext}{/if}
          </td>
         </tr>
        {/if}
@@ -11440,7 +11440,7 @@ registration process.{/ts}</p>
 ', @tpl_ovid_event_offline_receipt, 0,          1) ,      
       
       
-      ('Eventos- Recibo y Confirmación de Registro (on-line)', '{if $isOnWaitlist}{ts}Wait List Confirmation{/ts}{else}{ts}Registration Confirmation{/ts}{/if} - {$event.event_title}', 'Dear {contact.display_name},
+      ('Eventos- Recibo y confirmación de registro (on-line)', '{if $isOnWaitlist}{ts}Wait List Confirmation{/ts}{else}{ts}Registration Confirmation{/ts}{/if} - {$event.event_title}', 'Dear {contact.display_name},
 
 {if $event.confirm_email_text AND (not $isOnWaitlist AND not $isRequireApproval)}
 {$event.confirm_email_text}
@@ -11539,7 +11539,7 @@ registration process.{/ts}
 {foreach from=$location.phone item=phone}
 {if $phone.phone}
 
-{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if}
+{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if} {if $phone.phone_ext} {ts}ext.{/ts} {$phone.phone_ext}{/if}
 {/foreach}
 {foreach from=$location.email item=eventEmail}
 {if $eventEmail.email}
@@ -11862,7 +11862,7 @@ registration process.{/ts}</p>
           {/if}
          </td>
          <td {$valueStyle}>
-          {$phone.phone}
+          {$phone.phone} {if $phone.phone_ext}&nbsp;{ts}ext.{/ts} {$phone.phone_ext}{/if}
          </td>
         </tr>
        {/if}
@@ -12174,7 +12174,7 @@ registration process.{/ts}</p>
 </body>
 </html>
 ', @tpl_ovid_event_online_receipt, 1,          0),
-      ('Eventos- Recibo y Confirmación de Registro (on-line)', '{if $isOnWaitlist}{ts}Wait List Confirmation{/ts}{else}{ts}Registration Confirmation{/ts}{/if} - {$event.event_title}', 'Dear {contact.display_name},
+      ('Eventos- Recibo y confirmación de registro (on-line)', '{if $isOnWaitlist}{ts}Wait List Confirmation{/ts}{else}{ts}Registration Confirmation{/ts}{/if} - {$event.event_title}', 'Dear {contact.display_name},
 
 {if $event.confirm_email_text AND (not $isOnWaitlist AND not $isRequireApproval)}
 {$event.confirm_email_text}
@@ -12273,7 +12273,7 @@ registration process.{/ts}
 {foreach from=$location.phone item=phone}
 {if $phone.phone}
 
-{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if}
+{if $phone.phone_type}{$phone.phone_type_display}{else}{ts}Phone{/ts}{/if}: {$phone.phone}{/if} {if $phone.phone_ext} {ts}ext.{/ts} {$phone.phone_ext}{/if}
 {/foreach}
 {foreach from=$location.email item=eventEmail}
 {if $eventEmail.email}
@@ -12596,7 +12596,7 @@ registration process.{/ts}</p>
           {/if}
          </td>
          <td {$valueStyle}>
-          {$phone.phone}
+          {$phone.phone} {if $phone.phone_ext}&nbsp;{ts}ext.{/ts} {$phone.phone_ext}{/if}
          </td>
         </tr>
        {/if}
@@ -13482,7 +13482,7 @@ Total: {$total|crmMoney:$currency|string_format:"%10s"}
 ', @tpl_ovid_event_registration_receipt, 0,          1) ,      
       
       
-      ('Eventos - Noticia de Cancelación de Registro', '{ts 1=$event.event_title}Event Registration Cancelled for %1{/ts}
+      ('Eventos - Noticia de cancelación de registro', '{ts 1=$event.event_title}Event Registration Cancelled for %1{/ts}
 ', '{ts 1=$contact.display_name}Dear %1{/ts},
 
 {ts}Your Event Registration has been cancelled.{/ts}
@@ -13698,7 +13698,7 @@ Total: {$total|crmMoney:$currency|string_format:"%10s"}
 </body>
 </html>
 ', @tpl_ovid_participant_cancelled, 1,          0),
-      ('Eventos - Noticia de Cancelación de Registro', '{ts 1=$event.event_title}Event Registration Cancelled for %1{/ts}
+      ('Eventos - Noticia de cancelación de registro', '{ts 1=$event.event_title}Event Registration Cancelled for %1{/ts}
 ', '{ts 1=$contact.display_name}Dear %1{/ts},
 
 {ts}Your Event Registration has been cancelled.{/ts}
@@ -13916,7 +13916,7 @@ Total: {$total|crmMoney:$currency|string_format:"%10s"}
 ', @tpl_ovid_participant_cancelled, 0,          1) ,      
       
       
-      ('Eventos - Invitación a Confirmación de Registro', '{ts 1=$event.event_title}Confirm your registration for %1{/ts}
+      ('Eventos - Invitación a confirmación de registro', '{ts 1=$event.event_title}Confirm your registration for %1{/ts}
 ', '{ts 1=$contact.display_name}Dear %1{/ts},
 {if !$isAdditional and $participant.id}
 
@@ -14189,7 +14189,7 @@ Click this link to go to a web page where you can confirm your registration onli
 </body>
 </html>
 ', @tpl_ovid_participant_confirm, 1,          0),
-      ('Eventos - Invitación a Confirmación de Registro', '{ts 1=$event.event_title}Confirm your registration for %1{/ts}
+      ('Eventos - Invitación a confirmación de registro', '{ts 1=$event.event_title}Confirm your registration for %1{/ts}
 ', '{ts 1=$contact.display_name}Dear %1{/ts},
 {if !$isAdditional and $participant.id}
 
@@ -14464,7 +14464,7 @@ Click this link to go to a web page where you can confirm your registration onli
 ', @tpl_ovid_participant_confirm, 0,          1) ,      
       
       
-      ('Eventos - Noticia de Expiración de Registro Pendiente', '{ts 1=$event.event_title}Event registration has expired for %1{/ts}
+      ('Eventos - Noticia de expiración de registro pendiente', '{ts 1=$event.event_title}Event registration has expired for %1{/ts}
 ', '{ts 1=$contact.display_name}Dear %1{/ts},
 
 {ts 1=$event.event_title}Your pending event registration for %1 has expired
@@ -14687,7 +14687,7 @@ or want to inquire about reinstating your registration for this event.{/ts}</p>
 </body>
 </html>
 ', @tpl_ovid_participant_expired, 1,          0),
-      ('Eventos - Noticia de Expiración de Registro Pendiente', '{ts 1=$event.event_title}Event registration has expired for %1{/ts}
+      ('Eventos - Noticia de expiración de registro pendiente', '{ts 1=$event.event_title}Event registration has expired for %1{/ts}
 ', '{ts 1=$contact.display_name}Dear %1{/ts},
 
 {ts 1=$event.event_title}Your pending event registration for %1 has expired
@@ -14912,7 +14912,7 @@ or want to inquire about reinstating your registration for this event.{/ts}</p>
 ', @tpl_ovid_participant_expired, 0,          1) ,      
       
       
-      ('Correo Electrónico para Contarle a un Amigo', '{ts 1=$senderContactName 2=$title}%1 wants you to know about %2{/ts}
+      ('Correo electrónico para contarle a un amigo', '{ts 1=$senderContactName 2=$title}%1 wants you to know about %2{/ts}
 ', '{$senderMessage}
 
 {if $generalLink}{ts}For more information, visit:{/ts}
@@ -14969,7 +14969,7 @@ or want to inquire about reinstating your registration for this event.{/ts}</p>
 </body>
 </html>
 ', @tpl_ovid_friend, 1,          0),
-      ('Correo Electrónico para Contarle a un Amigo', '{ts 1=$senderContactName 2=$title}%1 wants you to know about %2{/ts}
+      ('Correo electrónico para contarle a un amigo', '{ts 1=$senderContactName 2=$title}%1 wants you to know about %2{/ts}
 ', '{$senderMessage}
 
 {if $generalLink}{ts}For more information, visit:{/ts}
@@ -15028,7 +15028,7 @@ or want to inquire about reinstating your registration for this event.{/ts}</p>
 ', @tpl_ovid_friend, 0,          1) ,      
       
       
-      ('Membresía- Recibos de Inscripción y Renovación (off-line)', '{if $receiptType EQ \'membership signup\'}
+      ('Membresía- Recibos de inscripción y renovación (off-line)', '{if $receiptType EQ \'membership signup\'}
 {ts}Membership Confirmation and Receipt{/ts}
 {elseif $receiptType EQ \'membership renewal\'}
 {ts}Membership Renewal Confirmation and Receipt{/ts}
@@ -15364,7 +15364,7 @@ or want to inquire about reinstating your registration for this event.{/ts}</p>
 </body>
 </html>
 ', @tpl_ovid_membership_offline_receipt, 1,          0),
-      ('Membresía- Recibos de Inscripción y Renovación (off-line)', '{if $receiptType EQ \'membership signup\'}
+      ('Membresía- Recibos de inscripción y renovación (off-line)', '{if $receiptType EQ \'membership signup\'}
 {ts}Membership Confirmation and Receipt{/ts}
 {elseif $receiptType EQ \'membership renewal\'}
 {ts}Membership Renewal Confirmation and Receipt{/ts}
@@ -15702,7 +15702,7 @@ or want to inquire about reinstating your registration for this event.{/ts}</p>
 ', @tpl_ovid_membership_offline_receipt, 0,          1) ,      
       
       
-      ('Membresía- Recibo (on-line)', '{if $is_pay_later}{ts}Invoice{/ts}{else}{ts}Receipt{/ts}{/if} - {$title}
+      ('Membresías - Recibo (on-line)', '{if $is_pay_later}{ts}Invoice{/ts}{else}{ts}Receipt{/ts}{/if} - {$title}
 ', '{if $receipt_text}
 {$receipt_text}
 {/if}
@@ -16439,7 +16439,7 @@ or want to inquire about reinstating your registration for this event.{/ts}</p>
 </body>
 </html>
 ', @tpl_ovid_membership_online_receipt, 1,          0),
-      ('Membresía- Recibo (on-line)', '{if $is_pay_later}{ts}Invoice{/ts}{else}{ts}Receipt{/ts}{/if} - {$title}
+      ('Membresías - Recibo (on-line)', '{if $is_pay_later}{ts}Invoice{/ts}{else}{ts}Receipt{/ts}{/if} - {$title}
 ', '{if $receipt_text}
 {$receipt_text}
 {/if}
@@ -17178,7 +17178,7 @@ or want to inquire about reinstating your registration for this event.{/ts}</p>
 ', @tpl_ovid_membership_online_receipt, 0,          1) ,      
       
       
-      ('Membresía- Notificación de Cancelación de Renovación Automática', '{ts}Autorenew Membership Cancellation Notification{/ts}
+      ('Membresías - Notificación de cancelación de renovación automática', '{ts}Autorenew Membership Cancellation Notification{/ts}
 ', '{ts 1=$membershipType}The automatic renewal of your %1 membership has been cancelled as requested. This does not affect the status of your membership - you will receive a separate notification when your membership is up for renewal.{/ts}
 
 ===========================================================
@@ -17262,7 +17262,7 @@ or want to inquire about reinstating your registration for this event.{/ts}</p>
 </body>
 </html>
 ', @tpl_ovid_membership_autorenew_cancelled, 1,          0),
-      ('Membresía- Notificación de Cancelación de Renovación Automática', '{ts}Autorenew Membership Cancellation Notification{/ts}
+      ('Membresías - Notificación de cancelación de renovación automática', '{ts}Autorenew Membership Cancellation Notification{/ts}
 ', '{ts 1=$membershipType}The automatic renewal of your %1 membership has been cancelled as requested. This does not affect the status of your membership - you will receive a separate notification when your membership is up for renewal.{/ts}
 
 ===========================================================
@@ -17348,7 +17348,7 @@ or want to inquire about reinstating your registration for this event.{/ts}</p>
 ', @tpl_ovid_membership_autorenew_cancelled, 0,          1) ,      
       
       
-      ('Membresía- Actualizaciones de Facturación de Renovación Automática', '{ts}Membership Autorenewal Billing Updates{/ts}', '{ts 1=$contact.display_name}Dear %1{/ts},
+      ('Membresía- Actualizaciones de facturación de renovación automática', '{ts}Membership Autorenewal Billing Updates{/ts}', '{ts 1=$contact.display_name}Dear %1{/ts},
 
 {ts 1=$membershipType}Billing details for your automatically renewed %1 membership have been updated.{/ts}
 
@@ -17437,7 +17437,7 @@ or want to inquire about reinstating your registration for this event.{/ts}</p>
 </body>
 </html>
 ', @tpl_ovid_membership_autorenew_billing, 1,          0),
-      ('Membresía- Actualizaciones de Facturación de Renovación Automática', '{ts}Membership Autorenewal Billing Updates{/ts}', '{ts 1=$contact.display_name}Dear %1{/ts},
+      ('Membresía- Actualizaciones de facturación de renovación automática', '{ts}Membership Autorenewal Billing Updates{/ts}', '{ts 1=$contact.display_name}Dear %1{/ts},
 
 {ts 1=$membershipType}Billing details for your automatically renewed %1 membership have been updated.{/ts}
 
@@ -17528,7 +17528,7 @@ or want to inquire about reinstating your registration for this event.{/ts}</p>
 ', @tpl_ovid_membership_autorenew_billing, 0,          1) ,      
       
       
-      ('Prueba Piloto - Encabezado de Recibo', '[TEST] 
+      ('Prueba piloto - Encabezado de recibo', '[TEST] 
 ', '***********************************************************
 
 {ts}Test-drive Email / Receipt{/ts} 
@@ -17547,7 +17547,7 @@ or want to inquire about reinstating your registration for this event.{/ts}</p>
  </table>
 </center>
 ', @tpl_ovid_test_preview, 1,          0),
-      ('Prueba Piloto - Encabezado de Recibo', '[TEST] 
+      ('Prueba piloto - Encabezado de recibo', '[TEST] 
 ', '***********************************************************
 
 {ts}Test-drive Email / Receipt{/ts} 
@@ -17568,7 +17568,7 @@ or want to inquire about reinstating your registration for this event.{/ts}</p>
 ', @tpl_ovid_test_preview, 0,          1) ,      
       
       
-      ('Compromisos- Reconocimiento', '{ts}Thank you for your Pledge{/ts}
+      ('Promesas - reconocimiento', '{ts}Thank you for your Pledge{/ts}
 ', '{ts 1=$contact.display_name}Dear %1{/ts},
 
 {ts}Thank you for your generous pledge. Please print this acknowledgment for your records.{/ts}
@@ -17757,7 +17757,7 @@ or need to modify your payment schedule.{/ts}</p>
 </body>
 </html>
 ', @tpl_ovid_pledge_acknowledge, 1,          0),
-      ('Compromisos- Reconocimiento', '{ts}Thank you for your Pledge{/ts}
+      ('Promesas - reconocimiento', '{ts}Thank you for your Pledge{/ts}
 ', '{ts 1=$contact.display_name}Dear %1{/ts},
 
 {ts}Thank you for your generous pledge. Please print this acknowledgment for your records.{/ts}
@@ -17948,7 +17948,7 @@ or need to modify your payment schedule.{/ts}</p>
 ', @tpl_ovid_pledge_acknowledge, 0,          1) ,      
       
       
-      ('Compromisos- Recordatorio de Pago', '{ts}Pledge Payment Reminder{/ts}
+      ('Promesas - Recordatorio de pago', '{ts}Pledge Payment Reminder{/ts}
 ', '{ts 1=$contact.display_name}Dear %1{/ts},
 
 {ts 1=$next_payment|truncate:10:\'\'|crmDate}This is a reminder that the next payment on your pledge is due on %1.{/ts}
@@ -18090,7 +18090,7 @@ or need to modify your payment schedule.{/ts}</p>
 </body>
 </html>
 ', @tpl_ovid_pledge_reminder, 1,          0),
-      ('Compromisos- Recordatorio de Pago', '{ts}Pledge Payment Reminder{/ts}
+      ('Promesas - Recordatorio de pago', '{ts}Pledge Payment Reminder{/ts}
 ', '{ts 1=$contact.display_name}Dear %1{/ts},
 
 {ts 1=$next_payment|truncate:10:\'\'|crmDate}This is a reminder that the next payment on your pledge is due on %1.{/ts}
@@ -18234,7 +18234,7 @@ or need to modify your payment schedule.{/ts}</p>
 ', @tpl_ovid_pledge_reminder, 0,          1) ,      
       
       
-      ('Perfiles- Notificación de Administración', '{$grouptitle} {ts 1=$displayName}Submitted by %1{/ts}
+      ('Perfiles- Administración de notificación', '{$grouptitle} {ts 1=$displayName}Submitted by %1{/ts}
 ', '{ts}Submitted For:{/ts} {$displayName}
 {ts}Date:{/ts} {$currentDate}
 {ts}Contact Summary:{/ts} {$contactLink}
@@ -18321,7 +18321,7 @@ or need to modify your payment schedule.{/ts}</p>
 </body>
 </html>
 ', @tpl_ovid_uf_notify, 1,          0),
-      ('Perfiles- Notificación de Administración', '{$grouptitle} {ts 1=$displayName}Submitted by %1{/ts}
+      ('Perfiles- Administración de notificación', '{$grouptitle} {ts 1=$displayName}Submitted by %1{/ts}
 ', '{ts}Submitted For:{/ts} {$displayName}
 {ts}Date:{/ts} {$currentDate}
 {ts}Contact Summary:{/ts} {$contactLink}
@@ -18614,18 +18614,18 @@ SELECT @option_value_rel_id_cg  := value FROM civicrm_option_value WHERE option_
 
 SELECT @financial_type_id_dtn 	       := max(id) FROM civicrm_financial_type WHERE name = 'Donación';
 SELECT @financial_type_id_md	       := max(id) FROM civicrm_financial_type WHERE name = 'Cuotas de Miembro';
-SELECT @financial_type_id_cc	       := max(id) FROM civicrm_financial_type WHERE name = 'Contribución de Campaña';
-SELECT @financial_type_id_ef	       := max(id) FROM civicrm_financial_type WHERE name = 'Tarifa del Evento';
+SELECT @financial_type_id_cc	       := max(id) FROM civicrm_financial_type WHERE name = 'Contribución de campaña';
+SELECT @financial_type_id_ef	       := max(id) FROM civicrm_financial_type WHERE name = 'Precio del evento';
 
 SELECT @financial_account_id_dtn       := max(id) FROM civicrm_financial_account WHERE name = 'Donación';
 SELECT @financial_account_id_md	       := max(id) FROM civicrm_financial_account WHERE name = 'Cuotas de Miembro';
-SELECT @financial_account_id_cc	       := max(id) FROM civicrm_financial_account WHERE name = 'Contribución de Campaña';
-SELECT @financial_account_id_ef	       := max(id) FROM civicrm_financial_account WHERE name = 'Tarifa del Evento';
+SELECT @financial_account_id_cc	       := max(id) FROM civicrm_financial_account WHERE name = 'Contribución de campaña';
+SELECT @financial_account_id_ef	       := max(id) FROM civicrm_financial_account WHERE name = 'Precio del evento';
 SELECT @financial_account_id_bf	       := max(id) FROM civicrm_financial_account WHERE name = 'Banking Fees';
 SELECT @financial_account_id_ap	       := max(id) FROM civicrm_financial_account WHERE name = 'Accounts Receivable';
 SELECT @financial_account_id_ar        := max(id) FROM civicrm_financial_account WHERE name = 'Deposit Bank Account';
 SELECT @financial_account_id_pp        := max(id) FROM civicrm_financial_account WHERE name = 'Payment Processor Account';
-SELECT @financial_account_id_pr        := max(id) FROM civicrm_financial_account WHERE name = 'Premio';
+SELECT @financial_account_id_pr        := max(id) FROM civicrm_financial_account WHERE name = 'Premios';
 
 INSERT INTO `civicrm_entity_financial_account`
      ( entity_table, entity_id, account_relationship, financial_account_id )
@@ -19510,4 +19510,4 @@ INSERT INTO `civicrm_report_instance`
 VALUES
     (  @domainID, 'Survey Details', 'survey/detail', 'Detailed report for canvassing, phone-banking, walk lists or other surveys.', 'access CiviReport', 'a:39:{s:6:"fields";a:2:{s:9:"sort_name";s:1:"1";s:6:"result";s:1:"1";}s:22:"assignee_contact_id_op";s:2:"eq";s:25:"assignee_contact_id_value";s:0:"";s:12:"sort_name_op";s:3:"has";s:15:"sort_name_value";s:0:"";s:17:"street_number_min";s:0:"";s:17:"street_number_max";s:0:"";s:16:"street_number_op";s:3:"lte";s:19:"street_number_value";s:0:"";s:14:"street_name_op";s:3:"has";s:17:"street_name_value";s:0:"";s:15:"postal_code_min";s:0:"";s:15:"postal_code_max";s:0:"";s:14:"postal_code_op";s:3:"lte";s:17:"postal_code_value";s:0:"";s:7:"city_op";s:3:"has";s:10:"city_value";s:0:"";s:20:"state_province_id_op";s:2:"in";s:23:"state_province_id_value";a:0:{}s:13:"country_id_op";s:2:"in";s:16:"country_id_value";a:0:{}s:12:"survey_id_op";s:2:"in";s:15:"survey_id_value";a:0:{}s:12:"status_id_op";s:2:"eq";s:15:"status_id_value";s:1:"1";s:11:"custom_1_op";s:2:"in";s:14:"custom_1_value";a:0:{}s:11:"custom_2_op";s:2:"in";s:14:"custom_2_value";a:0:{}s:17:"custom_3_relative";s:1:"0";s:13:"custom_3_from";s:0:"";s:11:"custom_3_to";s:0:"";s:11:"description";s:75:"Detailed report for canvassing, phone-banking, walk lists or other surveys.";s:13:"email_subject";s:0:"";s:8:"email_to";s:0:"";s:8:"email_cc";s:0:"";s:10:"permission";s:17:"access CiviReport";s:6:"groups";s:0:"";s:9:"domain_id";i:1;}');
 
- UPDATE civicrm_domain SET version = '4.3.4';
+ UPDATE civicrm_domain SET version = '4.3.5';
