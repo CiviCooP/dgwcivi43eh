@@ -383,10 +383,10 @@ function civicrm_api3_dgw_address_create($inparms) {
         $location_type = strtolower(trim($inparms['location_type']));
     }
     /*
-     * if no is_primary passed, error
+     * if no is_primary passed, default to 0
      */
     if (!isset($inparms['is_primary'])) {
-        $s_primary = 0;
+        $is_primary = 0;
     } else {
         $is_primary = trim($inparms['is_primary']);
     }
@@ -550,7 +550,7 @@ function civicrm_api3_dgw_address_create($inparms) {
     }
     if (isset($inparms['street_number'])) {
         $address['street_number'] = trim($inparms['street_number']);
-        if (empty($address[street_address])) {
+        if (empty($address['street_address'])) {
             $address['street_address'] = trim($inparms['street_number']);
         } else {
             $address['street_address'] = $address['street_address']." ".trim($inparms['street_number']);
@@ -604,6 +604,8 @@ function civicrm_api3_dgw_address_create($inparms) {
             $entity_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity');
             $entity_id_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity_id');
             $key_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first');
+            $change_date_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('change_date');
+            $toDay = new DateTime(date('Y-m-d'));
             $civiparms5 = array (
                 'version' => 3,
                 'entity_id' => $contact_id,
@@ -611,8 +613,9 @@ function civicrm_api3_dgw_address_create($inparms) {
                 'custom_'.$entity_field['id'] => "address",
                 'custom_'.$entity_id_field['id'] => $address_id,
                 'custom_'.$key_first_field['id'] => $inparms['adr_refno'],
+                'custom_'.$change_date_field['id'] => $toDay->format('Y-m-d H:i:s')
                 );
-            $civicres5 = civicrm_api('CustomValue', 'Create', $civiparms2);
+            $civicres5 = civicrm_api('CustomValue', 'Create', $civiparms5);
         }
         /*
          * return array
