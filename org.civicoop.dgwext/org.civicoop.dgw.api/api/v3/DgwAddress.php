@@ -16,7 +16,7 @@ function civicrm_api3_dgw_address_update($inparms) {
     /*
      * set superglobal to avoid double update via post or pre hook
      */
-    $GLOBALS['dgw_api'] = true;
+    $GLOBALS['dgw_api'] = "nosync";
     /*
      * if no address_id or adr_refno passed, error
      */
@@ -294,7 +294,7 @@ function civicrm_api3_dgw_address_delete($inparms) {
     /*
      * set superglobal to avoid double delete via post or pre hook
      */
-    $GLOBALS['dgw_api'] = true;
+    $GLOBALS['dgw_api'] = "nosync";
     /*
      * if no address_id or adr_refno passed, error
      */
@@ -354,7 +354,8 @@ function civicrm_api3_dgw_address_create($inparms) {
     /*
      * set superglobal to avoid double create via post or pre hook
      */
-    $GLOBALS['dgw_api'] = true;
+    $txt = "Inparms in address_create : ";
+    $GLOBALS['dgw_api'] = "nosync";
     /*
      * if no contact_id or persoonsnummer_first passed, error
      */
@@ -534,9 +535,9 @@ function civicrm_api3_dgw_address_create($inparms) {
         }
     }
     /*
-     *  Add address to contact with standard civicrm function civicrm_location_add
+     *  Add address to contact with standard civicrm api Address Create
      */
-    $address = array(
+    $addressParams = array(
         "location_type_id" =>  $location_type_id,
         "is_primary"       =>  $is_primary,
         "city"             =>  $city,
@@ -545,30 +546,30 @@ function civicrm_api3_dgw_address_create($inparms) {
         'version'          => 3,
         );
     if (isset($street_name)) {
-        $address['street_name'] = $street_name;
-        $address['street_address'] = $street_name;
+        $addressParams['street_name'] = $street_name;
+        $addressParams['street_address'] = $street_name;
     }
     if (isset($inparms['street_number'])) {
-        $address['street_number'] = trim($inparms['street_number']);
-        if (empty($address['street_address'])) {
-            $address['street_address'] = trim($inparms['street_number']);
+        $addressParams['street_number'] = trim($inparms['street_number']);
+        if (empty($addressParams['street_address'])) {
+            $addressParams['street_address'] = trim($inparms['street_number']);
         } else {
-            $address['street_address'] = $address['street_address']." ".trim($inparms['street_number']);
+            $addressParams['street_address'] = $addressParams['street_address']." ".trim($inparms['street_number']);
         }
     }
     if (isset($inparms['street_suffix'])) {
-        $address['street_unit'] = trim($inparms['street_suffix']);
-        if (empty($address['street_address'])) {
-            $address['street_address'] = trim($inparms['street_suffix']);
+        $addressParams['street_unit'] = trim($inparms['street_suffix']);
+        if (empty($addressParams['street_address'])) {
+            $addressParams['street_address'] = trim($inparms['street_suffix']);
         } else {
-            $address['street_address'] = $address['street_address']." ".trim($inparms['street_suffix']);
+            $addressParams['street_address'] = $addressParams['street_address']." ".trim($inparms['street_suffix']);
         }
     }
     if (isset($postcode)) {
-        $address['postal_code'] = $postcode;
+        $addressParams['postal_code'] = $postcode;
     }
     if (isset($country_id)) {
-        $address['country_id'] = $country_id;
+        $addressParams['country_id'] = $country_id;
     }
     /*
      * if location_type = toekomst or oud, set start and end date in add field
@@ -576,18 +577,18 @@ function civicrm_api3_dgw_address_create($inparms) {
     if ($location_type == "oud" || $location_type == "toekomst") {
         if (isset($start_date) && !empty($start_date)) {
             $datum = date("d-m-Y", strtotime($start_date));
-            $address['supplemental_address_1'] = "(Vanaf $datum";
+            $addressParams['supplemental_address_1'] = "(Vanaf $datum";
         }
         if (isset($end_date) && !empty($end_date)) {
             $datum = date("d-m-Y", strtotime($end_date));
-            if (isset($address['supplemental_address_1']) && !empty($address['supplemental_address_1'])) {
-                $address['supplemental_address_1'] = $address['supplemental_address_1']." tot ".$datum.")";
+            if (isset($addressParams['supplemental_address_1']) && !empty($addressParams['supplemental_address_1'])) {
+                $addressParams['supplemental_address_1'] = $addressParams['supplemental_address_1']." tot ".$datum.")";
             } else {
-                $address['supplemental_address_1'] = "(Tot ".$datum.")";
+                $addressParams['supplemental_address_1'] = "(Tot ".$datum.")";
             }
         }
     }
-    $res_adr = civicrm_api('Address', 'create', $address);
+    $res_adr = civicrm_api('Address', 'create', $addressParams);
     if (civicrm_error($res_adr)) {
         return civicrm_api3_create_error("Onverwachte fout van CiviCRM, adres kon niet gemaakt worden, melding : ".$res_adr['error_message']);
     } else {
@@ -710,12 +711,13 @@ function civicrm_api3_dgw_address_get($inparms) {
  * @param type $oudID
  */
 function _replaceCurrentAddress($contact_id, $thuisID, $oudID) {
+    $GLOBALS['dgw_api'] = "nosync";
     $civiparms2 = array (
         'version' => 3,
         'contact_id' => $contact_id,
         'location_type_id' => $thuisID
     );
-    $civires2 = civicrm_api('Address', 'get', $civiparms2);
+    $civires2 = civicrm_api('Address', 'Get', $civiparms2);
     if (isset($civires2['values']) && is_array($civires2['values'])) {
         /*
          * remove all existing addresses with type Oud
@@ -731,7 +733,7 @@ function _replaceCurrentAddress($contact_id, $thuisID, $oudID) {
                 'contact_id' => $contact_id,
                 'location_type_id' => $oudID,
             );
-            $civires4 = civicrm_api('Address', 'create', $civiparms4);
+            $civires4 = civicrm_api('Address', 'update', $civiparms4);
         }
     }
 }
@@ -741,6 +743,7 @@ function _replaceCurrentAddress($contact_id, $thuisID, $oudID) {
  * @param type $oudID
  */
 function _removeAllOudAddresses($contact_id, $oudID) {
+    $GLOBALS['dgw_api'] = "nosync";
     $civiparms3 = array (
         'version' => 3,
         'contact_id' => $contact_id,

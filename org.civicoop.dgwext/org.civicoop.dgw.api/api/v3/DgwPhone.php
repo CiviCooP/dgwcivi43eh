@@ -16,7 +16,7 @@ function civicrm_api3_dgw_phone_update($inparms) {
     /*
      * set superglobal to avoid double update via post or pre hook
      */
-    $GLOBALS['dgw_api'] = true;
+    $GLOBALS['dgw_api'] = "nosync";
     /*
      * if no phone_id or cde_refno passed, error
      */
@@ -252,7 +252,7 @@ function civicrm_api3_dgw_phone_delete($inparms) {
     /*
      * set superglobal to avoid double delete via post or pre hook
      */
-    $GLOBALS['dgw_api'] = true;
+    $GLOBALS['dgw_api'] = "nosync";
     /*
      * if no phone_id or cde_refno passed, error
      */
@@ -308,7 +308,7 @@ function civicrm_api3_dgw_phone_create($inparms) {
     /*
      * set superglobal to avoid double create via post or pre hook
      */
-    $GLOBALS['dgw_api'] = true;
+    $GLOBALS['dgw_api'] = "nosync";
     /*
      * if no contact_id or persoonsnummer_first passed, error
      */

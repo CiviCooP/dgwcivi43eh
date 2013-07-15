@@ -15,7 +15,7 @@ function civicrm_api3_dgw_email_delete($inparms) {
     /*
      * set superglobal to avoid double delete via post or pre hook
      */
-    $GLOBALS['dgw_api'] = true;
+    $GLOBALS['dgw_api'] = "nosync";
     /*
      * if no email_id or cde_refno passed, error
      */
@@ -74,7 +74,7 @@ function civicrm_api3_dgw_email_update($inparms) {
     /*
      * set superglobal to avoid double update via post or pre hook
      */
-    $GLOBALS['dgw_api'] = true;
+    $GLOBALS['dgw_api'] = "nosync";
     /*
      * if no email_id or cde_refno passed, error
      */
@@ -253,7 +253,7 @@ function civicrm_api3_dgw_email_create($inparms) {
     /*
      * set superglobal to avoid double update via post or pre hook
      */
-    $GLOBALS['dgw_api'] = true;
+    $GLOBALS['dgw_api'] = "nosync";
     /*
      * if no contact_id or persoonsnummer_first passed, error
      */

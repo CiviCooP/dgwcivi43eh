@@ -193,7 +193,7 @@ function civicrm_api3_dgw_contact_create($inparms) {
     /*
      * set superglobal to avoid double create via post or pre hook
      */
-    $GLOBALS['dgw_api'] = true;
+    $GLOBALS['dgw_api'] = "nosync";
     /*
      * If contact_type passed and not valid, error. Else set contact_type
      * to default 'Individual'
@@ -591,6 +591,7 @@ function civicrm_api3_dgw_contact_create($inparms) {
             $entity_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity');
             $entity_id_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity_id');
             $key_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first');
+            $change_date_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('change_date');
             $customparms['custom_'.$action_field['id']] = "none";
             $customparms['custom_'.$entity_field['id']] = "contact";
             $customparms['custom_'.$entity_id_field['id']] = $contact_id;
@@ -633,7 +634,7 @@ function civicrm_api3_dgw_contact_update($inparms) {
     /*
      * set superglobal to avoid double update via post or pre hook
      */
-    $GLOBALS['dgw_api'] = true;
+    $GLOBALS['dgw_api'] = "nosync";
     /*
      * if no contact_id or persoonsnummer_first passed, error
      */
