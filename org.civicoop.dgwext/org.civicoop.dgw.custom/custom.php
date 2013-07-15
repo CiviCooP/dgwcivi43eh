@@ -208,13 +208,6 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
          * remove and then copy new set to huishouden and medehuurder if
          * contact hoofdhuurder for create and edit
          */
-        if ( $op == "delete" ) {
-            if ( $objectName == "Phone" ) {
-                if ( defined( 'DELCONTACTID' ) ) {
-                    $delContactId = DELCONTACTID;
-                }
-            }
-        }
         if ( $op == "create" || $op == "edit" ) {
             $contactId = 0;
             /*
@@ -232,8 +225,9 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
             }
         }
         if ( $op == "delete" ) {
-            if ( defined( 'DELCONTACTID' ) ) {
-                $contactId = DELCONTACTID;
+            if (isset($_GLOBALS['delcontactid'])) {
+                $contactId = $_GLOBALS['delcontactid'];
+                unset($GLOBALS['delcontactid']);
             } else {
                 $contactId = 0;
             }
@@ -397,7 +391,6 @@ function custom_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
                 }
             }
         }
-
         $parsedStreetAddress = "";
         if ( isset( $objectRef['street_name'] ) && !empty( $objectRef['street_name'] ) ) {
             $parsedStreetAddress = $objectRef['street_name'];
@@ -410,6 +403,7 @@ function custom_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
         }
         $objectRef['street_address'] = $parsedStreetAddress;
     }
+
     if ( $op == "delete" ) {
         if ( $objectName == "Phone" || $objectName == "Email" || $objectName == "Address" ) {
             /*
@@ -421,7 +415,7 @@ function custom_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
 "SELECT contact_id FROM $objectTable WHERE id = $objectId ";
                 $daoObject = CRM_Core_DAO::executeQuery( $selObject );
                 if ( $daoObject->fetch () ) {
-                    define("DELCONTACTID", $daoObject->contact_id);
+                    $_GLOBALS['delcontactid'] = $daoObject->contact_id;
                 }
             }
         }
