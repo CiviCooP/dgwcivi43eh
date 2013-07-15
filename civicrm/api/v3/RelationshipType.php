@@ -92,8 +92,8 @@ function civicrm_api3_relationship_type_create($params) {
  * @param array $params array or parameters determined by getfields
  */
 function _civicrm_api3_relationship_type_create_spec(&$params) {
-  $params['contact_type_a']['api.required'] = 0; //see bug CRM-12885
-  $params['contact_type_b']['api.required'] = 0; //see bug CRM-12885
+  $params['contact_type_a']['api.required'] = 1;
+  $params['contact_type_b']['api.required'] = 1;
   $params['name_a_b']['api.required'] = 1;
   $params['name_b_a']['api.required'] = 1;
 }
