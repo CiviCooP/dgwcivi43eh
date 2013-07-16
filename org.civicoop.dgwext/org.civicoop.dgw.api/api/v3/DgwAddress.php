@@ -265,6 +265,7 @@ function civicrm_api3_dgw_address_update($inparms) {
     if (isset($inparms['adr_refno']) && !empty($inparms['adr_refno'])) {
         $refno = trim($inparms['adr_refno']);
         $key_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first');
+        $change_date_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('change_date');
         $group = CRM_Utils_DgwApiUtils::retrieveCustomGroupByName('Synchronisatie_First_Noa');
         $fields = CRM_Utils_DgwApiUtils::retrieveCustomValuesForContactAndCustomGroupSorted($res_check['contact_id'], $group['id']);
         $fid = "";
@@ -274,10 +275,12 @@ function civicrm_api3_dgw_address_update($inparms) {
                 break;
             }
         }
+        $changeDate = date('Ymd');
         $civiparms2 = array (
             'version' => 3,
             'entity_id' => $res_check['contact_id'],
             'custom_'.$key_first_field['id'].$fid => $inparms['adr_refno'],
+            'custom_'.$change_date_field['id'].$fid => $changeDate,
             );
         $civicres2 = civicrm_api('CustomValue', 'Create', $civiparms2);
     }
@@ -608,7 +611,7 @@ function civicrm_api3_dgw_address_create($inparms) {
             $entity_id_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity_id');
             $key_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first');
             $change_date_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('change_date');
-            $toDay = new DateTime(date('Y-m-d'));
+            $changeDate = date('Ymd');
             $civiparms5 = array (
                 'version' => 3,
                 'entity_id' => $contact_id,
@@ -616,6 +619,7 @@ function civicrm_api3_dgw_address_create($inparms) {
                 'custom_'.$entity_field['id'] => "address",
                 'custom_'.$entity_id_field['id'] => $address_id,
                 'custom_'.$key_first_field['id'] => $inparms['adr_refno'],
+                'custom_'.$change_date_field['id'] => $changeDate
                 );
             $civicres5 = civicrm_api('CustomValue', 'Create', $civiparms5);
         }
