@@ -284,7 +284,6 @@ class CRM_Utils_DgwREST {
   }
 
   static function handle() {
-    CRM_Core_Error::debug('request in handle', $_REQUEST);
     // Get the function name being called from the q parameter in the query string
     $q = CRM_Utils_array::value('q', $_REQUEST);
     // or for the rest interface, from fnName
