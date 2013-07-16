@@ -63,6 +63,7 @@ function civicrm_api3_dgw_email_delete($inparms) {
         'id'        =>  $email_id
     );
     $res = civicrm_api('Email', 'delete', $emailParams );
+    unset($GLOBALS['dgw_api']);
     $outparms['is_error'] = "0";
     return $outparms;
 }
@@ -242,6 +243,7 @@ if (isset($inparms['email'])) {
             $civicres2 = civicrm_api('CustomValue', 'Create', $civiparms2);
         }
     }
+    unset($GLOBALS['dgw_api']);
     $outparms['is_error'] = "0";
     return $outparms;
 }
@@ -459,6 +461,7 @@ function civicrm_api3_dgw_email_create($inparms) {
         $outparms['email_id'] = $email_id;
         $outparms['is_error'] = "0";
     }
+    unset($GLOBALS['dgw_api']);
     return $outparms;
 }
 

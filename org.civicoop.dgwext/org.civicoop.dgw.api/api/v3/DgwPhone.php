@@ -241,6 +241,7 @@ function civicrm_api3_dgw_phone_update($inparms) {
             $civicres2 = civicrm_api('CustomValue', 'Create', $civiparms2);
         }
     }
+    unset($GLOBALS['dgw_api']);
     $outparms['is_error'] = "0";
     return $outparms;
 }
@@ -300,6 +301,7 @@ function civicrm_api3_dgw_phone_delete($inparms) {
         'id'        =>  $phone_id
     );
     $res = civicrm_api('Phone', 'delete', $civiparms);
+    unset($GLOBALS['dgw_api']);
     $outparms['is_error'] = "0";
     return $outparms;
 }
@@ -530,6 +532,7 @@ function civicrm_api3_dgw_phone_create($inparms) {
      */
     $outparms['phone_id'] = $phone_id;
     $outparms['is_error'] = "0";
+    unset($GLOBALS['dgw_api']);
     return $outparms;
 }
 

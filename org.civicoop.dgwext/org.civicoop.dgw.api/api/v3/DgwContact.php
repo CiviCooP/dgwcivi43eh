@@ -622,6 +622,7 @@ function civicrm_api3_dgw_contact_create($inparms) {
             $civicres2 = civicrm_api('CustomValue', 'Create', $customparms);
         }
      }
+     unset($GLOBALS['dgw_api']);
      $outparms = array(
         "contact_id"    =>  $contact_id,
         "is_error"      =>  0);
@@ -1117,6 +1118,7 @@ function civicrm_api3_dgw_contact_update($inparms) {
             $civicres2 = civicrm_api('CustomValue', 'Create', $civiparms2);
         }
     }
+    unset($GLOBALS['dgw_api']);
     $outparms['is_error'] = "0";
     return $outparms;
 }
