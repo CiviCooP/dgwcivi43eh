@@ -285,6 +285,7 @@ function civicrm_api3_dgw_address_update($inparms) {
      * issue 239: if there is only one address left, make this primary
      */
     $outparms['is_error'] = "0";
+    unset($GLOBALS['dgw_api']);
     return $outparms;
 }
 /**
@@ -343,6 +344,7 @@ function civicrm_api3_dgw_address_delete($inparms) {
         );
     $res = civicrm_api( 'Address', 'delete', $address );
     $outparms['is_error'] = "0";
+    unset($GLOBALS['dgw_api']);
     return $outparms;
 }
 /**
@@ -526,7 +528,7 @@ function civicrm_api3_dgw_address_create($inparms) {
      * location type Oud first
      */
     if ($location_type_id == $thuisID) {
-        _replaceCurrentAddress($contact_id, $thuisID, $oudID);
+        _replaceCurrentAddress($contact_id, $thuisID, $oudID, $start_date);
         /*
          * issue 158: if location_type = Thuis, is_primary = 1
         */
@@ -562,7 +564,7 @@ function civicrm_api3_dgw_address_create($inparms) {
         if (empty($addressParams['street_address'])) {
             $addressParams['street_address'] = trim($inparms['street_suffix']);
         } else {
-            $addressParams['street_address'] = $addressParams['street_address']." ".trim($inparms['street_suffix']);
+            $addressParams['street_address'] = trim($addressParams['street_address'])." ".trim($inparms['street_suffix']);
         }
     }
     if (isset($postcode)) {
@@ -614,7 +616,6 @@ function civicrm_api3_dgw_address_create($inparms) {
                 'custom_'.$entity_field['id'] => "address",
                 'custom_'.$entity_id_field['id'] => $address_id,
                 'custom_'.$key_first_field['id'] => $inparms['adr_refno'],
-                'custom_'.$change_date_field['id'] => $toDay->format('Y-m-d H:i:s')
                 );
             $civicres5 = civicrm_api('CustomValue', 'Create', $civiparms5);
         }
@@ -624,6 +625,7 @@ function civicrm_api3_dgw_address_create($inparms) {
         $outparms['address_id'] = $address_id;
         $outparms['is_error'] = "0";
      }
+     unset($GLOBALS['dgw_api']);
      return $outparms;
 }
 /**
@@ -710,7 +712,7 @@ function civicrm_api3_dgw_address_get($inparms) {
  * @param type $thuisID
  * @param type $oudID
  */
-function _replaceCurrentAddress($contact_id, $thuisID, $oudID) {
+function _replaceCurrentAddress($contact_id, $thuisID, $oudID, $startDateNew) {
     $GLOBALS['dgw_api'] = "nosync";
     $civiparms2 = array (
         'version' => 3,
@@ -733,6 +735,10 @@ function _replaceCurrentAddress($contact_id, $thuisID, $oudID) {
                 'contact_id' => $contact_id,
                 'location_type_id' => $oudID,
             );
+            if (!empty($startDateNew)) {
+                $endDate = date('d-m-Y', strtotime($startDateNew . ' -1 day'));
+                $civiparms4['supplemental_address_2'] = "(tot $endDate )";
+            }
             $civires4 = civicrm_api('Address', 'update', $civiparms4);
         }
     }
@@ -750,6 +756,8 @@ function _removeAllOudAddresses($contact_id, $oudID) {
         'location_type_id' => $oudID
     );
     $civires3 = civicrm_api('Address', 'get', $civiparms3);
+
+
     if (isset($civires3['values']) && is_array($civires3['values'])) {
         foreach($civires3['values'] as $aid => $address) {
             $civiparms4 = array (
