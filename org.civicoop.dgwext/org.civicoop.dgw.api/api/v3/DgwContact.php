@@ -250,7 +250,7 @@ function civicrm_api3_dgw_contact_create($inparms) {
          */
         if (isset($inparms['gender_id'])) {
             $gender_id = trim($inparms['gender_id']);
-            if (!array_key_exists($inparms['gender_id'], $gender_values) && gender_id != 4) {
+            if (!array_key_exists($inparms['gender_id'], $gender_values) && $gender_id != 4) {
                 return civicrm_api3_create_error("Gender_id is ongeldig");
             }
         } else {
@@ -511,6 +511,8 @@ function civicrm_api3_dgw_contact_create($inparms) {
     	return civicrm_api3_create_error('Onbekende fout: '.$create_contact['error_message']);
     }
     $contact_id = $create_contact['id'];
+    $customparms['entity_id'] = $contact_id;
+    $customparms['version'] = 3;
     /**
      * Set website
      */
@@ -523,24 +525,20 @@ function civicrm_api3_dgw_contact_create($inparms) {
     /*
      * create custom data for Individual
      */
-    $bsn_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('BSN');
-    $burg_staat_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Burgerlijke_staat');
-    $saldo_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Totaal_debiteur');
-    $woonkeusnr_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Inschrijfnummer_Woonkeus');
-    $woonkeusdatum_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Datum_inschrijving_woonkeus');
-    $woonsit_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Huidige_woonsituatie');
-    $hoofdhuurder_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Hoofdhuurder');
-    $anderecorp_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Welke_andere_corporatie');
-    $jaarinkomen_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Bruto_jaarinkomen');
-    $huishoudgrootte_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Huishoudgrootte');
-    $aanbod_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Bekend_met_koopaanbod');
-    $particulier_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Particuliere_markt');
+    if ($contact_type=="Individual") {
+        $bsn_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('BSN');
+        $burg_staat_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Burgerlijke_staat');
+        $saldo_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Totaal_debiteur');
+        $woonkeusnr_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Inschrijfnummer_Woonkeus');
+        $woonkeusdatum_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Datum_inschrijving_woonkeus');
+        $woonsit_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Huidige_woonsituatie');
+        $hoofdhuurder_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Hoofdhuurder');
+        $anderecorp_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Welke_andere_corporatie');
+        $jaarinkomen_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Bruto_jaarinkomen');
+        $huishoudgrootte_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Huishoudgrootte');
+        $aanbod_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Bekend_met_koopaanbod');
+        $particulier_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Particuliere_markt');
 
-    if ($contact_type == "Individual") {
-    	/*
-         * create array with required data, minimal is contact_id
-         */
-       $customparms['version'] = 3;
        $customparms['contact_id'] = $contact_id;
        if (isset($pers_first)) {
            $customparms['custom_'.$persoonsnummer_first_field['id']] = $pers_first;
@@ -592,12 +590,13 @@ function civicrm_api3_dgw_contact_create($inparms) {
             $entity_id_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity_id');
             $key_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first');
             $change_date_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('change_date');
+            $changeDate = date('Ymd');
             $customparms['custom_'.$action_field['id']] = "none";
             $customparms['custom_'.$entity_field['id']] = "contact";
             $customparms['custom_'.$entity_id_field['id']] = $contact_id;
             $customparms['custom_'.$key_first_field['id']] = $pers_first;
+            $customparms['custom_'.$change_date_field['id']] = $changeDate;
         }
-        $customparms['entity_id'] = $contact_id;
         $civires2 = civicrm_api('CustomValue', 'Create', $customparms);
     }
     /*
@@ -697,7 +696,7 @@ function civicrm_api3_dgw_contact_update($inparms) {
     $default_gender_id = 3;
     if (isset($inparms['gender_id'])) {
     	$gender_id = trim($inparms['gender_id']);
-        if (!array_key_exists($inparms['gender_id'], $gender_values) && gender_id != 4) {
+        if (!array_key_exists($inparms['gender_id'], $gender_values) && $gender_id != 4) {
             return civicrm_api3_create_error("Gender_id is ongeldig");
         }
     }
@@ -1101,6 +1100,8 @@ function civicrm_api3_dgw_contact_update($inparms) {
         */
         if (!empty($pers_nr)) {
             $key_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first');
+            $change_date_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('change_date');
+            $changeDate = date('Ymd');
             $group = CRM_Utils_DgwApiUtils::retrieveCustomGroupByName('Synchronisatie_First_Noa');
             $fields = CRM_Utils_DgwApiUtils::retrieveCustomValuesForContactAndCustomGroupSorted($res_check['contact_id'], $group['id']);
             $fid = "";
@@ -1113,7 +1114,8 @@ function civicrm_api3_dgw_contact_update($inparms) {
             $civiparms2 = array (
                 'version' => 3,
                 'entity_id' => $contact_id,
-                'custom_'.$key_first_field['id'].$fid => $pers_nr
+                'custom_'.$key_first_field['id'].$fid => $pers_nr,
+                'custom_'.$change_date_field['id'].$fid => $changeDate
         	);
             $civicres2 = civicrm_api('CustomValue', 'Create', $civiparms2);
         }
