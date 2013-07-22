@@ -198,7 +198,7 @@ function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
             /*
              * skip execution if hook originates from API De Goede Woning
              */
-            if (isset( $GLOBALS['dgw_api']) && $GLOBALS['dgw_api'] != "nosync") {
+            if (!isset( $GLOBALS['dgw_api']) || $GLOBALS['dgw_api'] != "nosync") {
                 /*
                  * check if sync action is required when op = edit
                  */
@@ -240,7 +240,6 @@ function sync_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
                     $syncResult = _syncFirstObject( $op, $objectId, $contactId, $objectName );
                 }
             }
-            unset($GLOBALS['dgw_api']);
         }
     }
     return;
@@ -269,8 +268,7 @@ function sync_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
             /*
              * skip execution if hook originates from API De Goede Woning
              */
-            if ( isset( $GLOBALS['dgw_api'] ) && $GLOBALS['dgw_api'] != "nosync" ) {
-                echo "<p>Hij mag hier (sync post) helemaal niet komen!! dgw_api is nu {$GLOBALS['dgw_api']}</p>";
+            if (!isset($GLOBALS['dgw_api']) || $GLOBALS['dgw_api'] != "nosync" ) {
                 if ( $objectName == "Individual" || $objectName == "Organization" ) {
                     $contactId = $objectId;
                 } else {
@@ -288,7 +286,6 @@ function sync_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
                 }
                 $syncResult = _syncFirstObject( $op, $objectId, $contactId, $objectName );
             }
-            unset($GLOBALS['dgw_api']);
         }
     }
     return;
