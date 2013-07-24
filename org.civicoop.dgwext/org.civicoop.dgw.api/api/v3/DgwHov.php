@@ -9,6 +9,10 @@
 */
 
 function civicrm_api3_dgw_hov_create( $inparms ) {
+    /*
+     * set superglobal to avoid double update via post or pre hook
+     */
+    $GLOBALS['dgw_api'] = "nosync";
     $outparms['is_error'] = '1';
     /*
      * if no hov_nummer passed, error
@@ -256,6 +260,89 @@ function civicrm_api3_dgw_hov_create( $inparms ) {
                 $huishouden_id = (int) $hh_res['id'];
                 $key = "";
                 /*
+                 * for both persons, check if a relation hoofdhuurder to household is
+                 * present. If so, update with incoming dates. If not so, create.
+                 */
+                if (isset($hh_persoon)) {
+                    $rel_med_id = CRM_Utils_DgwApiUtils::retrieveRelationshipTypeIdByNameAB('Medehuurder');
+                    $rel_hfd_id = CRM_Utils_DgwApiUtils::retrieveRelationshipTypeIdByNameAB('Hoofdhuurder');
+                    $parms = array(
+                        'version' => 3,
+                        'relationship_type_id' => $rel_med_id,
+                        'contact_id_a' => $huishouden_id,
+                    );
+                    $res = civicrm_api('Relationship', 'get', $parms);
+                    $updated = false;
+                    if (!civicrm_error($res)) {
+                        foreach($res['values'] as $rid => $value) {
+                            $rel_params['version'] = 3;
+                            $rel_params['id'] = $rid;
+                            $rel_params['relationship_type_id'] = $rel_hfd_id;
+                            if (isset($hh_start_date) && !empty($hh_start_date)) {
+                                $rel_params['start_date'] = $hh_start_date;
+                            }
+                            if (isset($hh_end_date) && !empty($hh_end_date)) {
+                                $rel_params['end_date'] = $hh_end_date;
+                            }
+                            civicrm_api('Relationship', 'Create', $rel_params);
+                            $updated = true;
+                        }
+                    }
+                    if (!$updated) {
+                        $rel_params['version'] = 3;
+                        $rel_params['contact_id_a'] = $hh_id;
+                        $rel_params['contact_id_b'] = $huishouden_id;
+                        $rel_params['is_active'] = 1;
+                        $rel_params['relationship_type_id'] = $rel_hfd_id;
+                        if (isset($hh_start_date) && !empty($hh_start_date)) {
+                            $rel_params['start_date'] = $hh_start_date;
+                        }
+                        if (isset($hh_end_date) && !empty($hh_end_date)) {
+                            $rel_params['end_date'] = $hh_end_date;
+                        }
+                        civicrm_api('Relationship', 'Create', $rel_params);
+                    }
+                }
+                if (isset($mh_persoon) && !empty($mh_persoon)) {
+                    $rel_med_id = CRM_Utils_DgwApiUtils::retrieveRelationshipTypeIdByNameAB('Medehuurder');
+                    $rel_hfd_id = CRM_Utils_DgwApiUtils::retrieveRelationshipTypeIdByNameAB('Hoofdhuurder');
+                    $parms = array(
+                        'version' => 3,
+                        'relationship_type_id' => $rel_med_id,
+                        'contact_id_a' => $mh_id,
+                    );
+                    $res = civicrm_api('Relationship', 'get', $parms);
+                    $updated = false;
+                    if (!civicrm_error($res)) {
+                        foreach($res['values'] as $rid => $value) {
+                            $rel_params['version'] = 3;
+                            $rel_params['id'] = $rid;
+                            if (isset($mh_start_date) && !empty($mh_start_date)) {
+                                $rel_params['start_date'] = $mh_start_date;
+                            }
+                            if (isset($mh_end_date) && !empty($mh_end_date)) {
+                                $rel_params['end_date'] = $mh_end_date;
+                            }
+                        civicrm_api('Relationship', 'Create', $rel_params);
+                        $updated = true;
+                        }
+                    }
+                    if (!$updated) {
+                        $rel_params['version'] = 3;
+                        $rel_params['contact_id_a'] = $mh_id;
+                        $rel_params['contact_id_b'] = $huishouden_id;
+                        $rel_params['is_active'] = 1;
+                        $rel_params['relationship_type_id'] = $rel_med_id;
+                        if (isset($mh_start_date) && !empty($mh_start_date)) {
+                            $rel_params['start_date'] = $mh_start_date;
+                        }
+                        if (isset($mh_end_date) && !empty($mh_end_date)) {
+                            $rel_params['end_date'] = $mh_end_date;
+                        }
+                        civicrm_api('Relationship', 'Create', $rel_params);
+                    }
+                }
+                /*
                  * copy address, email and phone from hoofdhuurder
                  */
                 CRM_Utils_DgwUtils::processAddressesHoofdHuurder( $hh_id );
@@ -312,91 +399,8 @@ function civicrm_api3_dgw_hov_create( $inparms ) {
             $cor_parms['contact_id'] = $huishouden_id;
             $res_cor = civicrm_api('Contact', 'Create', $cor_parms);
         }
-        /*
-         * for both persons, check if a relation hoofdhuurder to household is
-         * present. If so, update with incoming dates. If not so, create.
-         */
-        if (isset($hh_persoon)) {
-            $rel_med_id = CRM_Utils_DgwApiUtils::retrieveRelationshipTypeIdByNameAB('Medehuurder');
-            $rel_hfd_id = CRM_Utils_DgwApiUtils::retrieveRelationshipTypeIdByNameAB('Hoofdhuurder');
-            $parms = array(
-                'version' => 3,
-                'relationship_type_id' => $rel_med_id,
-                'contact_id_a' => $huishouden_id,
-            );
-            $res = civicrm_api('Relationship', 'get', $parms);
-            $updated = false;
-            if (!civicrm_error($res)) {
-                foreach($res['values'] as $rid => $value) {
-                    $rel_params['version'] = 3;
-                    $rel_params['id'] = $rid;
-                    $rel_params['relationship_type_id'] = $rel_hfd_id;
-                    if (isset($hh_start_date) && !empty($hh_start_date)) {
-                        $rel_params['start_date'] = $hh_start_date;
-                    }
-                    if (isset($hh_end_date) && !empty($hh_end_date)) {
-                        $rel_params['end_date'] = $hh_end_date;
-                    }
-                    civicrm_api('Relationship', 'Create', $rel_params);
-                    $updated = true;
-                }
-            }
-            if (!$updated) {
-                $rel_params['version'] = 3;
-                $rel_params['contact_id_a'] = $hh_id;
-                $rel_params['contact_id_b'] = $huishouden_id;
-                $rel_params['is_active'] = 1;
-                $rel_params['relationship_type_id'] = $rel_hfd_id;
-                if (isset($hh_start_date) && !empty($hh_start_date)) {
-                    $rel_params['start_date'] = $hh_start_date;
-                }
-                if (isset($hh_end_date) && !empty($hh_end_date)) {
-                    $rel_params['end_date'] = $hh_end_date;
-                }
-                civicrm_api('Relationship', 'Create', $rel_params);
-            }
-        }
-        if (isset($mh_persoon) && !empty($mh_persoon)) {
-            $rel_med_id = CRM_Utils_DgwApiUtils::retrieveRelationshipTypeIdByNameAB('Medehuurder');
-            $rel_hfd_id = CRM_Utils_DgwApiUtils::retrieveRelationshipTypeIdByNameAB('Hoofdhuurder');
-            $parms = array(
-                'version' => 3,
-                'relationship_type_id' => $rel_med_id,
-                'contact_id_a' => $mh_id,
-            );
-            $res = civicrm_api('Relationship', 'get', $parms);
-            $updated = false;
-            if (!civicrm_error($res)) {
-                foreach($res['values'] as $rid => $value) {
-                    $rel_params['version'] = 3;
-                    $rel_params['id'] = $rid;
-                    if (isset($mh_start_date) && !empty($mh_start_date)) {
-                        $rel_params['start_date'] = $mh_start_date;
-                    }
-                    if (isset($mh_end_date) && !empty($mh_end_date)) {
-                        $rel_params['end_date'] = $mh_end_date;
-                    }
-                civicrm_api('Relationship', 'Create', $rel_params);
-                $updated = true;
-                }
-            }
-            if (!$updated) {
-                $rel_params['version'] = 3;
-                $rel_params['contact_id_a'] = $mh_id;
-                $rel_params['contact_id_b'] = $huishouden_id;
-                $rel_params['is_active'] = 1;
-                $rel_params['relationship_type_id'] = $rel_med_id;
-                if (isset($mh_start_date) && !empty($mh_start_date)) {
-                    $rel_params['start_date'] = $mh_start_date;
-                }
-                if (isset($mh_end_date) && !empty($mh_end_date)) {
-                    $rel_params['end_date'] = $mh_end_date;
-                }
-                civicrm_api('Relationship', 'Create', $rel_params);
-
-            }
-        }
     }
+    unset($GLOBALS['dgw_api']);
     return $outparms;
 }
 
@@ -404,6 +408,10 @@ function civicrm_api3_dgw_hov_create( $inparms ) {
  * Function to update huurovereenkomst
  */
 function civicrm_api3_dgw_hov_update($inparms) {
+    /*
+     * set superglobal to avoid double update via post or pre hook
+     */
+    $GLOBALS['dgw_api'] = "nosync";
     /*
      * if no hov_nummer passed, error
      */
@@ -712,5 +720,6 @@ function civicrm_api3_dgw_hov_update($inparms) {
         }
     }
     $outparms['is_error'] = "0";
+    unset($GLOBALS['dgw_api']);
     return $outparms;
 }

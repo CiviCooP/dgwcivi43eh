@@ -568,7 +568,7 @@ class CRM_Utils_DgwUtils {
                             }
                         }
                     }
-                    if ( $processRel ) {
+                    if  ($processRel) {
                         if ( isset( $relValue['contact_id_b'] ) ) {
                             $huisHouden['huishouden_id'] = $relValue['contact_id_b'];
                         }
@@ -847,7 +847,7 @@ class CRM_Utils_DgwUtils {
             /*
              * now add the new situation if there is any data
              */
-            foreach( $hoofdEmailAddresses as $hoofdEmailAddress ) {
+            foreach( $hoofdEmailAddresses as $keyEmail => $hoofdEmailAddress ) {
                 $insArray = array( );
                 $executeInsert = false;
                 if ( isset( $hoofdEmailAddress['location_type_id'] ) ) {
@@ -878,7 +878,7 @@ class CRM_Utils_DgwUtils {
                     $insArray[] = "is_bulkmail = {$hoofdEmailAddress['is_bulkmail']}";
                     $executeInsert = true;
                 }
-                if ( $executeInsert ) {
+                if ($executeInsert) {
                     $insEmailAddress =
 "INSERT INTO civicrm_email SET contact_id = {$huisHouden['huishouden_id']}, ";
                     $insEmailAddress .= implode( ", ", $insArray );
