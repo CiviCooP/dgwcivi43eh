@@ -91,6 +91,8 @@ INSERT INTO `dgw_config` SET label = 'kov taxatiedatum veld', value = 'Taxatieda
 INSERT INTO `dgw_config` SET label = 'kov bouwkundige veld', value = 'Bouwkundige';
 INSERT INTO `dgw_config` SET label = 'kov bouwdatum veld', value = 'Datum bouwkundige keuring';
 
+INSERT INTO `dgw_config` SET label = 'groep toewijzen activiteit', value = 'Toewijzen activiteit';
+
 CREATE TABLE `kovhdr` (
   `kov_nr` int(11) NOT NULL DEFAULT '0',
   `vge_nr` int(11) DEFAULT NULL,
