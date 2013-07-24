@@ -342,6 +342,10 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
      * simply in the way. These will be removed here.
      */
     if ( $objectName == 'Activity' ) {
+
+        $tekst = "Activity met action $op, id $objectId, ref : ".json_encode($objectRef);
+        CRM_Core_DAO::executeQuery("INSERT INTO ehtest SET tekst = '$tekst'");
+
         $apiParams = array(
             'version'           =>  3,
             'option_group_id'   =>  2,
@@ -356,8 +360,8 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
                         if ( isset( $objectRef->subject ) ) {
                             $subjectParts = explode( "- copy sent to", $objectRef->subject );
                             if ( isset( $subjectParts[1] ) ) {
-                                $actDel = "DELETE FROM civicrm_activity WHERE id = $objectId ";
-                                //CRM_Core_DAO::executeQuery( $actDel );
+                                $actUpdate = "UPDATE civicrm_activity SET is_deleted = 1 WHERE id = $objectId ";
+                                CRM_Core_DAO::executeQuery( $actUpdate );
                             }
                         }
                     }
