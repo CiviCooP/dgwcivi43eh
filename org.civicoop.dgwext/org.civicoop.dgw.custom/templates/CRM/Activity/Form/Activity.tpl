@@ -137,6 +137,7 @@
     {literal}
 
     var sourceDataUrl = "{/literal}{$dataUrl}{literal}";
+    //DGW14 add tokenDataUrl_assignee
     var tokenDataUrl_assignee  = "{/literal}{$tokenUrl}&context=activity_assignee{literal}";
     var hintText = "{/literal}{ts escape='js'}Type in a partial or complete name of an existing contact.{/ts}{literal}";
     cj( "#assignee_contact_id").tokenInput( tokenDataUrl_assignee, { prePopulate: assignee_contact, theme: 'facebook', hintText: hintText });

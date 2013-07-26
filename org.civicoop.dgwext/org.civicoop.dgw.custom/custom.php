@@ -375,11 +375,11 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
  *
  * @author Erik Hommel (erik.hommel@civicoop.org)
  *
- * Object Address:
- * - change sequence of address fields for street parsing in Dutch format
  */
 function custom_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
-
+    /*
+     * street parsing in Dutch format
+     */
     if ( $objectName == "Address" ) {
         /*
          * change sequence of address fields for street parsing in Dutch format
@@ -428,9 +428,6 @@ function custom_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
 /**
  * Implementation of hook_civicrm_buildForm
  * @author Erik Hommel (erik.hommel@civicoop.org)
- *
- * Contact_Form_Contact:
- * - change sequence of address fields to show Dutch format
  *
  */
 function custom_civicrm_buildForm( $formName, &$form ) {
@@ -671,5 +668,38 @@ function custom_civicrm_buildForm( $formName, &$form ) {
                 $form->setDefaults( $defaults );
             }
         }
+    }
+}
+/**
+ * Implementation of hook_civicrm_contactListQuery
+ * @author Erik Hommel (erik.hommel@civicoop.org)
+ *
+ */
+function custom_civicrm_contactListQuery( &$query, $name, $context, $id ) {
+    if ($context == "activity_assignee") {
+        /*
+         * retrieve group_id for group Toewijzen activiteit
+         */
+        $assigneeGroupId = 0;
+        require_once 'CRM/Utils/DgwUtils.php';
+        $groupTitle = CRM_Utils_DgwUtils::getDgwConfigValue("groep toewijzen activiteit");
+        $apiParams = array(
+            'version'   =>  3,
+            'title'     =>  $groupTitle
+        );
+        $apiGroup = civicrm_api('Group', 'Getsingle', $apiParams);
+        if (!isset($apiGroup['is_error']) || $apiGroup['is_error'] == 0) {
+            if (isset($apiGroup['id'])) {
+                $assigneeGroupId = $apiGroup['id'];
+            }
+        }
+        /*
+         * retrieve all members of the group
+         */
+        $query =
+"SELECT cc.sort_name AS name, cc.id
+FROM civicrm_group_contact
+JOIN civicrm_contact cc ON(contact_id = cc.id)
+WHERE group_id = $assigneeGroupId AND cc.sort_name LIKE '%{$name}%'";
     }
 }
