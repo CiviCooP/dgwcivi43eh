@@ -150,7 +150,7 @@ if ( !$isError ) {
     /*
      * read and process all headers
      */
-    $headerDAO = CRM_Core_DAO::executeQuery( "SELECT * FROM $kovHeader ");
+    $headerDAO = CRM_Core_DAO::executeQuery( "SELECT * FROM $kovHeader ORDER BY kov_nr");
     while ( $headerDAO->fetch() ) {
         if ( !empty( $headerDAO->kov_nr ) && $headerDAO->kov_nr != 0 ) {
             $kov_nr = (int) $headerDAO->kov_nr;
@@ -227,11 +227,11 @@ if ( !$isError ) {
                      * check if contact is active 'hoofdhuurder' somewhere and if so
                      * use that household
                      */
-                    $activeHoofdHuurder = CRM_Utils_DgwUtils::getHuishoudens( $contactId, true );
-                    if ( isset( $activeHoofdHuuder['count'] ) ) {
-                        if ( $activeHoofdHuurder['count'] > 0 ) {
+                    $checkHoofdHuurder = CRM_Utils_DgwUtils::getHuishoudens( $contactId );
+                    if ( isset( $checkHoofdHuurder['count'] ) ) {
+                        if ( $checkHoofdHuurder['count'] > 0 ) {
                             $createHouseHold = false;
-                            $houseHoldId = $activeHoofdHuurder['household_id'];
+                            $houseHoldId = $checkHoofdHuurder[0]['huishouden_id'];
                         }
                     }
                     /*
@@ -239,11 +239,11 @@ if ( !$isError ) {
                      * somewhere and if so, use that household
                      */
                     if ( $createHouseHold ) {
-                        $activeKoopPartner = CRM_Utils_DgwUtils::getHuishoudens( $contactId, true );
-                        if ( isset( $activeKoopPartner['count'] ) ) {
-                            if ( $activeKoopPartner['count'] > 0 ) {
+                        $checkKoopPartner = CRM_Utils_DgwUtils::getHuishoudens( $contactId );
+                        if ( isset( $checkKoopPartner['count'] ) ) {
+                            if ( $checkKoopPartner['count'] > 0 ) {
                                 $createHouseHold = false;
-                                $houseHoldId = $activeKoopPartner['household_id'];
+                                $houseHoldId = $checkKoopPartner[0]['huishouden_id'];
                             }
                         }
                     }
@@ -460,6 +460,8 @@ if ( !$isError ) {
                         }
                     }
                 }
+                CRM_Core_Error::debug("headerDAO", $headerDAO);
+                exit();
             }
         }
     }

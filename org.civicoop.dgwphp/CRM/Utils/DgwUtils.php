@@ -556,6 +556,9 @@ class CRM_Utils_DgwUtils {
                 'contact_id_a'          =>  $hoofdHuurderId
             );
             $rel = civicrm_api( 'Relationship', 'Get', $relParams );
+            if (isset($rel['count'])) {
+                $huisHoudens['count'] = $rel['count'];
+            }
             if ( !isset( $rel['is_error'] ) || $rel['is_error'] == 0 ) {
                 foreach ( $rel['values'] as $relValue ) {
                     $huisHouden = array( );
