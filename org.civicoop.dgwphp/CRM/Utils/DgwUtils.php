@@ -534,26 +534,25 @@ class CRM_Utils_DgwUtils {
     /**
      * static function to retrieve contactId of huishouden for contact
      * @author Erik Hommel (erik.hommel@civicoop.org)
-     * @param $hoofdHuurderId contact_id of hoofdhuurder
+     * @param $contactId contact_id of contact (hoofdhuurder or koopovereenkomst partner)
      * @param $active holds true if only actives are required
      * @return $huisHoudens array contact_id, start_date, end_date of huishouden
      */
-    static function getHuishoudens( $hoofdHuurderId, $active = false ) {
+    static function getHuishoudens( $contactId, $relLabel = 'relatie hoofdhuurder', $active = false ) {
         $huisHoudens = array( );
-        if ( empty( $hoofdHuurderId ) ) {
+        if ( empty( $contactId ) ) {
             return $huisHoudens;
         }
-        $relHoofdHuurder = self::getDgwConfigValue( 'relatie hoofdhuurder' );
         $relTypeParams = array(
             'version'   =>  3,
-            'label_a_b' =>  $relHoofdHuurder
+            'label_a_b' =>  $relLabel
         );
         $relType = civicrm_api( 'RelationshipType', 'Getsingle' , $relTypeParams );
         if ( !isset( $relType['is_error'] ) || $relType['is_error'] == 0 ) {
             $relParams = array(
                 'version'               =>  3,
                 'relationship_type_id'  =>  $relType['id'],
-                'contact_id_a'          =>  $hoofdHuurderId
+                'contact_id_a'          =>  $contactId
             );
             $rel = civicrm_api( 'Relationship', 'Get', $relParams );
             if (isset($rel['count'])) {

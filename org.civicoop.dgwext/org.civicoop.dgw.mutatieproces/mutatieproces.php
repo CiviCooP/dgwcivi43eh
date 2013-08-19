@@ -43,40 +43,40 @@ function mutatieproces_civicrm_enable() {
 	if ($dossier) {
 		$gid = mutatieproces_add_group('einde_huurcontract', 'Opzegging huurcontract', $dossier, 'Case');
 	}
-	
+
 	if ($gid) {
 		_mutatieproces_add_field($gid, 'mutatienr', 'Mutatienummer First Noa', 'String', 'Text', '1', 1);
-		
+
 		_mutatieproces_add_field($gid, 'vge_nr', 'VGE nummer', 'String', 'Text', '1', 2);
 		_mutatieproces_add_field($gid, 'complexnr', 'Complexnummer', 'String', 'Text', '1', 3);
 		_mutatieproces_add_field($gid, 'hov_nr', 'Huurovereenkomst nr.', 'String', 'Text', '1', 4);
 		_mutatieproces_add_field($gid, 'hov_start_datum', 'Huurovereenkomst startdatum', 'Date', 'Select Date', '1', 5);
-		
+
 		_mutatieproces_add_field($gid, 'hoofdhuurder_first', 'Persoonsnummer First (hoofdhuurder)', 'String', 'Text', '1', 6);
 		_mutatieproces_add_field($gid, 'medehuurder_first', 'Persoonsnummer First (medehuurder)', 'String', 'Text', '1', 7);
-		
+
 		_mutatieproces_add_field($gid, 'vge_adres', 'VGE Adres', 'String', 'Text', '1', 8);
 		_mutatieproces_add_field($gid, 'vge_straat', 'Straat', 'String', 'Text', '1', 9);
 		_mutatieproces_add_field($gid, 'vge_huisnummer', 'Huisnummer', 'String', 'Text', '1', 10);
 		_mutatieproces_add_field($gid, 'vge_suffix', 'Toevoeging', 'String', 'Text', '1', 11);
 		_mutatieproces_add_field($gid, 'vge_postcode', 'Postcode', 'String', 'Text', '1', 12);
 		_mutatieproces_add_field($gid, 'vge_plaats', 'Woonplaats', 'String', 'Text', '1', 13);
-		
+
 		_mutatieproces_add_field($gid, 'verwachte_eind_datum', 'Verwachte einddatum', 'Date', 'Select Date', '1', 14);
-		
+
 		_mutatieproces_add_field($gid, 'woningwaardering', 'Woningwaardering', 'Memo', 'TextArea', '1', 15);
 		_mutatieproces_add_field($gid, 'woningoppervlakte', 'Totale woonoppervlakte', 'String', 'Text', '1', 16);
-		
+
 		_mutatieproces_add_field($gid, 'epa_label', 'EPA label', 'String', 'Text', '1', 17);
 		_mutatieproces_add_field($gid, 'epa_pre_label', 'EPA pre-label', 'String', 'Text', '1', 18);
-		
+
 		_mutatieproces_add_field($gid, 'plattegrond', 'Bijlage plattegrond', 'File', 'File', '1', 19);
 		_mutatieproces_add_field($gid, 'opnamerapport', 'Bijlage opnamerapport', 'File', 'File', '1', 20);
 		_mutatieproces_add_field($gid, 'staat_van_oplevering', 'Bijlage staat van oplevering', 'File', 'File', '1', 21);
-				
+
 		_mutatieproces_enable_group('einde_huurcontract', true);
 	}
-	
+
 	return _mutatieproces_civix_civicrm_enable();
 }
 
@@ -116,7 +116,7 @@ function _mutatieproces_add_activity_type($type, $description) {
 	$param = array(
 		"label"=>$type,
 		"description"=> $description,
-		"component_id" => $componentCase, 
+		"component_id" => $componentCase,
 		"is_reserved"=>false,
 		"is_active"=>1,
 		"weight"=>1,
@@ -133,7 +133,7 @@ function _mutatieproces_add_relationship_type($name_a_b, $name_b_a, $contact_typ
    }
    if (strlen($contact_type_b)) {
    		$params['contact_type_b'] = $contact_type_b;
-   }   
+   }
    $params['version'] = 3;
    $result = civicrm_api('relationship_type', 'get', $params);
    if ($result['is_error'] == 1 || $result['count'] == 0) {
@@ -150,7 +150,7 @@ function _mutatieproces_add_case($case) {
 	if (!$option_group_id) {
 		return false;
 	}
-	
+
 	$option_value = civicrm_api('OptionValue', 'getsingle', array('option_group_id' => $option_group_id, 'name' => $case, 'version' => '3'));
 	$option_value_id = false;
 	$option_value_value = false;
@@ -159,14 +159,14 @@ function _mutatieproces_add_case($case) {
 		$option_value_value = $option_value['value'];
 	}
 	if (!$option_value_id) {
-		$option_value = civicrm_api('OptionValue', 'create', array('option_group_id' => $option_group_id, 'name' => $case, 'version' => '3'));		
+		$option_value = civicrm_api('OptionValue', 'create', array('option_group_id' => $option_group_id, 'name' => $case, 'version' => '3'));
 		if (isset($option_value['id']) && is_array($option_value['values']) && count($option_value['values'])) {
 			$v = reset($option_value['values']);
 			$option_value_id = $option_value['id'];
 			$option_value_value = $v['value'];
 		}
 	}
-	
+
 	return $option_value_value;
 }
 
@@ -188,9 +188,9 @@ function mutatieproces_add_group($group, $group_title, $case_id, $extends) {
 	if (isset($result['id'])) {
 		$gid = $result['id'];
 	}
-	
+
 	return $gid;
-} 
+}
 
 function _mutatieproces_add_field($gid, $name, $label, $data_type, $html_type, $active, $weight = 0) {
 	$params['version']  = 3;
@@ -208,12 +208,12 @@ function _mutatieproces_add_field($gid, $name, $label, $data_type, $html_type, $
 		$params['is_active'] = $active;
 		$params['weight'] = $weight;
 		$result = civicrm_api('CustomField', 'create', $params);
-		
+
 		$params2['version'] = 3;
 		$params2['label'] = $label;
 		$params2['is_active'] = $active;
 		$params2['id'] = $result['id'];
-		
+
 		civicrm_api('CustomField', 'create', $params2);
 	}
 }
@@ -236,7 +236,7 @@ function _mutatieproces_delete_group($name) {
 				civicrm_api('CustomField', 'delete', $params);
 			}
 		}
-	
+
 		unset($params);
 		$params['version']  = 3;
 		$params['id'] = $gid;
@@ -260,19 +260,19 @@ function _mutatieproces_enable_group($name, $enable) {
 
 
 function mutatieproces_civicrm_pageRun( &$page ) {
-	
+
 	$hov_opzeggen = false;
 	$huishouden_id = $page->getVar('_contactId');
 	$contactId = $page->getVar('_contactId');
-	
+
 	$contactHoofdHuurder = CRM_Utils_DgwUtils::checkContactHoofdhuurder( $contactId );
 	if ( $contactHoofdHuurder ) {
-		$huishoudens = CRM_Utils_DgwUtils::getHuishoudens( $contactId, true );
+		$huishoudens = CRM_Utils_DgwUtils::getHuishoudens( $contactId, 'relatie hoofdhuurder', true );
 		foreach($huishoudens as $huishouden) {
 			$huishouden_id = $huishouden['huishouden_id'];
 		}
 	}
-	
+
 	$result = civicrm_api('Contact', 'getsingle', array('version' => 3, 'contact_id' => $huishouden_id));
 	if (!isset($result['is_error'])) {
 		if ($result['contact_type'] == 'Household') {
@@ -283,11 +283,11 @@ function mutatieproces_civicrm_pageRun( &$page ) {
 				$result = civicrm_api('Contact', 'getsingle', array('version' => 3, 'contact_id' => $huishouden_id, 'return.custom_'.$custom_id => 1));
 				if (isset($result['custom_'.$custom_id]) && $result['custom_'.$custom_id]) {
 					$hov_opzeggen = true;
-				}	
-			}			
-		}		
+				}
+			}
+		}
 	}
-	
+
 	if ($hov_opzeggen) {
 		$page->assign('show_hov_opzeggen', '1');
 		$page->assign('hov_opzeggen_contact_id', $huishouden_id);
@@ -300,7 +300,7 @@ function mutatieproces_civicrm_pageRun( &$page ) {
 function mutatieproces_civicrm_buildForm($formName, &$form) {
 	if ($formName == 'CRM_Case_Form_Case') {
 		if ($form->getAction() == CRM_Core_Action::ADD) {
-			$case_type_id = _mutatieproces_get_case_type_id('DossierOpzeggingHuurcontract');			
+			$case_type_id = _mutatieproces_get_case_type_id('DossierOpzeggingHuurcontract');
 			if ($case_type_id && $form->elementExists('case_type_id')) {
 				$cases = $form->getElement('case_type_id');
 				foreach($cases->_options as $id => $option) {
@@ -328,6 +328,6 @@ function _mutatieproces_get_case_type_id($case) {
 		$option_value_id = $option_value['id'];
 		$option_value_value = $option_value['value'];
 	}
-	 
+
 	return $option_value_value;
 }

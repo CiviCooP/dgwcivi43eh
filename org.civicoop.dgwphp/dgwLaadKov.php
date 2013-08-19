@@ -227,10 +227,13 @@ if ( !$isError ) {
                      * check if contact is active 'hoofdhuurder' somewhere and if so
                      * use that household
                      */
-                    $checkHoofdHuurder = CRM_Utils_DgwUtils::getHuishoudens( $contactId );
+                    $relHoofdHuurder = false;
+                    $relKoopPartner = false;
+                    $checkHoofdHuurder = CRM_Utils_DgwUtils::getHuishoudens($contactId);
                     if ( isset( $checkHoofdHuurder['count'] ) ) {
                         if ( $checkHoofdHuurder['count'] > 0 ) {
                             $createHouseHold = false;
+                            $relHoofdHuurder = true;
                             $houseHoldId = $checkHoofdHuurder[0]['huishouden_id'];
                         }
                     }
@@ -239,10 +242,11 @@ if ( !$isError ) {
                      * somewhere and if so, use that household
                      */
                     if ( $createHouseHold ) {
-                        $checkKoopPartner = CRM_Utils_DgwUtils::getHuishoudens( $contactId );
+                        $checkKoopPartner = CRM_Utils_DgwUtils::getHuishoudens( $contactId, "relatie koopovereenkomst" );
                         if ( isset( $checkKoopPartner['count'] ) ) {
                             if ( $checkKoopPartner['count'] > 0 ) {
                                 $createHouseHold = false;
+                                $relKoopPartner = true;
                                 $houseHoldId = $checkKoopPartner[0]['huishouden_id'];
                             }
                         }
@@ -275,11 +279,11 @@ if ( !$isError ) {
                             );
                             civicrm_api( 'GroupContact', 'Create', $apiParams );
                             /*
-                             * use all contact details of first person
+                             * use all contact details of first person (depending on type of relation)
                              */
-                            CRM_Utils_DgwUtils::processAddressesHoofdHuurder( $contactId );
-                            CRM_Utils_DgwUtils::processEmailsHoofdHuurder( $contactId );
-                            CRM_Utils_DgwUtils::processPhonesHoofdHuurder( $contactId );
+                            CRM_Utils_DgwUtils::processAddressesHoofdHuurder($contactId);
+                            CRM_Utils_DgwUtils::processEmailsHoofdHuurder($contactId);
+                            CRM_Utils_DgwUtils::processPhonesHoofdHuurder($contactId);
                         }
                     }
                     /*
@@ -324,7 +328,7 @@ if ( !$isError ) {
                         $apiParams['label'] = $fldLabel;
                         $apiCustomField = civicrm_api( 'CustomField', 'getsingle', $apiParams );
                         if ( isset( $apiCustomField['column_name'] ) ) {
-                            $escapedString = CRM_Core_DAO::escapeString( $headerDAO->vge_adres);
+                            $escapedString = CRM_Core_DAO::escapeString( trim($headerDAO->vge_adres));
                             $kovFieldsSql[] = "{$apiCustomField['column_name']} = '$escapedString'";
                         }
 
@@ -332,7 +336,12 @@ if ( !$isError ) {
                         $apiParams['label'] = $fldLabel;
                         $apiCustomField = civicrm_api( 'CustomField', 'getsingle', $apiParams );
                         if ( isset( $apiCustomField['column_name'] ) ) {
-                            $kovFieldsSql[] = "{$apiCustomField['column_name']} = '{$headerDAO->ov_datum}'";
+                            if (empty($headerDAO->ov_datum)) {
+                                $sqlDatum = "";
+                            } else {
+                                $sqlDatum = date('Ymd', strtotime($headerDAO->ov_datum));
+                            }
+                            $kovFieldsSql[] = "{$apiCustomField['column_name']} = '$sqlDatum'";
                         }
 
                         $fldLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'kov naam veld' );
@@ -354,7 +363,7 @@ if ( !$isError ) {
                         $apiParams['label'] = $fldLabel;
                         $apiCustomField = civicrm_api( 'CustomField', 'getsingle', $apiParams );
                         if ( isset( $apiCustomField['column_name'] ) ) {
-                            $kovFieldsSql[] = "{$apiCustomField['column_name']} = '{$headerDAO->type}'";
+                            $kovFieldsSql[] = "{$apiCustomField['column_name']} = $type";
                         }
 
                         $fldLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'kov prijs veld' );
@@ -391,7 +400,12 @@ if ( !$isError ) {
                         $apiParams['label'] = $fldLabel;
                         $apiCustomField = civicrm_api( 'CustomField', 'getsingle', $apiParams );
                         if ( isset( $apiCustomField['column_name'] ) ) {
-                            $kovFieldsSql[] = "{$apiCustomField['column_name']} = '{$headerDAO->tax_datum}'";
+                            if (empty($headerDAO->tax_datum)) {
+                                $sqlDatum = "";
+                            } else {
+                                $sqlDatum = date('Ymd', strtotime($headerDAO->tax_datum));
+                            }
+                            $kovFieldsSql[] = "{$apiCustomField['column_name']} = '$sqlDatum'";
                         }
 
                         $fldLabel = CRM_Utils_DgwUtils::getDgwConfigValue( 'kov bouwkundige veld' );
@@ -406,7 +420,12 @@ if ( !$isError ) {
                         $apiParams['label'] = $fldLabel;
                         $apiCustomField = civicrm_api( 'CustomField', 'getsingle', $apiParams );
                         if ( isset( $apiCustomField['column_name'] ) ) {
-                            $kovFieldsSql[] = "{$apiCustomField['column_name']} = '{$headerDAO->bouw_datum}'";
+                            if (empty($headerDAO->bouw_datum)) {
+                                $sqlDatum = "";
+                            } else {
+                                $sqlDatum = date('Ymd', strtotime($headerDAO->bouw_datum));
+                            }
+                            $kovFieldsSql[] = "{$apiCustomField['column_name']} = '$sqlDatum'";
                         }
 
                         $kovExists = CRM_Utils_DgwUtils::checkKovExists( $headerDAO->kov_nr );
@@ -460,8 +479,6 @@ if ( !$isError ) {
                         }
                     }
                 }
-                CRM_Core_Error::debug("headerDAO", $headerDAO);
-                exit();
             }
         }
     }
