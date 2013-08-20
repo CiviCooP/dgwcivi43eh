@@ -673,7 +673,7 @@ function civicrm_api3_dgw_contact_update($inparms) {
                 return civicrm_api3_create_error("Contact niet gevonden");
             }
     	}
-    	$contact_id = $check_contact['contact_id'];
+    	$contact_id = $check_contact['id'];
     }
     $checkparms = array("contact_id" => $contact_id);
     $checkparms['version'] = 3;
@@ -1103,7 +1103,7 @@ function civicrm_api3_dgw_contact_update($inparms) {
             $change_date_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('change_date');
             $changeDate = date('Ymd');
             $group = CRM_Utils_DgwApiUtils::retrieveCustomGroupByName('Synchronisatie_First_Noa');
-            $fields = CRM_Utils_DgwApiUtils::retrieveCustomValuesForContactAndCustomGroupSorted($res_check['contact_id'], $group['id']);
+            $fields = CRM_Utils_DgwApiUtils::retrieveCustomValuesForContactAndCustomGroupSorted($contact_id, $group['id']);
             $fid = "";
             foreach($fields as $key => $field) {
                 if ($field['entity_id'] == $contact_id  && $field['entity'] == "contact") {
