@@ -540,9 +540,10 @@ class CRM_Utils_DgwUtils {
      */
     static function getHuishoudens( $contactId, $relLabel = 'relatie hoofdhuurder', $active = false ) {
         $huisHoudens = array( );
-        if ( empty( $contactId ) ) {
+        if (empty($contactId)) {
             return $huisHoudens;
         }
+        $relLabel = self::getDgwConfigValue($relLabel);
         $relTypeParams = array(
             'version'   =>  3,
             'label_a_b' =>  $relLabel
@@ -598,10 +599,10 @@ class CRM_Utils_DgwUtils {
      * Should be solved in core at a later stage and then fixed here
      *
      * @author Erik Hommel (erik.hommel@civicoop.org)
-     * @param $hoofdHuurderId
+     * @param $hoofdHuurderId, $relLabel
      * @return none
      */
-    static function processAddressesHoofdHuurder( $hoofdHuurderId ) {
+    static function processAddressesHoofdHuurder( $hoofdHuurderId, $relLabel = 'relatie hoofdhuurder' ) {
         if ( empty( $hoofdHuurderId ) ) {
             return;
         }
@@ -721,10 +722,10 @@ class CRM_Utils_DgwUtils {
      * Should be solved in core at a later stage and then fixed here
      *
      * @author Erik Hommel (erik.hommel@civicoop.org)
-     * @param $hoofdHuurderId
+     * @param $hoofdHuurderId, $relLabel
      * @return none
      */
-    static function processPhonesHoofdHuurder( $hoofdHuurderId ) {
+    static function processPhonesHoofdHuurder( $hoofdHuurderId, $relLabel = 'relatie hoofdhuurder' ) {
         if ( empty( $hoofdHuurderId ) ) {
             return;
         }
@@ -812,10 +813,10 @@ class CRM_Utils_DgwUtils {
      * Should be solved in core at a later stage and then fixed here
      *
      * @author Erik Hommel (erik.hommel@civicoop.org)
-     * @param $hoofdHuurderId
+     * @param $hoofdHuurderId, $relLabel
      * @return none
      */
-    static function processEmailsHoofdHuurder( $hoofdHuurderId ) {
+    static function processEmailsHoofdHuurder( $hoofdHuurderId, $relLabel = 'relatie hoofdhuurder' ) {
         if ( empty( $hoofdHuurderId ) ) {
             return;
         }
@@ -1112,5 +1113,24 @@ class CRM_Utils_DgwUtils {
             }
         }
         return false;
+    }
+    /**
+     * static function to convert string (format dd-mm-jj) to date
+     * @author Erik Hommel (erik.hommel@civicoop.org)
+     * @param $inDate string
+     * @return $outDate string
+     */
+    static function convertDMJString($inDate) {
+        $outDate = "";
+        if (empty($inDate)) {
+            return $outDate;
+        }
+        $day = substr($inDate,0,2);
+        $month = substr($inDate,3,2);
+        $year = substr($inDate,6,2);
+        $processedDate = $year."-".$month."-".$day." 00:00:00";
+        $tempDate = new DateTime($processedDate);
+        $outDate = $tempDate->format("Ymd");
+        return $outDate;
     }
 }
