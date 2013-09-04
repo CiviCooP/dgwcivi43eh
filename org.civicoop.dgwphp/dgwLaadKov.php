@@ -269,8 +269,8 @@ function processHeader($kovData) {
     $individualDAO = CRM_Core_DAO::executeQuery( $kovIndQry );
     $createHouseHold = true;
     $i = 0;
+    $relLabel = 'relatie koopovereenkomst';
     while ( $individualDAO->fetch() ) {
-        $relLabel = "relatie hoofdhuurder";
         $apiParams = array(
             'version'               =>  3,
             'persoonsnummer_first'  =>  $individualDAO->pers_nr
@@ -288,26 +288,19 @@ function processHeader($kovData) {
                 $checkHoofdHuurder = CRM_Utils_DgwUtils::getHuishoudens($contactId);
                 if (isset($checkHoofdHuurder['count'])) {
                     if ($checkHoofdHuurder['count'] > 0) {
-                        /*
-                         * check if name huishouden is the same
-                         */
-                        $apiParams = array(
-                            'version'       =>  3,
-                            'contact_type'  =>  'Household',
-                            'contact_id'    =>  $checkHoofdHuurder[0]['huishouden_id']
-                        );
                         $createHouseHold = false;
                         $houseHoldId = $checkHoofdHuurder[0]['huishouden_id'];
+                        $copyContactId = $contactId;
                         $kovIndividuals[$i]['rel'] = "hoofdhuurder";
                     }
                 }
                 if ($createHouseHold) {
-                    $checkKoopPartner = CRM_Utils_DgwUtils::getHuishoudens($contactId, "relatie koopovereenkomst");
+                    $checkKoopPartner = CRM_Utils_DgwUtils::getHuishoudens($contactId, $relLabel);
                     if (isset($checkKoopPartner['count'])) {
                         if ($checkKoopPartner['count'] > 0) {
                             $createHouseHold = false;
+                            $copyContactId = $contactId;
                             $houseHoldId = $checkKoopPartner[0]['huishouden_id'];
-                            $relLabel = "relatie koopovereenkomst";
                             $kovIndividuals[$i]['rel'] = "koopovereenkomst";
                         }
                     }
@@ -346,7 +339,6 @@ function processHeader($kovData) {
                 $copyContactId = $kovIndividual['id'];
             }
         }
-        $relLabel = 'relatie koopovereenkomst';
         $houseHoldId = createHouseHold($kovData->corr_naam, $copyContactId, $relLabel);
     }
     /*
