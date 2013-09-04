@@ -603,7 +603,8 @@ class CRM_Utils_DgwUtils {
      * @return none
      */
     static function processAddressesHoofdHuurder( $hoofdHuurderId, $relLabel = 'relatie hoofdhuurder' ) {
-        if ( empty( $hoofdHuurderId ) ) {
+
+        if (empty($hoofdHuurderId)) {
             return;
         }
         $hoofdAddresses = array( );
@@ -628,86 +629,88 @@ class CRM_Utils_DgwUtils {
          * retrieve all active huishoudens for hoofdhuurder and
          * remove their addresses
          */
-        $huisHoudens = self::getHuishoudens( $hoofdHuurderId, true );
+        $huisHoudens = self::getHuishoudens( $hoofdHuurderId, $relLabel, true );
         foreach ( $huisHoudens as $huisHouden ) {
-            $delAddressesQry =
-"DELETE FROM civicrm_address WHERE contact_id = {$huisHouden['huishouden_id']}";
-            CRM_Core_DAO::executeQuery( $delAddressesQry );
-            /*
-             * now add the new situation if there is any data
-             */
-            foreach( $hoofdAddresses as $hoofdAddress ) {
-                $insArray = array( );
-                $executeInsert = false;
-                if ( isset( $hoofdAddress['location_type_id'] ) ) {
-                    $insArray[]= " location_type_id = {$hoofdAddress['location_type_id']}";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdAddress['is_primary'] ) ) {
-                    $insArray[] = " is_primary = {$hoofdAddress['is_primary']}";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdAddress['is_billing'] ) ) {
-                    $insArray[] = " is_billing = {$hoofdAddress['is_billing']}";
-                   $executeInsert = true;
-                }
-                if ( isset( $hoofdAddress['street_address'] ) ) {
-                    $insArray[] = "street_address = '{$hoofdAddress['street_address']}'";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdAddress['street_name'] ) ) {
-                    $insArray[] = "street_name = '{$hoofdAddress['street_name']}'";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdAddress['street_unit'] ) ) {
-                    $insArray[] = "street_unit = '{$hoofdAddress['street_unit']}'";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdAddress['supplemental_address_1'] ) ) {
-                    $insArray[] = "supplemental_address_1 = '{$hoofdAddress['supplemental_address_1']}'";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdAddress['supplemental_address_2'] ) ) {
-                    $insArray[] = "supplemental_address_2 = '{$hoofdAddress['supplemental_address_2']}'";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdAddress['supplemental_address_3'] ) ) {
-                    $insArray[] = "supplemental_address_3 = '{$hoofdAddress['supplemental_address_3']}'";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdAddress['city'] ) ) {
-                    $insArray[] = "city = '{$hoofdAddress['city']}'";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdAddress['postal_code'] ) ) {
-                    $insArray[] = "postal_code = '{$hoofdAddress['postal_code']}'";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdAddress['street_number'] ) ) {
-                    $insArray[] = "street_number = {$hoofdAddress['street_number']}";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdAddress['country_id'] ) ) {
-                    $insArray[] = "country_id = {$hoofdAddress['country_id']}";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdAddress['geo_code_1'] ) ) {
-                    $insArray[] = "geo_code_1 = {$hoofdAddress['geo_code_1']}";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdAddress['geo_code_2'] ) ) {
-                    $insArray[] = "geo_code_2 = {$hoofdAddress['geo_code_2']}";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdAddress['manual_geo_code'] ) ) {
-                    $insArray[] = "manual_geo_code = {$hoofdAddress['manual_geo_code']}";
-                    $executeInsert = true;
-                }
-                if ( $executeInsert ) {
-                    $insAddress =
-"INSERT INTO civicrm_address SET contact_id = {$huisHouden['huishouden_id']}, ";
-                    $insAddress .= implode( ", ", $insArray );
-                    CRM_Core_DAO::executeQuery( $insAddress );
+            if (isset($huisHouden['huishouden_id'])) {
+                $delAddressesQry =
+    "DELETE FROM civicrm_address WHERE contact_id = {$huisHouden['huishouden_id']}";
+                CRM_Core_DAO::executeQuery( $delAddressesQry );
+                /*
+                 * now add the new situation if there is any data
+                 */
+                foreach( $hoofdAddresses as $hoofdAddress ) {
+                    $insArray = array( );
+                    $executeInsert = false;
+                    if ( isset( $hoofdAddress['location_type_id'] ) ) {
+                        $insArray[]= " location_type_id = {$hoofdAddress['location_type_id']}";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdAddress['is_primary'] ) ) {
+                        $insArray[] = " is_primary = {$hoofdAddress['is_primary']}";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdAddress['is_billing'] ) ) {
+                        $insArray[] = " is_billing = {$hoofdAddress['is_billing']}";
+                       $executeInsert = true;
+                    }
+                    if ( isset( $hoofdAddress['street_address'] ) ) {
+                        $insArray[] = "street_address = '{$hoofdAddress['street_address']}'";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdAddress['street_name'] ) ) {
+                        $insArray[] = "street_name = '{$hoofdAddress['street_name']}'";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdAddress['street_unit'] ) ) {
+                        $insArray[] = "street_unit = '{$hoofdAddress['street_unit']}'";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdAddress['supplemental_address_1'] ) ) {
+                        $insArray[] = "supplemental_address_1 = '{$hoofdAddress['supplemental_address_1']}'";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdAddress['supplemental_address_2'] ) ) {
+                        $insArray[] = "supplemental_address_2 = '{$hoofdAddress['supplemental_address_2']}'";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdAddress['supplemental_address_3'] ) ) {
+                        $insArray[] = "supplemental_address_3 = '{$hoofdAddress['supplemental_address_3']}'";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdAddress['city'] ) ) {
+                        $insArray[] = "city = '{$hoofdAddress['city']}'";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdAddress['postal_code'] ) ) {
+                        $insArray[] = "postal_code = '{$hoofdAddress['postal_code']}'";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdAddress['street_number'] ) ) {
+                        $insArray[] = "street_number = {$hoofdAddress['street_number']}";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdAddress['country_id'] ) ) {
+                        $insArray[] = "country_id = {$hoofdAddress['country_id']}";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdAddress['geo_code_1'] ) ) {
+                        $insArray[] = "geo_code_1 = {$hoofdAddress['geo_code_1']}";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdAddress['geo_code_2'] ) ) {
+                        $insArray[] = "geo_code_2 = {$hoofdAddress['geo_code_2']}";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdAddress['manual_geo_code'] ) ) {
+                        $insArray[] = "manual_geo_code = {$hoofdAddress['manual_geo_code']}";
+                        $executeInsert = true;
+                    }
+                    if ( $executeInsert ) {
+                        $insAddress =
+    "INSERT INTO civicrm_address SET contact_id = {$huisHouden['huishouden_id']}, ";
+                        $insAddress .= implode( ", ", $insArray );
+                        CRM_Core_DAO::executeQuery( $insAddress );
+                    }
                 }
             }
         }
@@ -751,54 +754,56 @@ class CRM_Utils_DgwUtils {
          * retrieve all active huishoudens for hoofdhuurder and
          * remove their phones
          */
-        $huisHoudens = self::getHuishoudens( $hoofdHuurderId, true );
+        $huisHoudens = self::getHuishoudens( $hoofdHuurderId, $relLabel, true );
         foreach ( $huisHoudens as $huisHouden ) {
-            $delPhonesQry =
-"DELETE FROM civicrm_phone WHERE contact_id = {$huisHouden['huishouden_id']}";
-            CRM_Core_DAO::executeQuery( $delPhonesQry );
-            /*
-             * now add the new situation if there is any data
-             */
-            foreach( $hoofdPhones as $hoofdPhone ) {
-                $insArray = array( );
-                $executeInsert = false;
-                if ( isset( $hoofdPhone['location_type_id'] ) ) {
-                    $insArray[]= " location_type_id = {$hoofdPhone['location_type_id']}";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdPhone['is_primary'] ) ) {
-                    $insArray[] = " is_primary = {$hoofdPhone['is_primary']}";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdPhone['is_billing'] ) ) {
-                    $insArray[] = " is_billing = {$hoofdPhone['is_billing']}";
-                   $executeInsert = true;
-                }
-                if ( isset( $hoofdPhone['phone_type_id'] ) ) {
-                    $insArray[] = "phone_type_id = {$hoofdPhone['phone_type_id']}";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdPhone['phone'] ) ) {
-                    $insArray[] = "phone = '{$hoofdPhone['phone']}'";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdPhone['phone_ext'] ) ) {
-                    $insArray[] = "phone_ext = '{$hoofdPhone['phone_ext']}'";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdPhone['phone_numeric'] ) ) {
-                    $insArray[] = "phone_numeric = '{$hoofdPhone['phone_numeric']}'";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdPhone['mobile_provider_id'] ) ) {
-                    $insArray[] = "mobile_provider_id = {$hoofdPhone['mobile_provider_id']}";
-                    $executeInsert = true;
-                }
-                if ( $executeInsert ) {
-                    $insPhone =
-"INSERT INTO civicrm_phone SET contact_id = {$huisHouden['huishouden_id']}, ";
-                    $insPhone .= implode( ", ", $insArray );
-                    CRM_Core_DAO::executeQuery( $insPhone );
+            if (isset($huisHouden['huishouden_id'])) {
+                $delPhonesQry =
+    "DELETE FROM civicrm_phone WHERE contact_id = {$huisHouden['huishouden_id']}";
+                CRM_Core_DAO::executeQuery( $delPhonesQry );
+                /*
+                 * now add the new situation if there is any data
+                 */
+                foreach( $hoofdPhones as $hoofdPhone ) {
+                    $insArray = array( );
+                    $executeInsert = false;
+                    if ( isset( $hoofdPhone['location_type_id'] ) ) {
+                        $insArray[]= " location_type_id = {$hoofdPhone['location_type_id']}";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdPhone['is_primary'] ) ) {
+                        $insArray[] = " is_primary = {$hoofdPhone['is_primary']}";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdPhone['is_billing'] ) ) {
+                        $insArray[] = " is_billing = {$hoofdPhone['is_billing']}";
+                       $executeInsert = true;
+                    }
+                    if ( isset( $hoofdPhone['phone_type_id'] ) ) {
+                        $insArray[] = "phone_type_id = {$hoofdPhone['phone_type_id']}";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdPhone['phone'] ) ) {
+                        $insArray[] = "phone = '{$hoofdPhone['phone']}'";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdPhone['phone_ext'] ) ) {
+                        $insArray[] = "phone_ext = '{$hoofdPhone['phone_ext']}'";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdPhone['phone_numeric'] ) ) {
+                        $insArray[] = "phone_numeric = '{$hoofdPhone['phone_numeric']}'";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdPhone['mobile_provider_id'] ) ) {
+                        $insArray[] = "mobile_provider_id = {$hoofdPhone['mobile_provider_id']}";
+                        $executeInsert = true;
+                    }
+                    if ( $executeInsert ) {
+                        $insPhone =
+    "INSERT INTO civicrm_phone SET contact_id = {$huisHouden['huishouden_id']}, ";
+                        $insPhone .= implode( ", ", $insArray );
+                        CRM_Core_DAO::executeQuery( $insPhone );
+                    }
                 }
             }
         }
@@ -842,50 +847,52 @@ class CRM_Utils_DgwUtils {
          * retrieve all active huishoudens for hoofdhuurder and
          * remove their emailaddresses
          */
-        $huisHoudens = self::getHuishoudens( $hoofdHuurderId, true );
+        $huisHoudens = self::getHuishoudens( $hoofdHuurderId, $relLabel, true );
         foreach ( $huisHoudens as $huisHouden ) {
-            $delEmailAddressesQry =
-"DELETE FROM civicrm_email WHERE contact_id = {$huisHouden['huishouden_id']}";
-            CRM_Core_DAO::executeQuery( $delEmailAddressesQry );
-            /*
-             * now add the new situation if there is any data
-             */
-            foreach( $hoofdEmailAddresses as $keyEmail => $hoofdEmailAddress ) {
-                $insArray = array( );
-                $executeInsert = false;
-                if ( isset( $hoofdEmailAddress['location_type_id'] ) ) {
-                    $insArray[]= " location_type_id = {$hoofdEmailAddress['location_type_id']}";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdEmailAddress['is_primary'] ) ) {
-                    $insArray[] = " is_primary = {$hoofdEmailAddress['is_primary']}";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdEmailAddress['is_billing'] ) ) {
-                    $insArray[] = " is_billing = {$hoofdEmailAddress['is_billing']}";
-                   $executeInsert = true;
-                }
-                if ( isset( $hoofdEmailAddress['email'] ) ) {
-                    $insArray[] = "email = '{$hoofdEmailAddress['email']}'";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdEmailAddress['on_hold'] ) ) {
-                    $insArray[] = "on_hold = {$hoofdEmailAddress['on_hold']}";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdEmailAddress['hold_date'] ) ) {
-                    $insArray[] = "hold_date = '{$hoofdEmailAddress['hold_date']}'";
-                    $executeInsert = true;
-                }
-                if ( isset( $hoofdEmailAddress['is_bulkmail'] ) ) {
-                    $insArray[] = "is_bulkmail = {$hoofdEmailAddress['is_bulkmail']}";
-                    $executeInsert = true;
-                }
-                if ($executeInsert) {
-                    $insEmailAddress =
-"INSERT INTO civicrm_email SET contact_id = {$huisHouden['huishouden_id']}, ";
-                    $insEmailAddress .= implode( ", ", $insArray );
-                    CRM_Core_DAO::executeQuery( $insEmailAddress );
+            if (isset($huisHouden['huishouden_id'])) {
+                $delEmailAddressesQry =
+    "DELETE FROM civicrm_email WHERE contact_id = {$huisHouden['huishouden_id']}";
+                CRM_Core_DAO::executeQuery( $delEmailAddressesQry );
+                /*
+                 * now add the new situation if there is any data
+                 */
+                foreach( $hoofdEmailAddresses as $keyEmail => $hoofdEmailAddress ) {
+                    $insArray = array( );
+                    $executeInsert = false;
+                    if ( isset( $hoofdEmailAddress['location_type_id'] ) ) {
+                        $insArray[]= " location_type_id = {$hoofdEmailAddress['location_type_id']}";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdEmailAddress['is_primary'] ) ) {
+                        $insArray[] = " is_primary = {$hoofdEmailAddress['is_primary']}";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdEmailAddress['is_billing'] ) ) {
+                        $insArray[] = " is_billing = {$hoofdEmailAddress['is_billing']}";
+                       $executeInsert = true;
+                    }
+                    if ( isset( $hoofdEmailAddress['email'] ) ) {
+                        $insArray[] = "email = '{$hoofdEmailAddress['email']}'";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdEmailAddress['on_hold'] ) ) {
+                        $insArray[] = "on_hold = {$hoofdEmailAddress['on_hold']}";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdEmailAddress['hold_date'] ) ) {
+                        $insArray[] = "hold_date = '{$hoofdEmailAddress['hold_date']}'";
+                        $executeInsert = true;
+                    }
+                    if ( isset( $hoofdEmailAddress['is_bulkmail'] ) ) {
+                        $insArray[] = "is_bulkmail = {$hoofdEmailAddress['is_bulkmail']}";
+                        $executeInsert = true;
+                    }
+                    if ($executeInsert) {
+                        $insEmailAddress =
+    "INSERT INTO civicrm_email SET contact_id = {$huisHouden['huishouden_id']}, ";
+                        $insEmailAddress .= implode( ", ", $insArray );
+                        CRM_Core_DAO::executeQuery( $insEmailAddress );
+                    }
                 }
             }
         }

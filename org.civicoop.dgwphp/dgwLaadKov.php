@@ -268,7 +268,9 @@ function processHeader($kovData) {
     $kovIndQry = "SELECT DISTINCT(pers_nr) FROM $kovTable WHERE kov_nr = $kov_nr";
     $individualDAO = CRM_Core_DAO::executeQuery( $kovIndQry );
     $createHouseHold = true;
+    $i = 0;
     while ( $individualDAO->fetch() ) {
+        $relLabel = "relatie hoofdhuurder";
         $apiParams = array(
             'version'               =>  3,
             'persoonsnummer_first'  =>  $individualDAO->pers_nr
@@ -276,7 +278,7 @@ function processHeader($kovData) {
         $apiIndividual = civicrm_api( 'DgwContact', 'Get', $apiParams );
         if ( isset( $apiIndividual[1]['contact_id'] ) ) {
             $contactId = $apiIndividual[1]['contact_id'];
-            $kovIndividuals[] = $contactId;
+            $kovIndividuals[$i]['id'] = $contactId;
             /*
              * if we have no household yet, check if contact is
              * hoofdhuurder or koopovereenkomst partner somewhere and
@@ -296,7 +298,7 @@ function processHeader($kovData) {
                         );
                         $createHouseHold = false;
                         $houseHoldId = $checkHoofdHuurder[0]['huishouden_id'];
-                        $relLabel = "relatie hoofdhuurder";
+                        $kovIndividuals[$i]['rel'] = "hoofdhuurder";
                     }
                 }
                 if ($createHouseHold) {
@@ -306,11 +308,13 @@ function processHeader($kovData) {
                             $createHouseHold = false;
                             $houseHoldId = $checkKoopPartner[0]['huishouden_id'];
                             $relLabel = "relatie koopovereenkomst";
+                            $kovIndividuals[$i]['rel'] = "koopovereenkomst";
                         }
                     }
                 }
             }
         }
+        $i++;
     }
     /*
      * check if name household is the same, create if different
@@ -332,9 +336,18 @@ function processHeader($kovData) {
     /*
      * create household if required and put in correction group
      */
-
     if ($createHouseHold) {
-        $houseHoldId = createHouseHold($kovData->corr_naam, $contactId, $relLabel);
+        /*
+         * determine who's addresses/emails/phones have to be copied into household
+         */
+        $copyContactId = $kovIndividuals[0]['id'];
+        foreach ($kovIndividuals as $kovIndividual) {
+            if (isset($kovIndividual['rel']) && $kovIndividual['rel'] == "hoofdhuurder") {
+                $copyContactId = $kovIndividual['id'];
+            }
+        }
+        $relLabel = 'relatie koopovereenkomst';
+        $houseHoldId = createHouseHold($kovData->corr_naam, $copyContactId, $relLabel);
     }
     /*
      * update or create koopovereenkomst if there is a household
@@ -372,7 +385,7 @@ function processHeader($kovData) {
             $apiParams = array(
                 'version'               =>  3,
                 'relationship_type_id'  =>  $relTypeId,
-                'contact_id_a'          =>  $kovIndividual,
+                'contact_id_a'          =>  $kovIndividual['id'],
                 'contact_id_b'          =>  $houseHoldId
             );
             if ( !empty( $kovData->ov_datum ) ) {
@@ -380,8 +393,16 @@ function processHeader($kovData) {
             } else {
                 $apiParams['start_date'] = date('Ymd');
             }
-            civicrm_api( "Relationship", "Create", $apiParams );
+            $apiRelCreate = civicrm_api( "Relationship", "Create", $apiParams );
         }
+    }
+    /*
+     * update contact details (address, phone, email) for huishouden
+     */
+    if (isset($copyContactId)) {
+        CRM_Utils_DgwUtils::processAddressesHoofdHuurder($copyContactId, $relLabel);
+        CRM_Utils_DgwUtils::processEmailsHoofdHuurder($copyContactId, $relLabel);
+        CRM_Utils_DgwUtils::processPhonesHoofdHuurder($copyContactId, $relLabel);
     }
 }
 function createHouseHold($houseHoldName, $contactId, $relLabel) {
@@ -408,12 +429,6 @@ function createHouseHold($houseHoldName, $contactId, $relLabel) {
             'contact_id'    =>  $houseHoldId
         );
         civicrm_api( 'GroupContact', 'Create', $apiParams );
-        /*
-         * use all contact details of first person (depending on type of relation)
-         */
-        CRM_Utils_DgwUtils::processAddressesHoofdHuurder($contactId, $relLabel);
-        CRM_Utils_DgwUtils::processEmailsHoofdHuurder($contactId, $relLabel);
-        CRM_Utils_DgwUtils::processPhonesHoofdHuurder($contactId, $relLabel);
     }
     return($houseHoldId);
 }
