@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/laadkov</path>
+    <page_callback>CRM_Custom_Page_LaadKov</page_callback>
+    <title>LaadKov</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/processkov</path>
+    <page_callback>CRM_Custom_Page_ProcessKov</page_callback>
+    <title>ProcessKov</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>

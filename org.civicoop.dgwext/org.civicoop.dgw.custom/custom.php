@@ -342,10 +342,6 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
      * simply in the way. These will be removed here.
      */
     if ( $objectName == 'Activity' ) {
-
-        $tekst = "Activity met action $op, id $objectId, ref : ".json_encode($objectRef);
-        CRM_Core_DAO::executeQuery("INSERT INTO ehtest SET tekst = '$tekst'");
-
         $apiParams = array(
             'version'           =>  3,
             'option_group_id'   =>  2,
