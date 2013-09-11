@@ -1128,6 +1128,7 @@ class CRM_Utils_DgwUtils {
      * @return $outDate string
      */
     static function convertDMJString($inDate) {
+        echo "<p>inkomende datum is $inDate</p>";
         $outDate = "";
         if (empty($inDate)) {
             return $outDate;

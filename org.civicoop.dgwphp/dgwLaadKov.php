@@ -70,7 +70,6 @@ if ( !$isError ) {
     }
 }
 if ( !$isError ) {
-    CRM_Core_Session::setStatus('Het laden van koopovereenkomsten is bezig', 'Laden koopovereenkomsten actief', 'info');
     /*
      * truncate load and header table and load new data
      */
@@ -89,8 +88,11 @@ if ( !$isError ) {
     /*
      * remove source file
      */
-    unlink( $kovSource );
-    sendError("Koopovereenkomsten uit First zijn succesvol geladen in CiviCRM", "Koopovereenkomsten geladen!");
+    //unlink( $kovSource );
+    $session = CRM_Core_Session::singleton();
+    $session->setStatus("Laden koopovereenkomsten is klaar!", 'Klaar', 'success');
+    CRM_Utils_System::redirect();
+    //sendError("Koopovereenkomsten uit First zijn succesvol geladen in CiviCRM", "Koopovereenkomsten geladen!");
 }
 /**
  * function to send error mail and show error in CiviCRM status
