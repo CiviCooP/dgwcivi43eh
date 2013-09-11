@@ -32,8 +32,6 @@
  | Marker       :   CoreCorp8                                         |
  | Description  :   Label for sic code is KvK nummer                  |
  | Marker       :   CoreCorp6                                         |
- | Description  :   Remove nick name                                  |
- | Date         :   12 Jan 2011 (v3.3.0)                              |
  | Marker       :   CoreCorp4                                         |
  | Description  :   Remove nick name for household                    |
  +--------------------------------------------------------------------+
@@ -42,19 +40,10 @@
 {assign var="showNickname" value="1"}
 {assign var="showLegalName" value="1"}
 {if $contactType eq 'Organization'}
-	{assign var="showNickname" value="0"}
 	{assign var="showLegalName" value="0"}
 {/if}
 {* end CoreCorp7 *}
 {* CoreCorp6 *}
-{if $contactType eq 'Individual'}
-	{assign var="showNickname" value="0"}
-{/if}
-{* end CoreCorp6 *}
-{* CoreCorp4 *}
-{if $contactType eq 'Individual'}
-	{assign var="showNickname" value="0"}
-{/if}
 {* end CoreCorp6 *}
 {$form.oplock_ts.html}
 <div class="crm-inline-edit-form">
@@ -62,7 +51,7 @@
     {include file="CRM/common/formButtons.tpl"}
   </div>
 
-  <div class="crm-clear">  
+  <div class="crm-clear">
     {if $contactType eq 'Individual'}
     <div class="crm-summary-row">
       <div class="crm-label">{$form.current_employer.label}&nbsp;{help id="id-current-employer" file="CRM/Contact/Form/Contact.hlp"}</div>
@@ -76,8 +65,7 @@
       <div class="crm-content">{$form.job_title.html}</div>
     <div>
     {/if}
-    {* CoreCorp7 *}
-    {if $showNickname}
+    {if $contactType eq 'Individual'}
     <div class="crm-summary-row">
       <div class="crm-label">{$form.nick_name.label}</div>
       <div class="crm-content">{$form.nick_name.html}</div>
