@@ -31,9 +31,6 @@
  | Marker       :   CoreCorp5                                         |
  | Description  :   Remove suffix                                     |
  |                                                                    |
- | Marker       :   CoreCorp6                                         |
- | Description  :   Remove nick name                                  |
- |                                                                    |
  | Date		:   27 Dec 2011                                       |
  | Marker       :   DGW22                                             |
  | Description  :   Wijzigen voornaam in voorletters                  |
@@ -103,8 +100,8 @@ cj(function($) {
 <table class="form-layout-compressed">
   <tr>
     {* BOS1303566 *}
-        
-        {* if $form.prefix_id *}       
+
+        {* if $form.prefix_id *}
         {if $form.prefix_id and $action ne 1}
 	    <td>
                 {*$form.prefix_id.label}<br/>*}
@@ -121,19 +118,19 @@ cj(function($) {
                             <br /><input readonly=readonly size=6 style='background-color:#E6E6E6' type=text name=prefixName value='heer'><br />
                         {elseif $contactField.gender_id == 3}
                             <br /><input readonly=readonly size=6 style='background-color:#E6E6E6' type=text name=prefixName value='mevrouw/heer'><br />
-                        {else}    
+                        {else}
                             <br /><input readonly=readonly size=6 style='background-color:#E6E6E6' type=text name=prefixName value=''><br />
-                        {/if}    
+                        {/if}
                     {/if}
                 {/foreach}
-            </td>    
+            </td>
         {/if}
         {* end BOS1303566 *}
     <td>
     	{* DGW22 wijzigen voornaam in voorletters *}
 		Voorletters (zonder puntjes)<br />
         {* {$form.first_name.label}<br />*}
-        {* end DGW22 *} 
+        {* end DGW22 *}
       {$form.first_name.html}
     </td>
     <td>
@@ -164,12 +161,14 @@ cj(function($) {
       {$form.job_title.label}<br />
       {$form.job_title.html}
     </td>
-    {* Customization CoreCorp6 Remove Nick Name *}
-    {*<td>
-    {*  {$form.nick_name.label}<br />
-    {*  {$form.nick_name.html}
-    {* </td>
-    {* end CoreCorp6 *}
+    <td>
+    {* DGW22 roepnaam voor nick_name *}
+    {*{$form.nick_name.label}<br />*}
+    Roepnaam<br />
+
+    {$form.nick_name.html}
+    </td>
+    
     <td>
       {if $buildContactSubType}
       {$form.contact_sub_type.label}<br />
