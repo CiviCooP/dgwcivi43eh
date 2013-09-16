@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<extension key="org.civicoop.dgw.datacontrol" type="module">
+  <file>datacontrol</file>
+  <name>De Goede Woning Data Control First-CiviCRM</name>
+  <description>Extension specific for De Goede Woning, data control for synchronization</description>
+  <license>Free Academic License 3.0</license>
+  <maintainer>
+    <author>CiviCooP</author>
+    <email>helpdesk@civicoop.org</email>
+  </maintainer>
+  <releaseDate>2013-09-16</releaseDate>
+  <version>1.0</version>
+  <develStage>alpha</develStage>
+  <compatibility>
+    <ver>4.3</ver>
+  </compatibility>
+  <comments>New extension under development</comments>
+  <civix>
+    <namespace>CRM/Datacontrol</namespace>
+  </civix>
+</extension>
