@@ -392,8 +392,11 @@ function civicrm_api3_dgw_firstsync_get( $inparms ) {
                 $proccessRecord = false;
             }
             if ($proccessRecord) {
-                $data = $field;
                 $data['contact_id'] = $contact['contact_id'];
+                $data['action'] = $field['action'];
+                $data['entity'] = $field['entity'];
+                $data['entity_id'] = $field['entity_id'];
+                $data['key_first'] = $field['key_first'];
                 $data['persoonsnummer_first'] = $pers_first;
                 $outparms[$i] = $data;
                 $i++;
