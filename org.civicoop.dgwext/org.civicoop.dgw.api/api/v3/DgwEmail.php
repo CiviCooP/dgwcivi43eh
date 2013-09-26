@@ -118,9 +118,10 @@ function civicrm_api3_dgw_email_update($inparms) {
         }
     }
     /*
-     * if $cde_refno is used, retrieve email_id from synchronisation First table
+     * if $cde_refno is used, retrieve email_id from synchronisation First table when
+     * email is empty
      */
-    if (!empty($cde_refno)) {
+    if (!empty($cde_refno) && empty($email_id)) {
         $email_id = CRM_Utils_DgwApiUtils::getEntityIdFromSyncTable($cde_refno, 'email');
     }
     /*
@@ -212,6 +213,9 @@ if (isset($inparms['email'])) {
             $params['is_primary'] = $inparms['is_primary'];
         }
         $params['email_id'] = $email_id;
+        if (isset($inparms['contact_id'])) {
+            $params['contact_id'] = $inparms['contact_id'];
+        }
         $res_update = civicrm_api('Email', 'Create', $params);
         if (civicrm_error($res_update)) {
             return civicrm_api3_create_error('Onbekende fout: '.$res_update['error_msg']);
