@@ -662,18 +662,20 @@ function civicrm_api3_dgw_contact_update($inparms) {
     $persoonsnummer_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('persoonsnummer_first');
     $nr_in_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Nr_in_First');
     if (isset($pers_nr) && !empty($pers_nr)) {
-    	$checkparms = array("custom_".$persoonsnummer_first_field['id'] => $pers_nr);
-    	$checkparms['version'] = 3;
-    	$check_contact = civicrm_api('Contact', 'get', $checkparms);
-    	if (civicrm_error($check_contact) || $check_contact['count'] < 1) {
-            $checkparms = array("custom_".$nr_in_first_field['id'] => $pers_nr);
+        if (!isset($contact_id)) {
+            $checkparms = array("custom_".$persoonsnummer_first_field['id'] => $pers_nr);
             $checkparms['version'] = 3;
             $check_contact = civicrm_api('Contact', 'get', $checkparms);
             if (civicrm_error($check_contact) || $check_contact['count'] < 1) {
-                return civicrm_api3_create_error("Contact niet gevonden");
+                $checkparms = array("custom_".$nr_in_first_field['id'] => $pers_nr);
+                $checkparms['version'] = 3;
+                $check_contact = civicrm_api('Contact', 'get', $checkparms);
+                if (civicrm_error($check_contact) || $check_contact['count'] < 1) {
+                    return civicrm_api3_create_error("Contact niet gevonden");
+                }
             }
-    	}
-    	$contact_id = $check_contact['id'];
+            $contact_id = $check_contact['id'];
+        }
     }
     $checkparms = array("contact_id" => $contact_id);
     $checkparms['version'] = 3;
@@ -1042,7 +1044,6 @@ function civicrm_api3_dgw_contact_update($inparms) {
          */
         $bsn_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('BSN');
         $burg_staat_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Burgerlijke_staat');
-        $saldo_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Totaal_debiteur');
         $woonkeusnr_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Inschrijfnummer_Woonkeus');
         $woonkeusdatum_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Datum_inschrijving_woonkeus');
         $woonsit_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Huidige_woonsituatie');
@@ -1052,52 +1053,9 @@ function civicrm_api3_dgw_contact_update($inparms) {
         $huishoudgrootte_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Huishoudgrootte');
         $aanbod_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Bekend_met_koopaanbod');
         $particulier_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('Particuliere_markt');
-        $customparms = array();
-        $customparms['version'] = 3;
-        $customparms['contact_id'] = $contact_id;
-        if (isset($pers_nr)) {
-            $customparms['custom_'.$persoonsnummer_first_field['id']] = $pers_nr;
-        }
-        if (isset($bsn)) {
-            $customparms['custom_'.$bsn_field['id']] = $bsn;
-        }
-        if (isset($burg_staat_id)) {
-            $customparms['custom_'.$burg_staat_field['id']] = $burg_staat_id;
-        }
-        if (isset($saldo)) {
-        	$customparms['custom_'.$saldo_field['id']] = $saldo;
-        }
-        if (isset($inparms['woonkeusnummer'])) {
-            $customparms['custom_'.$woonkeusnr_field['id']] = trim($inparms['woonkeusnummer']);
-        }
-        if (isset($woonkeusdatum)) {
-            $customparms['custom_'.$woonkeusdatum_field['id']] = $woonkeusdatum;
-        }
-        if (isset($huidige_woonsit)) {
-            $customparms['custom_'.$woonsit_field['id']] = $huidige_woonsit;
-        }
-        if (isset($hoofdhuurder)) {
-            $customparms['custom_'.$hoofdhuurder_field['id']] = $hoofdhuurder;
-        }
-        if (isset($andere_corp)) {
-            $customparms['custom_'.$anderecorp_field['id']] = $andere_corp;
-        }
-        if (isset($bruto_jaarinkomen)) {
-            $customparms['custom_'.$jaarinkomen_field['id']] = $bruto_jaarinkomen;
-        }
-        if (isset($huishoudgrootte)) {
-            $customparms['custom_'.$huishoudgrootte_field['id']] = $huishoudgrootte;
-        }
-        if (isset($aanbod_bekend)) {
-            $customparms['custom_'.$aanbod_field['id']] = $aanbod_bekend;
-        }
-        if (isset($particulier)) {
-            $customparms['custom_'.$particulier_field['id']] = $particulier;
-        }
-        civicrm_api('Contact', 'Create', $customparms);
         /*
          * update records in synctable for contact with persoonsnummer_first if not empty
-        */
+         */
         if (!empty($pers_nr)) {
             $key_first_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first');
             $change_date_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('change_date');
@@ -1114,9 +1072,43 @@ function civicrm_api3_dgw_contact_update($inparms) {
             $civiparms2 = array (
                 'version' => 3,
                 'entity_id' => $contact_id,
+                'custom_'.$persoonsnummer_first_field['id'] => $pers_nr,
                 'custom_'.$key_first_field['id'].$fid => $pers_nr,
                 'custom_'.$change_date_field['id'].$fid => $changeDate
         	);
+            if (isset($bsn)) {
+                $civiparms2['custom_'.$bsn_field['id']] = $bsn;
+            }
+            if (isset($burg_staat_id)) {
+                $civiparms2['custom_'.$burg_staat_field['id']] = $burg_staat_id;
+            }
+            if (isset($inparms['woonkeusnummer'])) {
+                $civiparms2['custom_'.$woonkeusnr_field['id']] = trim($inparms['woonkeusnummer']);
+            }
+            if (isset($woonkeusdatum)) {
+                $civiparms2['custom_'.$woonkeusdatum_field['id']] = $woonkeusdatum;
+            }
+            if (isset($huidige_woonsit)) {
+                $civiparms2['custom_'.$woonsit_field['id']] = $huidige_woonsit;
+            }
+            if (isset($hoofdhuurder)) {
+                $civiparms2['custom_'.$hoofdhuurder_field['id']] = $hoofdhuurder;
+            }
+            if (isset($andere_corp)) {
+                $civiparms2['custom_'.$anderecorp_field['id']] = $andere_corp;
+            }
+            if (isset($bruto_jaarinkomen)) {
+                $civiparms2['custom_'.$jaarinkomen_field['id']] = $bruto_jaarinkomen;
+            }
+            if (isset($huishoudgrootte)) {
+                $civiparms2['custom_'.$huishoudgrootte_field['id']] = $huishoudgrootte;
+            }
+            if (isset($aanbod_bekend)) {
+                $civiparms2['custom_'.$aanbod_field['id']] = $aanbod_bekend;
+            }
+            if (isset($particulier)) {
+                $civiparms2['custom_'.$particulier_field['id']] = $particulier;
+            }
             $civicres2 = civicrm_api('CustomValue', 'Create', $civiparms2);
         }
     }
