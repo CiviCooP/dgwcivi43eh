@@ -59,9 +59,9 @@ function civicrm_api3_dgw_address_update($inparms) {
         }
     }
     /*
-     * if $adr_refno is used, retrieve address from synchronisation First table
+     * if $adr_refno is used and address_id is empty, retrieve address from synchronisation First table
      */
-    if (!empty($adr_refno)) {
+    if (!empty($adr_refno) && empty($address_id)) {
         $address_id = CRM_Utils_DgwApiUtils::getEntityIdFromSyncTable($adr_refno, 'address');
     }
     /*
@@ -679,32 +679,73 @@ function civicrm_api3_dgw_address_get($inparms) {
     foreach ($civires1['values'] as $result) {
         /* Get location type name */
         $locationType = CRM_Utils_DgwApiUtils::getLocationByid($result['location_type_id']);
-        /* Get address type name */
-        $civiparms3 = array('version' => 3, 'id' => $result['location_type_id']);
-        $civires3 = civicrm_api('Country', 'getsingle', $civiparms3);
-        $country = "";
-        if (!civicrm_error($civires3)) {
-            $addressType = $civires3['label'];
+        /*
+         * params exactly in expected sequence because NCCW First does not
+         * cope otherwise
+         */
+        if (isset($contact_id)) {
+            $outparms[$i]['contact_id'] = $contact_id;
+        } else {
+            $outparms[$i]['contact_id'] = "";
         }
-	$data = $result;
-        $data['contact_id'] = $data['id'];
-        unset($data['id']);
-        $data['street_suffix'] = '';
-        if (isset($data['street_unit'])) {
-            $data['street_suffix'] = $data['street_unit'];
-            unset($data['street_unit']);
+        if (isset($result['id'])) {
+            $outparms[$i]['address_id'] = $result['id'];
+        } else {
+            $outparms[$i]['address_id'] = "";
         }
-        if (isset($data['country_id'])) {
-            if (!empty($data['country_id'])) {
-                $data['country'] = CRM_Core_PseudoConstant::country($data['country_id']);
+        if (isset($locationType)) {
+            $outparms[$i]['location_type'] = $locationType;
+        } else {
+            $outparms[$i]['location_type'] = "";
+        }
+        if (isset($result['is_primary'])) {
+            $outparms[$i]['is_primary'] = $result['is_primary'];
+        } else {
+            $outparms[$i]['is_primary'] = 0;
+        }
+        if (isset($result['street_address'])) {
+            $outparms[$i]['street_address'] = $result['street_address'];
+        } else {
+            $outparms[$i]['street_address'] = "";
+        }
+        if (isset($result['street_name'])) {
+            $outparms[$i]['street_name'] = $result['street_name'];
+        } else {
+            $outparms[$i]['street_name'] = "";
+        }
+        if (isset($result['street_number'])) {
+            $outparms[$i]['street_number'] = $result['street_number'];
+        } else {
+            $outparms[$i]['street_number'] = "";
+        }
+        if (isset($result['street_unit'])) {
+            $outparms[$i]['street_suffix'] = $result['street_unit'];
+        } else {
+            $outparms[$i]['street_suffix'] = "";
+        }
+        if (isset($result['postal_code'])) {
+            $outparms[$i]['postal_code'] = $result['postal_code'];
+        } else {
+            $outparms[$i]['postal_code'] = "";
+        }
+        if (isset($result['city'])) {
+            $outparms[$i]['city'] = $result['city'];
+        } else {
+            $outparms[$i]['city'] = "";
+        }
+        if (isset($result['country_id'])) {
+            $outparms[$i]['country_id'] = $result['country_id'];
+            if (!empty($result['country_id'])) {
+                $outparms[$i]['country'] = CRM_Core_PseudoConstant::country($result['country_id']);
             } else {
-                $data['country'] = "";
+                $outparms[$i]['country'] = "";
             }
+        } else {
+            $outparms[$i]['country_id'] = "";
+            $outparms[$i]['country'] = "";
         }
-        $data['location_type'] = $locationType;
-        $data['start_date'] = date("Y-m-d");
-        $data['end_date'] = "";
-        $outparms[$i] = $data;
+        $outparms[$i]['start_date'] = date("Y-m-d");
+        $outparms[$i]['end_date'] = "";   
         $i++;
     }
     $outparms[0]['record_count'] = $i - 1;
