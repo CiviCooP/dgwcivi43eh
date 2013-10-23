@@ -216,6 +216,16 @@ if (isset($inparms['email'])) {
         if (isset($inparms['contact_id'])) {
             $params['contact_id'] = $inparms['contact_id'];
         }
+        /**
+         * @TODO check if required: retrieve email if email is not set to avoid 
+         * emptying email
+         */
+        if (!isset($params['email'])) {
+            $res_get = civicrm_api('Email', 'getsingle', array('version'=>3, 'id'=>$email_id));
+            if (!civicrm_error($res_get)) {
+                $params['email'] = $res_get['email'];
+            }
+        }
         $res_update = civicrm_api('Email', 'Create', $params);
         if (civicrm_error($res_update)) {
             return civicrm_api3_create_error('Onbekende fout: '.$res_update['error_msg']);
