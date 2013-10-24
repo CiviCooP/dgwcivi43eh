@@ -82,6 +82,48 @@ function custom_civicrm_managed(&$entities) {
  * @author Erik Hommel (erik.hommel@civicoop.org)
  */
 function custom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$errors ) {
+
+	/*
+	 * Incident BOS1303715 
+	 * verplicht maken van toewijzen aan bij terugbel verzoek
+	 */
+	if ( $formName == "CRM_Activity_Form_Activity" ) {
+	
+		$terugbel_verzoek_type_id = false;
+		$gid = false;
+		$apiParams = array(
+            'version'   =>  3,
+            'name'     =>  'activity_type'
+        );
+        $apiGroup = civicrm_api('OptionGroup', 'Getsingle', $apiParams);
+        if (!isset($apiGroup['is_error']) || $apiGroup['is_error'] == 0) {
+            if (isset($apiGroup['id'])) {
+                $gid = $apiGroup['id'];
+            }
+        }
+		if ($gid) {
+			$apiParams = array(
+				'version'   =>  3,
+				'option_group_id'     =>  $gid,
+				'label' => 'Terugbellen',
+			);
+			$apiValue = civicrm_api('OptionValue', 'Getsingle', $apiParams);
+			if (!isset($apiValue['is_error']) || $apiValue['is_error'] == 0) {
+				if (isset($apiValue['value'])) {
+					$terugbel_verzoek_type_id = $apiValue['value'];
+				}
+			}
+		}
+
+		if ($terugbel_verzoek_type_id && $form->_activityTypeId == $terugbel_verzoek_type_id) {
+			$assigned_to = CRM_Utils_Array::value( 'assignee_contact_id', $fields );
+			if (empty($assigned_to)) {
+				//$errors['assignee_contact_id'] = ts('Deze activiteit moet toegewezen worden aan een medewerker');
+				$form->setElementError('assignee_contact_id' , ts('Deze activiteit moet toegewezen worden aan een medewerker'));
+			}
+		}
+	}
+
     /*
      * validation address fields on Contact Edit form
      */
