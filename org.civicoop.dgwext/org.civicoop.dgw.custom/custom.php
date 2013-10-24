@@ -76,6 +76,26 @@ function custom_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 function custom_civicrm_managed(&$entities) {
   return _custom_civix_civicrm_managed($entities);
 }
+
+/**
+ * Implementation of hook_civicrm_tabs
+ *
+ * @author Jaap Jansma (jaap.jansma@civicoop.org)
+ */
+function custom_civicrm_tabs( &$tabs, $contactID ) {
+	foreach($tabs as $key => $tab) {
+		/**
+		 * BOS1308567 insite - volgorde huurovereenkomsten
+		 *
+		 */
+		if ($tab['id'] == 'custom_2') {
+			$tabs[$key]['url'] = str_replace('/civicrm/contact/view/cd', '/civicrm/contact/view/cd_hov_tab', $tabs[$key]['url']);
+			break;
+		}
+	}
+}
+
+
 /**
  * Implementation of hook_civicrm_validateForm
  *
