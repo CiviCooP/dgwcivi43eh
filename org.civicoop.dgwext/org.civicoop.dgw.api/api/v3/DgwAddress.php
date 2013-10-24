@@ -664,7 +664,9 @@ function civicrm_api3_dgw_address_get($inparms) {
                 niet numerieke waarden in dgwcontact_addressget');
         }
     }
-    $civiparms['contact_id'] = $contact_id;
+    if (isset($contact_id)) {
+        $civiparms['contact_id'] = $contact_id;
+    }
     if (isset($inparms['address_id']) && !empty($inparms['address_id'])) {
         $civiparms['id'] = $inparms['address_id'];
     }
