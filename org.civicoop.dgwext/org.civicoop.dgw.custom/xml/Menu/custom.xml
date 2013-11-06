@@ -12,4 +12,8 @@
     <title>ProcessKov</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
+  <item>
+     <path>civicrm/contact/view/cd_hov_tab</path>
+     <page_callback>CRM_Contact_Page_View_HovCustomData</page_callback>
+  </item>
 </menu>
