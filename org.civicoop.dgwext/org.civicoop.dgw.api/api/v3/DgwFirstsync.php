@@ -319,58 +319,64 @@ function civicrm_api3_dgw_firstsync_remove($inparms) {
 /*
  * Function to sync with first
  */
-function civicrm_api3_dgw_firstsync_get( $inparms ) {
-    $group = CRM_Utils_DgwApiUtils::retrieveCustomGroupByName('Synchronisatie_First_Noa');
-    if (!is_array($group)) {
-        return civicrm_api3_create_error("CustomGroup Synchronisatie_First_Noa niet gevonden");
+function civicrm_api3_dgw_firstsync_get() {
+    $groupTitle = CRM_Utils_DgwUtils::getDgwConfigValue('groep sync first');
+    $groupParams = array(
+        'version' => 3,
+        'title' => $groupTitle
+    );
+    $apiGroup = civicrm_api('Group', 'Getsingle', $groupParams);
+    if (!civicrm_error($apiGroup)) {
+        if (isset($apiGroup['id'])) {
+            $group_for_first_sync = $apiGroup['id'];
+        } else {
+            return civicrm_api3_create_error("Groep $groupTitle niet gevonden");        
+        }
+    } else {
+        return civicrm_api3_create_error("Groep $groupTitle niet gevonden");        
     }
-    $group_for_first_sync = $group['id'];
     /*
      * initialize output parameter array
      */
     $outparms = array("");
     $civiparms = array (
         'version' => 3,
+        'group_id' => $group_for_first_sync
     );
-    $group_id = CRM_Utils_DgwApiUtils::getGroupIdByTitle('FirstSync');
-    if ($group_id === false) {
-        return civicrm_api3_create_error('No group FirstSync found');
-    }
     /**
      * Use the GroupContact api
      */
-    $civiparms['group_id'] = $group_id;
     $civires1 = civicrm_api('GroupContact', 'get', $civiparms);
     if (civicrm_error($civires1)) {
         return civicrm_api3_create_error($civires1['error_message']);
     }
     $i = 1;
     foreach ($civires1['values'] as $contact) {
-        $pers_first = CRM_Utils_DgwApiUtils::retrievePersoonsNummerFirst($contact['contact_id']);
-        $fields = CRM_Utils_DgwApiUtils::retrieveCustomValuesForContactAndCustomGroupSorted( $contact['contact_id'], $group_for_first_sync);
-        foreach($fields as $field) {
-            $proccessRecord = true;
+        $syncRecords = CRM_Utils_DgwApiUtils::retrieveSyncRecords($contact['contact_id']);
+        foreach($syncRecords as $syncRecord) {
+            $processRecord = true;
             /*
              * issue 269: do not send if key_first is empty and action is
              * not ins
              * do not send if entity = address or contact and action is
              * delete
              */
-            if (empty($field['key_first']) && $field['action'] != 'ins') {
-                $proccessRecord = false;
+            if (empty($syncRecord['key_first']) && $syncRecord['action'] != 'ins') {
+                $processRecord = false;
             }
-            if ($field['action'] == 'del' && ($field['entity'] == 'contact' || $field['entity'] == 'address')) {
-                $proccessRecord = false;
+            if ($syncRecord['action'] == 'del' && ($syncRecord['entity'] == 'contact' || $syncRecord['entity'] == 'address')) {
+                $processRecord = false;
             }
-            if ($field['action'] == 'none') {
-                $proccessRecord = false;
+            if ($syncRecord['action'] == 'none') {
+                $processRecord = false;
             }
-            if ($proccessRecord) {
+            if ($processRecord) {
                 $data['contact_id'] = $contact['contact_id'];
-                $data['action'] = $field['action'];
-                $data['entity'] = $field['entity'];
-                $data['entity_id'] = $field['entity_id'];
-                $data['key_first'] = $field['key_first'];
+                $data['action'] = $syncRecord['action'];
+                $data['entity'] = $syncRecord['entity'];
+                $data['entity_id'] = $syncRecord['entity_id'];
+                $data['key_first'] = $syncRecord['key_first'];
+                $pers_first = CRM_Utils_DgwApiUtils::retrievePersoonsNummerFirst($contact['contact_id']);
                 $data['persoonsnummer_first'] = $pers_first;
                 $outparms[$i] = $data;
                 $i++;

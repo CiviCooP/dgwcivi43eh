@@ -217,7 +217,7 @@ if (isset($inparms['email'])) {
             $params['contact_id'] = $inparms['contact_id'];
         }
         /**
-         * @TODO check if required: retrieve email if email is not set to avoid 
+         * retrieve email if email is not set to avoid 
          * emptying email
          */
         if (!isset($params['email'])) {

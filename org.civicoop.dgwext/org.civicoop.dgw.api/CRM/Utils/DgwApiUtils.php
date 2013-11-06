@@ -18,165 +18,154 @@
 */
 class CRM_Utils_DgwApiUtils {
 
-	public static function parseEntity($action) {
-		$entities = array(
-				'phone' => 'DgwPhone',
-				'note' => 'DgwNote',
-				'email' => 'DgwEmail',
-				'address' => 'DgwAddress',
-				'group' => 'DgwGroup',
-				'tag' => 'DgwTag',
-				'hov' => 'DgwHov',
-				'relationship' => 'DgwRelationship',
-				'firstsync' => 'DgwFirstsync',
-		);
+    public static function parseEntity($action) {
+        $entities = array(
+            'phone' => 'DgwPhone',
+            'note' => 'DgwNote',
+            'email' => 'DgwEmail',
+            'address' => 'DgwAddress',
+            'group' => 'DgwGroup',
+            'tag' => 'DgwTag',
+            'hov' => 'DgwHov',
+            'relationship' => 'DgwRelationship',
+            'firstsync' => 'DgwFirstsync',
+        );
+        $return['entity'] = 'DgwContact';
+        $return['action'] = $action;
+	foreach($entities as $key => $value) {
+            if (strpos($action, $key) === 0) {
+                $return['entity'] = $value;
+                $return['action'] = str_replace($key, "", $action);
+            }
+        }
+        return $return;
+    }
 
-		/*$actions = array(
-			'remove' => 'delete'
-		);*/
+    public static function getLocationByid($id) {
+        $civiparms2 = array('version' => 3, 'id' => $id);
+        $civires2 = civicrm_api('LocationType', 'getsingle', $civiparms2);
+        $locationType = "";
+        if (!civicrm_error($civires2)) {
+            $locationType = $civires2['name'];
+        }
+        return $locationType;
+    }
 
-		$return['entity'] = 'DgwContact';
-		$return['action'] = $action;
+    public static function getLocationIdByName($name) {
+        $civiparms2 = array('version' => 3, 'name' => $name);
+        $civires2 = civicrm_api('LocationType', 'getsingle', $civiparms2);
+        $locationType = "";
+        if (!civicrm_error($civires2)) {
+            $locationType = $civires2['id'];
+        }
+        return $locationType;
+    }
 
-		foreach($entities as $key => $value) {
-			if (strpos($action, $key) === 0) {
-				$return['entity'] = $value;
-				$return['action'] = str_replace($key, "", $action);
-			}
-		}
-		/*foreach($actions as $key => $value) {
-			if ($return['action'] == $key) {
-				$return['action'] = $value;
-			}
-		}*/
+    public static function getContactTypeByName($name) {
+        $civiparms2 = array('version' => 3, 'name' => $name);
+        $civires2 = civicrm_api('ContactType', 'getsingle', $civiparms2);
+        $locationType = "";
+        if (!civicrm_error($civires2)) {
+            $locationType = $civires2['id'];
+        }
+        return $locationType;
+    }
 
-		return $return;
-	}
+    public static function getGroupIdByTitle($title) {
+        $civiparms2 = array('version' => 3, 'title' => $title);
+        $civires2 = civicrm_api('Group', 'getsingle', $civiparms2);
+        $id = false;
+        if (!civicrm_error($civires2)) {
+            $id = $civires2['id'];
+        }
+        return $id;
+    }
 
-	public static function getLocationByid($id) {
-		$civiparms2 = array('version' => 3, 'id' => $id);
-		$civires2 = civicrm_api('LocationType', 'getsingle', $civiparms2);
-		$locationType = "";
-		if (!civicrm_error($civires2)) {
-			$locationType = $civires2['name'];
-		}
-		return $locationType;
-	}
+    public static function getOptionGroupIdByTitle($title) {
+        $civiparms2 = array('version' => 3, 'name' => $title);
+        $civires2 = civicrm_api('OptionGroup', 'getsingle', $civiparms2);
+        $id = false;
+        if (!civicrm_error($civires2)) {
+            $id = $civires2['id'];
+        }
+        return $id;
+    }
 
-	public static function getLocationIdByName($name) {
-		$civiparms2 = array('version' => 3, 'name' => $name);
-		$civires2 = civicrm_api('LocationType', 'getsingle', $civiparms2);
-		$locationType = "";
-		if (!civicrm_error($civires2)) {
-			$locationType = $civires2['id'];
-		}
-		return $locationType;
-	}
+    public static function getOptionValuesByGroupId($group_id) {
+        $civiparms2 = array('version' => 3, 'option_group_id' => $group_id);
+        $civires2 = civicrm_api('OptionValue', 'get', $civiparms2);
+        $return = array();
+        if (!civicrm_error($civires2)) {
+            foreach($civires2['values'] as $val) {
+                $return[$val['value']] = $val;
+            }
+        }
+        return $return;
+    }
+    
+    public static function retrieveRelationshipTypeIdByNameAB($name) {
+        $id = 0;
+        $parms = array(
+            'version' => 3,
+            'name_a_b' => $name
+        );
+        $res = civicrm_api('RelationshipType', 'getsingle', $parms);
+        if (!civicrm_error($res)) {
+            $id = $res['id'];
+        }
+        return $id;
+    }
 
-	public static function getContactTypeByName($name) {
-		$civiparms2 = array('version' => 3, 'name' => $name);
-		$civires2 = civicrm_api('ContactType', 'getsingle', $civiparms2);
-		$locationType = "";
-		if (!civicrm_error($civires2)) {
-			$locationType = $civires2['id'];
-		}
-		return $locationType;
-	}
+    public static function getEntityIdFromSyncTable($first_key, $entity_type) {
+        $id = 0;
+        $cde_refno_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first');
+        $entity_id_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity_id');
+        $entity_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity');
+        $cde_refno_field_froup = CRM_Utils_DgwApiUtils::retrieveCustomGroupByid($cde_refno_field['custom_group_id']);
 
-	public static function getGroupIdByTitle($title) {
-		$civiparms2 = array('version' => 3, 'title' => $title);
-		$civires2 = civicrm_api('Group', 'getsingle', $civiparms2);
-		$id = false;
-		if (!civicrm_error($civires2)) {
-			$id = $civires2['id'];
-		}
-		return $id;
-	}
+        /*
+         * Onderstaande query is niet om te bouwen naar API calls
+         * Want er moet dan gebruik gemaakt worden van de CustomValues van de api
+         * maar om die te gebruiken hebben entity_id nodig en die verwijst in de database
+         * altijd naar het contact in de tabel voor synchronisatie.
+         * En omdat het een inactief (verborgen) veld is kunnen we ook niet zoeken via
+         * de Contact api met als parameter custom_*
+        */
+        $query = "SELECT ".$entity_id_field['column_name']." AS `entity_id` FROM ".$cde_refno_field_froup['table_name']." WHERE ".$cde_refno_field['column_name']." = '$first_key' AND ".$entity_field['column_name']." = '".$entity_type."'";
+        $daoSync = CRM_Core_DAO::executeQuery($query);
+        if ($daoSync->fetch()) {
+            $id = $daoSync->entity_id;
+        }
+        return $id;
+    }
 
-	public static function getOptionGroupIdByTitle($title) {
-		$civiparms2 = array('version' => 3, 'name' => $title);
-		$civires2 = civicrm_api('OptionGroup', 'getsingle', $civiparms2);
-		$id = false;
-		if (!civicrm_error($civires2)) {
-			$id = $civires2['id'];
-		}
-		return $id;
-	}
+    public static function getHovFromTable($hovnummer, $hovnr_field) {
+        $id = 0;
+        $hovnr_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName($hovnr_field);
+        $hovnr_field_field_froup = CRM_Utils_DgwApiUtils::retrieveCustomGroupByid($hovnr_field['custom_group_id']);
 
-	public static function getOptionValuesByGroupId($group_id) {
-		$civiparms2 = array('version' => 3, 'option_group_id' => $group_id);
-		$civires2 = civicrm_api('OptionValue', 'get', $civiparms2);
-		$return = array();
-		if (!civicrm_error($civires2)) {
-			foreach($civires2['values'] as $val) {
-				$return[$val['value']] = $val;
-			}
-		}
-		return $return;
-	}
-	public static function retrieveRelationshipTypeIdByNameAB($name) {
-		$id = 0;
-		$parms = array(
-			'version' => 3,
-			'name_a_b' => $name
-		);
-		$res = civicrm_api('RelationshipType', 'getsingle', $parms);
-		if (!civicrm_error($res)) {
-			$id = $res['id'];
-		}
-		return $id;
-	}
+        /*
+         * Onderstaande query is niet om te bouwen naar API calls
+         * Want er moet dan gebruik gemaakt worden van de CustomValues van de api
+         * maar om die te gebruiken hebben entity_id nodig en die verwijst in de database
+         * altijd naar het contact in de tabel voor synchronisatie.
+         * En omdat het een inactief (verborgen) veld is kunnen we ook niet zoeken via
+         * de Contact api met als parameter custom_*
+         */
+        $query = "SELECT `entity_id` FROM ".$hovnr_field_field_froup['table_name']." WHERE ".$hovnr_field['column_name']." = '$hovnummer'";
+        $daoSync = CRM_Core_DAO::executeQuery($query);
+        if ($daoSync->fetch()) {
+            $id = $daoSync->entity_id;
+        }
+        return $id;
+    }
 
-	public static function getEntityIdFromSyncTable($first_key, $entity_type) {
-		$id = 0;
-		$cde_refno_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first');
-		$entity_id_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity_id');
-		$entity_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity');
-		$cde_refno_field_froup = CRM_Utils_DgwApiUtils::retrieveCustomGroupByid($cde_refno_field['custom_group_id']);
-
-		/*
-		 * Onderstaande query is niet om te bouwen naar API calls
-		* Want er moet dan gebruik gemaakt worden van de CustomValues van de api
-		* maar om die te gebruiken hebben entity_id nodig en die verwijst in de database
-		* altijd naar het contact in de tabel voor synchronisatie.
-		* En omdat het een inactief (verborgen) veld is kunnen we ook niet zoeken via
-		* de Contact api met als parameter custom_*
-		*/
-		$query = "SELECT ".$entity_id_field['column_name']." AS `entity_id` FROM ".$cde_refno_field_froup['table_name']." WHERE ".$cde_refno_field['column_name']." = '$first_key' AND ".$entity_field['column_name']." = '".$entity_type."'";
-		$daoSync = CRM_Core_DAO::executeQuery($query);
-		if ($daoSync->fetch()) {
-			$id = $daoSync->entity_id;
-		}
-		return $id;
-	}
-
-	public static function getHovFromTable($hovnummer, $hovnr_field) {
-		$id = 0;
-		$hovnr_field = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName($hovnr_field);
-		$hovnr_field_field_froup = CRM_Utils_DgwApiUtils::retrieveCustomGroupByid($hovnr_field['custom_group_id']);
-
-		/*
-		 * Onderstaande query is niet om te bouwen naar API calls
-		* Want er moet dan gebruik gemaakt worden van de CustomValues van de api
-		* maar om die te gebruiken hebben entity_id nodig en die verwijst in de database
-		* altijd naar het contact in de tabel voor synchronisatie.
-		* En omdat het een inactief (verborgen) veld is kunnen we ook niet zoeken via
-		* de Contact api met als parameter custom_*
-		*/
-		$query = "SELECT `entity_id` FROM ".$hovnr_field_field_froup['table_name']." WHERE ".$hovnr_field['column_name']." = '$hovnummer'";
-		$daoSync = CRM_Core_DAO::executeQuery($query);
-		if ($daoSync->fetch()) {
-			$id = $daoSync->entity_id;
-		}
-		return $id;
-	}
-
-	public static function retrieveCustomGroupByid($group_id) {
-		$civiparms2 = array('version' => 3, 'id' => $group_id);
-		$civires2 = civicrm_api('CustomGroup', 'getsingle', $civiparms2);
-		$id = false;
-		if (!civicrm_error($civires2)) {
-			return $civires2;
+    public static function retrieveCustomGroupByid($group_id) {
+        $civiparms2 = array('version' => 3, 'id' => $group_id);
+        $civires2 = civicrm_api('CustomGroup', 'getsingle', $civiparms2);
+        $id = false;
+        if (!civicrm_error($civires2)) {
+            return $civires2;
 		}
 		return false;
 	}
@@ -196,7 +185,7 @@ class CRM_Utils_DgwApiUtils {
 		$civires2 = civicrm_api('CustomField', 'getsingle', $civiparms2);
 		$id = false;
 		if (!civicrm_error($civires2)) {
-			return $civires2;
+                    return $civires2;
 		}
 		return false;
 	}
@@ -353,4 +342,113 @@ class CRM_Utils_DgwApiUtils {
             }
             return $results;
         }
+        /**
+         * static function to retrieve sync records in sequence of
+         * all actions for contacts first
+         * 
+         * @author Erik Hommel (erik.hommel@civicoop.org)
+         *                      http://www/civicoop.org
+         * @params $contactId contact for which sync records are retrieved
+         * @return $syncRecords array holding sync records
+         */
+        static function retrieveSyncRecords($contactId) {
+            $syncRecords = array();
+            if (empty($contactId)) {
+                return $syncRecords;
+            }
+            require_once 'CRM/Utils/DgwUtils.php';
+            $syncTableName = CRM_Utils_DgwUtils::getDgwConfigValue('synchronisatietabel first');
+            $syncTable = CRM_Utils_DgwUtils::getCustomGroupTableName($syncTableName);
+            $selectSyncContact = "SELECT * FROM ".$syncTable." WHERE entity_id = $contactId";
+            $customField = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('action');
+            if (isset($customField['column_name'])) {
+                $actionField = $customField['column_name'];
+                $selectSyncContact .= " AND ".$actionField." = 'ins'";
+            }
+            $customField = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity');
+            if (isset($customField['column_name'])) {
+                $entityField = $customField['column_name'];
+                $selectSyncContact .= " AND ".$entityField." = 'contact'";
+            }
+            $customField = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('entity_id');
+            if (isset($customField['column_name'])) {
+                $entityIdField = $customField['column_name'];
+            }
+            $customField = CRM_Utils_DgwApiUtils::retrieveCustomFieldByName('key_first');
+            if (isset($customField['column_name'])) {
+                $keyFirstField = $customField['column_name'];
+            }
+            /*
+             * all contact insert transaction first
+             */
+            $daoSync = CRM_Core_DAO::executeQuery($selectSyncContact);
+            while ($daoSync->fetch()) {
+                $syncRecord = array();
+                $syncRecord['action'] = $daoSync->$actionField;
+                $syncRecord['entity'] = "contact";
+                $syncRecord['entity_id'] = $daoSync->$entityIdField;
+                $syncRecord['key_first'] = $daoSync->$keyFirstField;
+                $syncRecords[] = $syncRecord;
+            }
+            /*
+             * all other contact insert transactions next
+             */
+            $selectSyncContact = "SELECT * FROM ".$syncTable." WHERE entity_id = $contactId";
+            if (isset($entityField)) {
+                $selectSyncContact .= " AND ".$entityField." = 'contact'";
+            }
+            if (isset($actionField)) {
+                $selectSyncContact .= " AND ".$actionField." <> 'ins' AND ".$actionField." <> 'none'";
+            }
+            $daoSync = CRM_Core_DAO::executeQuery($selectSyncContact);
+            while ($daoSync->fetch()) {
+                $syncRecord = array();
+                $syncRecord['action'] = $daoSync->$actionField;
+                $syncRecord['entity'] = "contact";
+                $syncRecord['entity_id'] = $daoSync->$entityIdField;
+                $syncRecord['key_first'] = $daoSync->$keyFirstField;
+                $syncRecords[] = $syncRecord;
+            }
+            /*
+             * all non-contact inserts next
+             */
+            $selectSyncContact = "SELECT * FROM ".$syncTable." WHERE entity_id = $contactId";
+            if (isset($entityField)) {
+                $selectSyncContact .= " AND ".$entityField." <> 'contact'";
+            }
+            if (isset($actionField)) {
+                $selectSyncContact .= " AND ".$actionField." = 'ins'";
+            }
+            $daoSync = CRM_Core_DAO::executeQuery($selectSyncContact);
+            while ($daoSync->fetch()) {
+                $syncRecord = array();
+                $syncRecord['action'] = $daoSync->$actionField;
+                $syncRecord['entity'] = $daoSync->$entityField;
+                $syncRecord['entity_id'] = $daoSync->$entityIdField;
+                $syncRecord['key_first'] = $daoSync->$keyFirstField;
+                $syncRecords[] = $syncRecord;
+            }
+            /*
+            * all other transactions last
+            */
+            $selectSyncContact = "SELECT * FROM ".$syncTable." WHERE entity_id = $contactId";
+            if (isset($entityField)) {
+                $selectSyncContact .= " AND ".$entityField." <> 'contact'";
+            }
+            if (isset($actionField)) {
+                $selectSyncContact .= " AND ".$actionField." <> 'ins' AND ".$actionField." <> 'none'";
+            }
+            $daoSync = CRM_Core_DAO::executeQuery($selectSyncContact);
+            while ($daoSync->fetch()) {
+                $syncRecord = array();
+                $syncRecord['action'] = $daoSync->$actionField;
+                $syncRecord['entity'] = $daoSync->$entityField;
+                $syncRecord['entity_id'] = $daoSync->$entityIdField;
+                $syncRecord['key_first'] = $daoSync->$keyFirstField;
+                $syncRecords[] = $syncRecord;
+            }
+            return $syncRecords;
+    }
 }
+
+
