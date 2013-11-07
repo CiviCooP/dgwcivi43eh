@@ -110,9 +110,9 @@ class dgwSnelZoek
     
     function from( ) {
         return "FROM civicrm_contact contact_a LEFT JOIN civicrm_address 
-			address ON ( address.contact_id = contact_a.id AND address.is_primary = 1 ) 
+			address ON ( address.contact_id = contact_a.id ) 
 			LEFT JOIN civicrm_phone phone ON ( phone.contact_id = 
-			contact_a.id AND phone.is_primary = 1 )";
+			contact_a.id )";
     }
 
     function where( $includeContactIDs = false ) {
