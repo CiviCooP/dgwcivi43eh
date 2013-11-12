@@ -378,11 +378,13 @@ class CRM_Utils_DgwApiUtils {
             if (isset($customField['column_name'])) {
                 $keyFirstField = $customField['column_name'];
             }
+            $contactInserted = FALSE;
             /*
              * all contact insert transaction first
              */
             $daoSync = CRM_Core_DAO::executeQuery($selectSyncContact);
             while ($daoSync->fetch()) {
+                $contactInserted = TRUE;
                 $syncRecord = array();
                 $syncRecord['action'] = $daoSync->$actionField;
                 $syncRecord['entity'] = "contact";
@@ -390,9 +392,6 @@ class CRM_Utils_DgwApiUtils {
                 $syncRecord['key_first'] = $daoSync->$keyFirstField;
                 $syncRecords[] = $syncRecord;
             }
-            /*
-             * all other contact insert transactions next
-             */
             $selectSyncContact = "SELECT * FROM ".$syncTable." WHERE entity_id = $contactId";
             if (isset($entityField)) {
                 $selectSyncContact .= " AND ".$entityField." = 'contact'";
@@ -411,10 +410,19 @@ class CRM_Utils_DgwApiUtils {
             }
             /*
              * all non-contact inserts next
+             * if there has been a contact insert, ignore the insert email and phone for this run.
+             * They will be part of the next run. This is because First Noa can not process
+             * the contact create quicky enough to also add a email and phone in the
+             * same run. Address can be created at the same time
+             * 
              */
             $selectSyncContact = "SELECT * FROM ".$syncTable." WHERE entity_id = $contactId";
             if (isset($entityField)) {
-                $selectSyncContact .= " AND ".$entityField." <> 'contact'";
+                if (!$contactInserted) {
+                    $selectSyncContact .= " AND ".$entityField." <> 'contact'";
+                } else {
+                    $selectSyncContact .= " AND ".$entityField." NOT IN('contact', 'email', 'phone')";
+                }
             }
             if (isset($actionField)) {
                 $selectSyncContact .= " AND ".$actionField." = 'ins'";

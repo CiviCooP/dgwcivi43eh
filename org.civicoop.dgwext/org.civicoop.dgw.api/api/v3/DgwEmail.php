@@ -215,6 +215,8 @@ if (isset($inparms['email'])) {
         $params['email_id'] = $email_id;
         if (isset($inparms['contact_id'])) {
             $params['contact_id'] = $inparms['contact_id'];
+        } else {
+            $params['contact_id'] = null;
         }
         /**
          * retrieve email if email is not set to avoid 
