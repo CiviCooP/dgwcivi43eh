@@ -669,22 +669,26 @@ function civicrm_api3_dgw_hov_update($inparms) {
                 'relationship_type_id' => $rel_hfd_id,
                 'contact_id_b' => $huis_id,
             );
-            $res = civicrm_api('Relationship', 'get', $parms);
+            $res = civicrm_api('Relationship', 'Get', $parms);
             $updated = false;
             if (!civicrm_error($res)) {
                 foreach($res['values'] as $rid => $value) {
                     $rel_params['version'] = 3;
                     $rel_params['id'] = $rid;
+                    $rel_params['contact_id_b'] = $value['contact_id_b'];
+                    $rel_params['contact_id_a'] = $value['contact_id_a'];
                     $rel_params['relationship_type_id'] = $rel_hfd_id;
                     if (isset($hh_start_date) && !empty($hh_start_date)) {
                         $rel_params['start_date'] = $hh_start_date;
+                    } else {
+                        $rel_params['start_date'] = $value['start_date'];
                     }
                     if (isset($hh_end_date) && !empty($hh_end_date)) {
                         $rel_params['end_date'] = $hh_end_date;
                     } else {
-                        $rel_params['end_date'] = $end_date;
+                        $rel_params['end_date'] = $value['end_date'];
                     }
-                    $relRes = civicrm_api('Relationship', 'Create', $rel_params);
+                    civicrm_api('Relationship', 'Create', $rel_params);
                     $updated = true;
                 }
             }

@@ -410,35 +410,35 @@ class CRM_Utils_DgwApiUtils {
             }
             /*
              * all non-contact inserts next
-             * if there has been a contact insert, ignore the insert email and phone for this run.
+             * if there has been a contact insert, ignore the insert address, email and phone for this run.
              * They will be part of the next run. This is because First Noa can not process
-             * the contact create quicky enough to also add a email and phone in the
-             * same run. Address can be created at the same time
+             * the contact create quicky enough to also add address, email and phone in the
+             * same run. 
              * 
              */
-            $selectSyncContact = "SELECT * FROM ".$syncTable." WHERE entity_id = $contactId";
-            if (isset($entityField)) {
-                if (!$contactInserted) {
-                    $selectSyncContact .= " AND ".$entityField." <> 'contact'";
-                } else {
-                    $selectSyncContact .= " AND ".$entityField." NOT IN('contact', 'email', 'phone')";
+            if (!$contactInserted) {
+                $selectSyncContact = "SELECT * FROM ".$syncTable." WHERE entity_id = $contactId";
+                if (isset($entityField)) {
+                    if (!$contactInserted) {
+                        $selectSyncContact .= " AND ".$entityField." <> 'contact'";
+                    }
+                }
+                if (isset($actionField)) {
+                    $selectSyncContact .= " AND ".$actionField." = 'ins'";
+                }
+                $daoSync = CRM_Core_DAO::executeQuery($selectSyncContact);
+                while ($daoSync->fetch()) {
+                    $syncRecord = array();
+                    $syncRecord['action'] = $daoSync->$actionField;
+                    $syncRecord['entity'] = $daoSync->$entityField;
+                    $syncRecord['entity_id'] = $daoSync->$entityIdField;
+                    $syncRecord['key_first'] = $daoSync->$keyFirstField;
+                    $syncRecords[] = $syncRecord;
                 }
             }
-            if (isset($actionField)) {
-                $selectSyncContact .= " AND ".$actionField." = 'ins'";
-            }
-            $daoSync = CRM_Core_DAO::executeQuery($selectSyncContact);
-            while ($daoSync->fetch()) {
-                $syncRecord = array();
-                $syncRecord['action'] = $daoSync->$actionField;
-                $syncRecord['entity'] = $daoSync->$entityField;
-                $syncRecord['entity_id'] = $daoSync->$entityIdField;
-                $syncRecord['key_first'] = $daoSync->$keyFirstField;
-                $syncRecords[] = $syncRecord;
-            }
             /*
-            * all other transactions last
-            */
+             * all other transactions last
+             */
             $selectSyncContact = "SELECT * FROM ".$syncTable." WHERE entity_id = $contactId";
             if (isset($entityField)) {
                 $selectSyncContact .= " AND ".$entityField." <> 'contact'";
