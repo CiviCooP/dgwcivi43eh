@@ -429,90 +429,11 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
     }
 }
 /**
- * Implementation of hook_civicrm_pre
- *
- * @author Erik Hommel (erik.hommel@civicoop.org)
- *
- */
-function custom_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
-    /*
-     * street parsing in Dutch format
-     */
-    if ( $objectName == "Address" ) {
-        /*
-         * change sequence of address fields for street parsing in Dutch format
-         */
-        if ( isset( $objectRef['street_address'] ) ) {
-            if ( !empty( $objectRef['street_address'] ) ) {
-                require_once 'CRM/Utils/DgwUtils.php';
-                $splitAddress = CRM_Utils_DgwUtils::splitStreetAddressNl( $objectRef['street_address'] );
-                if ( $splitAddress['is_error'] == 0 ) {
-                    $objectRef['street_name'] = $splitAddress['street_name'];
-                    $objectRef['street_number'] = $splitAddress['street_number'];
-                    $objectRef['street_unit'] = $splitAddress['street_unit'];
-                }
-            }
-        }
-        $parsedStreetAddress = "";
-        if ( isset( $objectRef['street_name'] ) && !empty( $objectRef['street_name'] ) ) {
-            $parsedStreetAddress = $objectRef['street_name'];
-        }
-        if ( isset( $objectRef['street_number'] ) && !empty( $objectRef['street_number'] ) ) {
-            $parsedStreetAddress .= " ".$objectRef['street_number'];
-        }
-        if ( isset( $objectRef['street_unit'] ) && !empty( $objectRef['street_unit'] ) ) {
-            $parsedStreetAddress .= " ".$objectRef['street_unit'];
-        }
-        $objectRef['street_address'] = $parsedStreetAddress;
-    }
-
-    if ( $op == "delete" ) {
-        if ( $objectName == "Phone" || $objectName == "Email" || $objectName == "Address" ) {
-            /*
-             * retrieve contact_id from record
-             */
-            if ( isset( $objectId ) ) {
-                $objectTable = "civicrm_".strtolower( $objectName );
-                $selObject =
-"SELECT contact_id FROM $objectTable WHERE id = $objectId ";
-                $daoObject = CRM_Core_DAO::executeQuery( $selObject );
-                if ( $daoObject->fetch () ) {
-                    $_GLOBALS['delcontactid'] = $daoObject->contact_id;
-                }
-            }
-        }
-    }
-}
-/**
  * Implementation of hook_civicrm_buildForm
  * @author Erik Hommel (erik.hommel@civicoop.org)
  *
  */
 function custom_civicrm_buildForm( $formName, &$form ) {
-    if ( $formName == "CRM_Contact_Form_Contact" ) {
-        $values = $form->getVar('_values' );
-        if ( isset( $values['address'] ) ) {
-            foreach ( $values['address'] as $addressKey => $address ) {
-                if ( isset( $values['address'][$addressKey]['street_name'] ) ) {
-                    $parseParams['street_name'] = $values['address'][$addressKey]['street_name'];
-                }
-                if ( isset( $values['address'][$addressKey]['street_number'] ) ) {
-                    $parseParams['street_number'] = $values['address'][$addressKey]['street_number'];
-                }
-                if ( isset( $values['address'][$addressKey]['street_unit'] ) ) {
-                    $parseParams['street_unit'] = $values['address'][$addressKey]['street_unit'];
-                }
-                require_once 'CRM/Utils/DgwUtils.php';
-                $parseResult = CRM_Utils_DgwUtils::glueStreetAddressNl( $parseParams );
-                if ( $parseResult['is_error'] == 0 ) {
-                    if ( isset( $parseResult['parsed_street_address'] ) ) {
-                        $defaults['address'][$addressKey]['street_address'] = $parseResult['parsed_street_address'];
-                        $form->setDefaults( $defaults );
-                    }
-                }
-            }
-        }
-    }
     /*
      * DGW incident 14 01 13 003
      */
