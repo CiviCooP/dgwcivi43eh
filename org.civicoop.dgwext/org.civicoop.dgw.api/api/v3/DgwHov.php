@@ -482,7 +482,7 @@ function civicrm_api3_dgw_hov_update($inparms) {
             return civicrm_api3_create_error("Medehuurder niet gevonden");
         }
         $res_mh = reset($res_mh['values']);
-        $mh_id = $res_hh['contact_id'];
+        $mh_id = $res_mh['contact_id'];
     }
     /*
      * if start_date passed and format invalid, error
@@ -672,24 +672,27 @@ function civicrm_api3_dgw_hov_update($inparms) {
             $res = civicrm_api('Relationship', 'Get', $parms);
             $updated = false;
             if (!civicrm_error($res)) {
-                foreach($res['values'] as $rid => $value) {
-                    $rel_params['version'] = 3;
-                    $rel_params['id'] = $rid;
-                    $rel_params['contact_id_b'] = $value['contact_id_b'];
-                    $rel_params['contact_id_a'] = $value['contact_id_a'];
+                $rel_params['version'] = 3;
+                if (isset($hh_start_date) && !empty($hh_start_date)) {
+                    $rel_params['start_date'] = $hh_start_date;
+                }
+                if (isset($hh_end_date) && !empty($hh_end_date)) {
+                    $rel_params['end_date'] = $hh_end_date;
+                }
+                /*
+                 * if none exist yet, create
+                 */
+                if (isset($res['count']) && $res['count'] == 0) {
                     $rel_params['relationship_type_id'] = $rel_hfd_id;
-                    if (isset($hh_start_date) && !empty($hh_start_date)) {
-                        $rel_params['start_date'] = $hh_start_date;
-                    } else {
-                        $rel_params['start_date'] = $value['start_date'];
+                    $rel_params['contact_id_a'] = $hh_id;
+                    $rel_params['contact_id_b'] = $huis_id;
+                    $createRel = civicrm_api('Relationship', 'Create', $rel_params);
+                } else {
+                    foreach($res['values'] as $rid => $value) {
+                        $rel_params['id'] = $rid;
+                        civicrm_api('Relationship', 'Create', $rel_params);
+                        $updated = true;
                     }
-                    if (isset($hh_end_date) && !empty($hh_end_date)) {
-                        $rel_params['end_date'] = $hh_end_date;
-                    } else {
-                        $rel_params['end_date'] = $value['end_date'];
-                    }
-                    civicrm_api('Relationship', 'Create', $rel_params);
-                    $updated = true;
                 }
             }
         }
@@ -699,7 +702,6 @@ function civicrm_api3_dgw_hov_update($inparms) {
          */
         if (isset($mh_persoon)) {
             $rel_med_id = CRM_Utils_DgwApiUtils::retrieveRelationshipTypeIdByNameAB('Medehuurder');
-            $rel_hfd_id = CRM_Utils_DgwApiUtils::retrieveRelationshipTypeIdByNameAB('Hoofdhuurder');
             $parms = array(
                 'version' => 3,
                 'relationship_type_id' => $rel_med_id,
@@ -708,17 +710,27 @@ function civicrm_api3_dgw_hov_update($inparms) {
             $res = civicrm_api('Relationship', 'get', $parms);
             $updated = false;
             if (!civicrm_error($res)) {
-                foreach($res['values'] as $rid => $value) {
                 $rel_params['version'] = 3;
-                $rel_params['id'] = $rid;
                 if (isset($mh_start_date) && !empty($mh_start_date)) {
                     $rel_params['start_date'] = $mh_start_date;
                 }
                 if (isset($mh_end_date) && !empty($mh_end_date)) {
                     $rel_params['end_date'] = $mh_end_date;
                 }
-                civicrm_api('Relationship', 'Create', $rel_params);
-                $updated = true;
+                /*
+                 * if none exist yet, create
+                 */
+                if (isset($res['count']) && $res['count'] == 0) {
+                    $rel_params['relationship_type_id'] = $rel_med_id;
+                    $rel_params['contact_id_a'] = $mh_id;
+                    $rel_params['contact_id_b'] = $huis_id;
+                    $createRel = civicrm_api('Relationship', 'Create', $rel_params);
+                } else {
+                    foreach($res['values'] as $rid => $value) {
+                        $rel_params['id'] = $rid;
+                        civicrm_api('Relationship', 'Create', $rel_params);
+                        $updated = true;
+                    }
                 }
             }
         }
