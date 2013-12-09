@@ -1,5 +1,4 @@
 <?php
-ini_set( 'display_errors', '1');
 require_once 'custom.civix.php';
 
 /**
@@ -36,7 +35,7 @@ function custom_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function custom_civicrm_enable() {
-    /*
+    /**
      * change all existing street_number_suffix to street_unit as the
      * street parsing rules have changed in the upgrade to 4.3.x
      */
@@ -83,18 +82,16 @@ function custom_civicrm_managed(&$entities) {
  * @author Jaap Jansma (jaap.jansma@civicoop.org)
  */
 function custom_civicrm_tabs( &$tabs, $contactID ) {
-	foreach($tabs as $key => $tab) {
-		/**
-		 * BOS1308567 insite - volgorde huurovereenkomsten
-		 *
-		 */
-		if ($tab['id'] == 'custom_2') {
-			$tabs[$key]['url'] = str_replace('/civicrm/contact/view/cd', '/civicrm/contact/view/cd_hov_tab', $tabs[$key]['url']);
-			break;
-		}
-	}
+    foreach($tabs as $key => $tab) {
+        /**
+         * BOS1308567 insite - volgorde huurovereenkomsten
+         */
+        if ($tab['id'] == 'custom_2') {
+            $tabs[$key]['url'] = str_replace('/civicrm/contact/view/cd', '/civicrm/contact/view/cd_hov_tab', $tabs[$key]['url']);
+            break;
+        }
+    }
 }
-
 
 /**
  * Implementation of hook_civicrm_validateForm
@@ -102,16 +99,14 @@ function custom_civicrm_tabs( &$tabs, $contactID ) {
  * @author Erik Hommel (erik.hommel@civicoop.org)
  */
 function custom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$errors ) {
-
-	/*
-	 * Incident BOS1303715 
-	 * verplicht maken van toewijzen aan bij terugbel verzoek
-	 */
-	if ( $formName == "CRM_Activity_Form_Activity" ) {
-	
-		$terugbel_verzoek_type_id = false;
-		$gid = false;
-		$apiParams = array(
+    /**
+     * Incident BOS1303715 
+     * verplicht maken van toewijzen aan bij terugbel verzoek
+     */
+    if ( $formName == "CRM_Activity_Form_Activity" ) {
+        $terugbel_verzoek_type_id = false;
+        $gid = false;
+        $apiParams = array(
             'version'   =>  3,
             'name'     =>  'activity_type'
         );
@@ -121,35 +116,33 @@ function custom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$er
                 $gid = $apiGroup['id'];
             }
         }
-		if ($gid) {
-			$apiParams = array(
-				'version'   =>  3,
-				'option_group_id'     =>  $gid,
-				'label' => 'Terugbellen',
-			);
-			$apiValue = civicrm_api('OptionValue', 'Getsingle', $apiParams);
-			if (!isset($apiValue['is_error']) || $apiValue['is_error'] == 0) {
-				if (isset($apiValue['value'])) {
-					$terugbel_verzoek_type_id = $apiValue['value'];
-				}
-			}
-		}
+        if ($gid) {
+            $apiParams = array(
+                'version'   =>  3,
+                'option_group_id'     =>  $gid,
+                'label' => 'Terugbellen',
+            );
+            $apiValue = civicrm_api('OptionValue', 'Getsingle', $apiParams);
+            if (!isset($apiValue['is_error']) || $apiValue['is_error'] == 0) {
+                if (isset($apiValue['value'])) {
+                    $terugbel_verzoek_type_id = $apiValue['value'];
+                }
+            }
+        }
 
-		if ($terugbel_verzoek_type_id && $form->_activityTypeId == $terugbel_verzoek_type_id) {
-			$assigned_to = CRM_Utils_Array::value( 'assignee_contact_id', $fields );
-			if (empty($assigned_to)) {
-				//$errors['assignee_contact_id'] = ts('Deze activiteit moet toegewezen worden aan een medewerker');
-				$form->setElementError('assignee_contact_id' , ts('Deze activiteit moet toegewezen worden aan een medewerker'));
-			}
-		}
-	}
-
-    /*
+        if ($terugbel_verzoek_type_id && $form->_activityTypeId == $terugbel_verzoek_type_id) {
+            $assigned_to = CRM_Utils_Array::value( 'assignee_contact_id', $fields );
+            if (empty($assigned_to)) {
+                $form->setElementError('assignee_contact_id' , ts('Deze activiteit moet toegewezen worden aan een medewerker'));
+            }
+        }
+    }
+    /**
      * validation address fields on Contact Edit form
      */
     if ( $formName == "CRM_Contact_Form_Contact" || $formName == "CRM_Contact_Form_Inline_Address" ) {
         foreach ( $fields['address'] as $addressKey => $address ) {
-            /*
+            /**
              * if street_address entered and street_name empty, split address before validation
              */
             if ( !empty( $address['street_address'] ) && empty( $address['street_name'] ) ) {
@@ -161,7 +154,7 @@ function custom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$er
                     $address['street_unit'] = $splitAddress['street_unit'];
                 }
             }
-            /*
+            /**
              * if streetname is entered, street number can not be empty and vice versa
              */
             if ( !empty( $address['street_name'] ) ) {
@@ -174,7 +167,7 @@ function custom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$er
                    $errors['address[' . $addressKey . '][street_name]'] = 'Straat mag niet leeg zijn als huisnummer gevuld is';
                 }
             }
-            /*
+            /**
              * street number has to be numeric
              */
             if ( !empty( $address['street_number'] ) ) {
@@ -182,7 +175,7 @@ function custom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$er
                    $errors['address[' . $addressKey . '][street_number]'] = 'Huisnummer mag alleen cijfers bevatten';
                 }
             }
-            /*
+            /**
              * if city is entered, postal code can not be empty and vice versa
              */
             if ( !empty( $address['city'] ) ) {
@@ -195,7 +188,7 @@ function custom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$er
                    $errors['address[' . $addressKey . '][city]'] = 'Plaats mag niet leeg zijn als postcode gevuld is';
                 }
             }
-            /*
+            /**
              * supplemental_address_2 can only be used if 1 and street_name is not empty
              */
             if ( !empty( $address['supplemental_address_2'] ) ) {
@@ -203,7 +196,7 @@ function custom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$er
                    $errors['address[' . $addressKey . '][supplemental_address_2]'] = 'Adres toevoeging (2) kan alleen gevuld worden als adres toevoeging (1) en straatnaam ook gevuld zijn';
                 }
             }
-            /*
+            /**
              * supplemental_address_1 can only be used if street_name is not empty
              */
             if ( !empty( $address['supplemental_address_1'] ) ) {
@@ -211,7 +204,7 @@ function custom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$er
                     $errors['address['. $addressKey . '][supplemental_address_1'] = 'Adres toevoeging (1) kan alleen gevuld worden als straatnaam ook gevuld is';
                 }
             }
-            /*
+            /**
              * postal_code and/or city can only be used if street_name or street_address is not empty
              */
             if ( !empty( $address['postal_code'] ) ) {
@@ -226,7 +219,7 @@ function custom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$er
 
                 }
             }
-            /*
+            /**
              * pattern postal code has to be correct (is required in First Noa)
              */
             if ( !empty( $address['postal_code'] ) && !empty( $address['city'] ) ) {
@@ -266,13 +259,13 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
      * Synchronization First Noa
      */
     if ( $objectName == "Address" || $objectName == "Email" || $objectName == "Phone" ) {
-        /*
+        /**
          * remove and then copy new set to huishouden and medehuurder if
          * contact hoofdhuurder for create and edit
          */
         if ( $op == "create" || $op == "edit" ) {
             $contactId = 0;
-            /*
+            /**
              * check if objectRef is array or object
              */
             if ( is_object( $objectRef ) ) {
@@ -310,7 +303,7 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
             }
         }
     }
-    /*
+    /**
      * BOS1303566
      */
     if ( $objectName == "Individual" ) {
@@ -337,7 +330,7 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
         $updContact .= "postal_greeting_display = '$greetings' WHERE id = $objectId";
         CRM_Core_DAO::executeQuery( $updContact );
     }
-    /*
+    /**
      * incident 01 10 12 002 - add username and date to details activity,
      * remove 'old' username and date if required to avoid doubles
      */
@@ -347,7 +340,7 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
             if ( $activityTypeId == 32 ) {
                 $details = $objectRef->details;
                 $activityId = $objectRef->id;
-                /*
+                /**
                  * explode details in parts between <p> to decide
                  * if there is already a username and date and no other
                  * text. If that is the case, the 'old' username and
@@ -395,7 +388,7 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
             }
         }
     }
-    /*
+    /**
      * incident 20 06 12 004 depending on the CiviCRM settings, a mail is sent
      * to the assignee contact for an activity. That is fine.
      * What also happens is that an activity is automatically created for
@@ -434,7 +427,7 @@ function custom_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
  *
  */
 function custom_civicrm_buildForm( $formName, &$form ) {
-    /*
+    /**
      * DGW incident 14 01 13 003
      */
     if ( $formName == "CRM_Contact_Form_GroupContact") {
@@ -450,7 +443,7 @@ function custom_civicrm_buildForm( $formName, &$form ) {
             $elements = & $form->getVar('_elements');
             $element = & $elements[1];
             $opties = & $element->_options;
-            /*
+            /**
              * remove elements that are only available for administrator
              */
             if ( $waarden['text'] == "Complex 37 en 46B voor Elke" ) {
@@ -462,7 +455,7 @@ function custom_civicrm_buildForm( $formName, &$form ) {
             if ( $waarden['text'] == "FirstSync" ) {
                 unset( $opties[$optie]);
             }
-            /*
+            /**
              * only show groups that user is authorised for
              */
             if ( !$session ) {
@@ -495,14 +488,14 @@ function custom_civicrm_buildForm( $formName, &$form ) {
             }
         }
     }
-    /*
+    /**
      * default 'track url' to off
      */
     if ( $formName == "CRM_Mailing_Form_Settings" ) {
         $defaults = array('url_tracking' => 0);
         $form->setDefaults( $defaults );
     }
-    /*
+    /**
      * DGW incident 06 10 11 005
      */
     if ( $formName == "CRM_Case_Form_CaseView" ) {
@@ -513,7 +506,7 @@ function custom_civicrm_buildForm( $formName, &$form ) {
         }
 
         if ( !$userBeheerder ) {
-            /*
+            /**
              * only show details if user in special group
              */
             if ( !isset( $session ) ) {
@@ -542,7 +535,7 @@ function custom_civicrm_buildForm( $formName, &$form ) {
             }
         }
     }
-    /*
+    /**
      * DGW incident 14 01 13 003
      */
     if ( $formName == "CRM_Activity_Form_Activity" ) {
@@ -552,7 +545,7 @@ function custom_civicrm_buildForm( $formName, &$form ) {
           $userBeheerder = true;
         }
         if ( !$userBeheerder ) {
-            /*
+            /**
              * only show details if user in special group
              */
             if ( !isset( $session ) ) {
@@ -604,11 +597,11 @@ function custom_civicrm_buildForm( $formName, &$form ) {
                 }
             }
         }
-        /*
+        /**
          * BOS1303566
          */
         $action = $form->getVar('_action');
-        /*
+        /**
          * only for create or edit
          */
         if ( $action == 1 || $action == 2 ) {
@@ -656,7 +649,7 @@ function custom_civicrm_buildForm( $formName, &$form ) {
  */
 function custom_civicrm_contactListQuery( &$query, $name, $context, $id ) {
     if ($context == "activity_assignee") {
-        /*
+        /**
          * retrieve group_id for group Toewijzen activiteit
          */
         $assigneeGroupId = 0;
@@ -672,7 +665,7 @@ function custom_civicrm_contactListQuery( &$query, $name, $context, $id ) {
                 $assigneeGroupId = $apiGroup['id'];
             }
         }
-        /*
+        /**
          * retrieve all members of the group
          */
         $query =
