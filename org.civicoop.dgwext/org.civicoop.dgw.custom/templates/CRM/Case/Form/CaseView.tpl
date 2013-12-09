@@ -220,7 +220,7 @@
       var relType  = cj(this).attr('rel_type');
 
       CRM.confirm(function() {
-        var postUrl = {/literal}"{crmURL p='civicrm/ajax/delcaserole' h=0 }"{literal};
+        var postUrl = {/literal}"{crmURL p='civicrm/ajax/delcaserole' h=0}"{literal};
         cj.post( postUrl, {
           rel_type: relType, case_id: caseID, key: {/literal}"{crmKey name='civicrm/ajax/delcaserole'}"{literal}},
           function(data) {
@@ -268,14 +268,14 @@
       "aoColumns"  : columns,
       "bProcessing": true,
       "bJQueryUI": true,
-      "asStripClasses" : [ "odd-row", "even-row" ],
+      "asStripClasses" : ["odd-row", "even-row"],
       "sPaginationType": "full_numbers",
       "sDom"       : '<"crm-datatable-pager-top"lfp>rt<"crm-datatable-pager-bottom"ip>',
       "bServerSide": true,
       "sAjaxSource": sourceUrl,
       "iDisplayLength": 10,
-      "fnDrawCallback": function() { setCaseRolesSelectorClass(); },
-      "fnServerData": function ( sSource, aoData, fnCallback ) {
+      "fnDrawCallback": function() { setCaseRolesSelectorClass();},
+      "fnServerData": function ( sSource, aoData, fnCallback ){
         cj.ajax({
           "dataType": 'json',
           "type": "POST",
@@ -319,7 +319,7 @@
 <script type="text/javascript">
   var selectedContact = '';
   var caseID = {/literal}"{$caseID}"{literal};
-  var contactUrl = {/literal}"{crmURL p='civicrm/ajax/rest' q='className=CRM_Contact_Page_AJAX&fnName=getContactList&json=1&context=newcontact' h=0 }"{literal};
+  var contactUrl = {/literal}"{crmURL p='civicrm/ajax/rest' q='className=CRM_Contact_Page_AJAX&fnName=getContactList&json=1&context=newcontact' h=0}"{literal};
   cj( "#change_client_id").autocomplete( contactUrl, { width : 250, selectFirst : false, matchContains:true
   }).result( function(event, data, formatted) { cj( "#contact_id" ).val( data[1] ); selectedContact = data[0];
     }).bind( 'click', function( ) { cj( "#contact_id" ).val(''); });
@@ -337,7 +337,7 @@
       overlay: { opacity: 0.5, background: "black" },
 
       open:function() {
-      var contactUrl = {/literal}"{crmURL p='civicrm/ajax/rest' q='className=CRM_Contact_Page_AJAX&fnName=getContactList&json=1&context=caseview' h=0 }"{literal};
+      var contactUrl = {/literal}"{crmURL p='civicrm/ajax/rest' q='className=CRM_Contact_Page_AJAX&fnName=getContactList&json=1&context=caseview' h=0}"{literal};
         cj("#rel_contact").autocomplete( contactUrl, {
           width: 260,
           selectFirst: false,
@@ -352,7 +352,7 @@
 
       buttons: {
       "Done": function() {
-        var postUrl = {/literal}"{crmURL p='civicrm/case/ajax/addclient' h=0 }"{literal};
+        var postUrl = {/literal}"{crmURL p='civicrm/case/ajax/addclient' h=0}"{literal};
         var caseID        = {/literal}"{$caseID}"{literal};
         var contactID = cj("#rel_contact_id").val( );
 

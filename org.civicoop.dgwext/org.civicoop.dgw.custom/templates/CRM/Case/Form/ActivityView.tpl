@@ -142,7 +142,7 @@ function viewRevision( activityId ) {
       var cid= {/literal}"{$contactID}"{literal};
       var type = {/literal}"{$type}"{literal};
       var viewAct = cj("#view-activity" + type+ ".ui-dialog-content" );
-      var viewUrl = {/literal}"{crmURL p='civicrm/case/activity/view' h=0 q="snippet=4" }"{literal};
+      var viewUrl = {/literal}"{crmURL p='civicrm/case/activity/view' h=0 q='snippet=4'}"{literal};
       cj("#activity-content" + type, viewAct).load( viewUrl + "&cid="+cid + "&aid=" + activityId +"&type=" + type);
 }
 
@@ -150,7 +150,7 @@ function listRevisions( activityId ) {
       var cid= {/literal}"{$contactID}"{literal};
       var type = {/literal}"{$type}"{literal};
       var viewAct = cj("#view-activity" + type + ".ui-dialog-content" );
-      var viewUrl = {/literal}"{crmURL p='civicrm/case/activity/view' h=0 q="snippet=4" }"{literal};
+      var viewUrl = {/literal}"{crmURL p='civicrm/case/activity/view' h=0 q="snippet=4"}"{literal};
       cj("#activity-content" + type, viewAct).load( viewUrl + "&cid=" + cid + "&aid=" + activityId + "&revs=1" +"&type=" + type);
 }
 </script>
