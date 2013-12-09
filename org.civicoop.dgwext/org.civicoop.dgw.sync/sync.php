@@ -36,7 +36,7 @@ function sync_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function sync_civicrm_enable() {
-    /*
+    /**
      * Check if required extensions org.civicoop.dgw.custom and
      * org.civicoop.dgw.api are installed and enabled
      */
@@ -71,7 +71,7 @@ function sync_civicrm_enable() {
             because required extension org.civicoop.dgw.custom is not enabled", 'Extension not enabled', 'alert' );
         return;
     }
-    /*
+    /**
      * check if dgw_config table is present, which is required
      */
     $dgwConfigExists = CRM_Core_DAO::checkTableExists( 'dgw_config' );
@@ -262,7 +262,7 @@ function sync_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
      */
     if ( $op == "create" ) {
         /*
-         * only oif one of selected objects
+         * only if one of selected objects
          */
         if (in_array( $objectName, $syncedObjects ) ) {
             /*
